@@ -1,0 +1,566 @@
+[
+  {
+    "id": "seq_01_stage_intro",
+    "cat": "Movement",
+    "label": "STAGE_INTRO (Entrada da Base / Transicao)",
+    "fps": 8,
+    "loop": false,
+    "gif": "sprites_extracted/seq_01_stage_intro/animation.gif",
+    "strip": "sprites_extracted/seq_01_stage_intro/strip.png",
+    "frames": [
+      "sprites_extracted/seq_01_stage_intro/frame_00.png",
+      "sprites_extracted/seq_01_stage_intro/frame_01.png",
+      "sprites_extracted/seq_01_stage_intro/frame_02.png",
+      "sprites_extracted/seq_01_stage_intro/frame_03.png"
+    ]
+  },
+  {
+    "id": "seq_02_idle",
+    "cat": "Movement",
+    "label": "IDLE (Chegando na Fase / Parado Respirando)",
+    "fps": 6,
+    "loop": true,
+    "gif": "sprites_extracted/seq_02_idle/animation.gif",
+    "strip": "sprites_extracted/seq_02_idle/strip.png",
+    "frames": [
+      "sprites_extracted/seq_02_idle/frame_00.png",
+      "sprites_extracted/seq_02_idle/frame_01.png",
+      "sprites_extracted/seq_02_idle/frame_02.png",
+      "sprites_extracted/seq_02_idle/frame_03.png",
+      "sprites_extracted/seq_02_idle/frame_04.png",
+      "sprites_extracted/seq_02_idle/frame_05.png"
+    ]
+  },
+  {
+    "id": "seq_03_idle_arm_raised",
+    "cat": "Movement",
+    "label": "IDLE_ARM_RAISED (Idle com Braco Levantado)",
+    "fps": 8,
+    "loop": true,
+    "gif": "sprites_extracted/seq_03_idle_arm_raised/animation.gif",
+    "strip": "sprites_extracted/seq_03_idle_arm_raised/strip.png",
+    "frames": [
+      "sprites_extracted/seq_03_idle_arm_raised/frame_00.png",
+      "sprites_extracted/seq_03_idle_arm_raised/frame_01.png",
+      "sprites_extracted/seq_03_idle_arm_raised/frame_02.png",
+      "sprites_extracted/seq_03_idle_arm_raised/frame_03.png",
+      "sprites_extracted/seq_03_idle_arm_raised/frame_04.png",
+      "sprites_extracted/seq_03_idle_arm_raised/frame_05.png"
+    ]
+  },
+  {
+    "id": "seq_04_hurt_idle_low_hp",
+    "cat": "Movement",
+    "label": "HURT_IDLE (Idle Machucado / Pouca Vida)",
+    "fps": 8,
+    "loop": true,
+    "gif": "sprites_extracted/seq_04_hurt_idle_low_hp/animation.gif",
+    "strip": "sprites_extracted/seq_04_hurt_idle_low_hp/strip.png",
+    "frames": [
+      "sprites_extracted/seq_04_hurt_idle_low_hp/frame_00.png",
+      "sprites_extracted/seq_04_hurt_idle_low_hp/frame_01.png",
+      "sprites_extracted/seq_04_hurt_idle_low_hp/frame_02.png"
+    ]
+  },
+  {
+    "id": "seq_05_hurt_damage",
+    "cat": "Movement",
+    "label": "HURT_DAMAGE (Zero Machucado / Levando Dano)",
+    "fps": 8,
+    "loop": false,
+    "gif": "sprites_extracted/seq_05_hurt_damage/animation.gif",
+    "strip": "sprites_extracted/seq_05_hurt_damage/strip.png",
+    "frames": [
+      "sprites_extracted/seq_05_hurt_damage/frame_00.png"
+    ]
+  },
+  {
+    "id": "seq_06_walk",
+    "cat": "Movement",
+    "label": "WALK (Zero Andando / Movimento)",
+    "fps": 12,
+    "loop": true,
+    "gif": "sprites_extracted/seq_06_walk/animation.gif",
+    "strip": "sprites_extracted/seq_06_walk/strip.png",
+    "frames": [
+      "sprites_extracted/seq_06_walk/frame_00.png",
+      "sprites_extracted/seq_06_walk/frame_01.png",
+      "sprites_extracted/seq_06_walk/frame_02.png",
+      "sprites_extracted/seq_06_walk/frame_03.png"
+    ]
+  },
+  {
+    "id": "seq_07_run",
+    "cat": "Movement",
+    "label": "RUN (Zero Correndo)",
+    "fps": 14,
+    "loop": true,
+    "gif": "sprites_extracted/seq_07_run/animation.gif",
+    "strip": "sprites_extracted/seq_07_run/strip.png",
+    "frames": [
+      "sprites_extracted/seq_07_run/frame_00.png",
+      "sprites_extracted/seq_07_run/frame_01.png",
+      "sprites_extracted/seq_07_run/frame_02.png",
+      "sprites_extracted/seq_07_run/frame_03.png",
+      "sprites_extracted/seq_07_run/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_08_jump",
+    "cat": "Movement",
+    "label": "JUMP (Zero Pulando / Subida no Ar)",
+    "fps": 10,
+    "loop": false,
+    "gif": "sprites_extracted/seq_08_jump/animation.gif",
+    "strip": "sprites_extracted/seq_08_jump/strip.png",
+    "frames": [
+      "sprites_extracted/seq_08_jump/frame_00.png",
+      "sprites_extracted/seq_08_jump/frame_01.png",
+      "sprites_extracted/seq_08_jump/frame_02.png",
+      "sprites_extracted/seq_08_jump/frame_03.png",
+      "sprites_extracted/seq_08_jump/frame_04.png",
+      "sprites_extracted/seq_08_jump/frame_05.png"
+    ]
+  },
+  {
+    "id": "seq_09_land",
+    "cat": "Movement",
+    "label": "LAND (Zero Chegando do Pulo no Chao)",
+    "fps": 12,
+    "loop": false,
+    "gif": "sprites_extracted/seq_09_land/animation.gif",
+    "strip": "sprites_extracted/seq_09_land/strip.png",
+    "frames": [
+      "sprites_extracted/seq_09_land/frame_00.png",
+      "sprites_extracted/seq_09_land/frame_01.png",
+      "sprites_extracted/seq_09_land/frame_02.png",
+      "sprites_extracted/seq_09_land/frame_03.png",
+      "sprites_extracted/seq_09_land/frame_04.png",
+      "sprites_extracted/seq_09_land/frame_05.png"
+    ]
+  },
+  {
+    "id": "seq_10_jump_somersault",
+    "cat": "Movement",
+    "label": "JUMP_SOMERSAULT (Pulo Agachando no Final)",
+    "fps": 10,
+    "loop": false,
+    "gif": "sprites_extracted/seq_10_jump_somersault/animation.gif",
+    "strip": "sprites_extracted/seq_10_jump_somersault/strip.png",
+    "frames": [
+      "sprites_extracted/seq_10_jump_somersault/frame_00.png",
+      "sprites_extracted/seq_10_jump_somersault/frame_01.png",
+      "sprites_extracted/seq_10_jump_somersault/frame_02.png",
+      "sprites_extracted/seq_10_jump_somersault/frame_03.png",
+      "sprites_extracted/seq_10_jump_somersault/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_11_dash",
+    "cat": "Movement",
+    "label": "DASH (Arrancada / Dash Terrestre)",
+    "fps": 16,
+    "loop": true,
+    "gif": "sprites_extracted/seq_11_dash/animation.gif",
+    "strip": "sprites_extracted/seq_11_dash/strip.png",
+    "frames": [
+      "sprites_extracted/seq_11_dash/frame_00.png",
+      "sprites_extracted/seq_11_dash/frame_01.png",
+      "sprites_extracted/seq_11_dash/frame_02.png",
+      "sprites_extracted/seq_11_dash/frame_03.png",
+      "sprites_extracted/seq_11_dash/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_12_wall_grab_slide",
+    "cat": "Movement",
+    "label": "WALL_GRAB_SLIDE (Deslizando na Parede)",
+    "fps": 10,
+    "loop": true,
+    "gif": "sprites_extracted/seq_12_wall_grab_slide/animation.gif",
+    "strip": "sprites_extracted/seq_12_wall_grab_slide/strip.png",
+    "frames": [
+      "sprites_extracted/seq_12_wall_grab_slide/frame_00.png",
+      "sprites_extracted/seq_12_wall_grab_slide/frame_01.png",
+      "sprites_extracted/seq_12_wall_grab_slide/frame_02.png",
+      "sprites_extracted/seq_12_wall_grab_slide/frame_03.png",
+      "sprites_extracted/seq_12_wall_grab_slide/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_13_wall_slide_floor_contact",
+    "cat": "Movement",
+    "label": "WALL_CONTACT_FLOOR (Fim do Deslize Tocando Chao)",
+    "fps": 10,
+    "loop": false,
+    "gif": "sprites_extracted/seq_13_wall_slide_floor_contact/animation.gif",
+    "strip": "sprites_extracted/seq_13_wall_slide_floor_contact/strip.png",
+    "frames": [
+      "sprites_extracted/seq_13_wall_slide_floor_contact/frame_00.png",
+      "sprites_extracted/seq_13_wall_slide_floor_contact/frame_01.png",
+      "sprites_extracted/seq_13_wall_slide_floor_contact/frame_02.png"
+    ]
+  },
+  {
+    "id": "seq_14_wall_kick_jump",
+    "cat": "Movement",
+    "label": "WALL_KICK_JUMP (Pulo Saindo da Parede)",
+    "fps": 12,
+    "loop": false,
+    "gif": "sprites_extracted/seq_14_wall_kick_jump/animation.gif",
+    "strip": "sprites_extracted/seq_14_wall_kick_jump/strip.png",
+    "frames": [
+      "sprites_extracted/seq_14_wall_kick_jump/frame_00.png",
+      "sprites_extracted/seq_14_wall_kick_jump/frame_01.png",
+      "sprites_extracted/seq_14_wall_kick_jump/frame_02.png",
+      "sprites_extracted/seq_14_wall_kick_jump/frame_03.png",
+      "sprites_extracted/seq_14_wall_kick_jump/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_15_ladder_climb",
+    "cat": "Movement",
+    "label": "LADDER_CLIMB (Subindo Escada / Idle Escada)",
+    "fps": 10,
+    "loop": true,
+    "gif": "sprites_extracted/seq_15_ladder_climb/animation.gif",
+    "strip": "sprites_extracted/seq_15_ladder_climb/strip.png",
+    "frames": [
+      "sprites_extracted/seq_15_ladder_climb/frame_00.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_01.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_02.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_03.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_04.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_05.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_06.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_07.png",
+      "sprites_extracted/seq_15_ladder_climb/frame_08.png"
+    ]
+  },
+  {
+    "id": "seq_16_hang_ceiling_one_hand",
+    "cat": "Movement",
+    "label": "HANG_CEILING (Pendurado por uma das Maos)",
+    "fps": 10,
+    "loop": true,
+    "gif": "sprites_extracted/seq_16_hang_ceiling_one_hand/animation.gif",
+    "strip": "sprites_extracted/seq_16_hang_ceiling_one_hand/strip.png",
+    "frames": [
+      "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_00.png",
+      "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_01.png",
+      "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_02.png",
+      "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_03.png"
+    ]
+  },
+  {
+    "id": "seq_17_saber_slash_1",
+    "cat": "Combat (Saber)",
+    "label": "SABER_SLASH_1 (Golpe Simples de Sabre 1)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_17_saber_slash_1/animation.gif",
+    "strip": "sprites_extracted/seq_17_saber_slash_1/strip.png",
+    "frames": [
+      "sprites_extracted/seq_17_saber_slash_1/frame_00.png",
+      "sprites_extracted/seq_17_saber_slash_1/frame_01.png",
+      "sprites_extracted/seq_17_saber_slash_1/frame_02.png",
+      "sprites_extracted/seq_17_saber_slash_1/frame_03.png"
+    ]
+  },
+  {
+    "id": "seq_18_saber_slash_2",
+    "cat": "Combat (Saber)",
+    "label": "SABER_SLASH_2 (Golpe Simples de Sabre 2)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_18_saber_slash_2/animation.gif",
+    "strip": "sprites_extracted/seq_18_saber_slash_2/strip.png",
+    "frames": [
+      "sprites_extracted/seq_18_saber_slash_2/frame_00.png",
+      "sprites_extracted/seq_18_saber_slash_2/frame_01.png",
+      "sprites_extracted/seq_18_saber_slash_2/frame_02.png",
+      "sprites_extracted/seq_18_saber_slash_2/frame_03.png",
+      "sprites_extracted/seq_18_saber_slash_2/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_19_saber_slash_moving_step",
+    "cat": "Combat (Saber)",
+    "label": "SABER_SLASH_STEP (Golpe de Sabre Avancando)",
+    "fps": 18,
+    "loop": false,
+    "gif": "sprites_extracted/seq_19_saber_slash_moving_step/animation.gif",
+    "strip": "sprites_extracted/seq_19_saber_slash_moving_step/strip.png",
+    "frames": [
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_00.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_01.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_02.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_03.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_04.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_05.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_06.png",
+      "sprites_extracted/seq_19_saber_slash_moving_step/frame_07.png"
+    ]
+  },
+  {
+    "id": "seq_20_saber_slash_heavy",
+    "cat": "Combat (Saber)",
+    "label": "SABER_SLASH_HEAVY (Slash Comum em Pe)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_20_saber_slash_heavy/animation.gif",
+    "strip": "sprites_extracted/seq_20_saber_slash_heavy/strip.png",
+    "frames": [
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_00.png",
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_01.png",
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_02.png",
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_03.png",
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_04.png",
+      "sprites_extracted/seq_20_saber_slash_heavy/frame_05.png"
+    ]
+  },
+  {
+    "id": "seq_21_saber_slash_link",
+    "cat": "Combat (Saber)",
+    "label": "SABER_SLASH_LINK (Slash de Concatenacao)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_21_saber_slash_link/animation.gif",
+    "strip": "sprites_extracted/seq_21_saber_slash_link/strip.png",
+    "frames": [
+      "sprites_extracted/seq_21_saber_slash_link/frame_00.png",
+      "sprites_extracted/seq_21_saber_slash_link/frame_01.png",
+      "sprites_extracted/seq_21_saber_slash_link/frame_02.png",
+      "sprites_extracted/seq_21_saber_slash_link/frame_03.png",
+      "sprites_extracted/seq_21_saber_slash_link/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_22_run_forward",
+    "cat": "Movement",
+    "label": "RUN_FORWARD (Apenas Correndo Frente)",
+    "fps": 14,
+    "loop": true,
+    "gif": "sprites_extracted/seq_22_run_forward/animation.gif",
+    "strip": "sprites_extracted/seq_22_run_forward/strip.png",
+    "frames": [
+      "sprites_extracted/seq_22_run_forward/frame_00.png",
+      "sprites_extracted/seq_22_run_forward/frame_01.png",
+      "sprites_extracted/seq_22_run_forward/frame_02.png",
+      "sprites_extracted/seq_22_run_forward/frame_03.png",
+      "sprites_extracted/seq_22_run_forward/frame_04.png",
+      "sprites_extracted/seq_22_run_forward/frame_05.png",
+      "sprites_extracted/seq_22_run_forward/frame_06.png",
+      "sprites_extracted/seq_22_run_forward/frame_07.png"
+    ]
+  },
+  {
+    "id": "seq_23_run_arm_raised",
+    "cat": "Movement",
+    "label": "RUN_ARM_RAISED (Correndo com Braco Levantado)",
+    "fps": 14,
+    "loop": true,
+    "gif": "sprites_extracted/seq_23_run_arm_raised/animation.gif",
+    "strip": "sprites_extracted/seq_23_run_arm_raised/strip.png",
+    "frames": [
+      "sprites_extracted/seq_23_run_arm_raised/frame_00.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_01.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_02.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_03.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_04.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_05.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_06.png",
+      "sprites_extracted/seq_23_run_arm_raised/frame_07.png"
+    ]
+  },
+  {
+    "id": "seq_24_saber_blade_fx",
+    "cat": "Combat (Saber)",
+    "label": "SABER_BLADE_FX (Lamina / Efeito do Sabre)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_24_saber_blade_fx/animation.gif",
+    "strip": "sprites_extracted/seq_24_saber_blade_fx/strip.png",
+    "frames": [
+      "sprites_extracted/seq_24_saber_blade_fx/frame_00.png",
+      "sprites_extracted/seq_24_saber_blade_fx/frame_01.png",
+      "sprites_extracted/seq_24_saber_blade_fx/frame_02.png",
+      "sprites_extracted/seq_24_saber_blade_fx/frame_03.png",
+      "sprites_extracted/seq_24_saber_blade_fx/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_25_attack_walk_slash",
+    "cat": "Combat (Saber)",
+    "label": "ATTACK_WALK_SLASH (Ataque Simples Andando)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_25_attack_walk_slash/animation.gif",
+    "strip": "sprites_extracted/seq_25_attack_walk_slash/strip.png",
+    "frames": [
+      "sprites_extracted/seq_25_attack_walk_slash/frame_00.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_01.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_02.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_03.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_04.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_05.png",
+      "sprites_extracted/seq_25_attack_walk_slash/frame_06.png"
+    ]
+  },
+  {
+    "id": "seq_26_attack_air_jump_slash",
+    "cat": "Combat (Saber)",
+    "label": "ATTACK_AIR_SLASH (Ataque no Ar / Pular e Atacar)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_26_attack_air_jump_slash/animation.gif",
+    "strip": "sprites_extracted/seq_26_attack_air_jump_slash/strip.png",
+    "frames": [
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_00.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_01.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_02.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_03.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_04.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_05.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_06.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_07.png",
+      "sprites_extracted/seq_26_attack_air_jump_slash/frame_08.png"
+    ]
+  },
+  {
+    "id": "seq_27_attack_dash_slash",
+    "cat": "Combat (Saber)",
+    "label": "ATTACK_DASH_SLASH (Ataque ao dar Dash / Dash Slash)",
+    "fps": 16,
+    "loop": false,
+    "gif": "sprites_extracted/seq_27_attack_dash_slash/animation.gif",
+    "strip": "sprites_extracted/seq_27_attack_dash_slash/strip.png",
+    "frames": [
+      "sprites_extracted/seq_27_attack_dash_slash/frame_00.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_01.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_02.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_03.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_04.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_05.png",
+      "sprites_extracted/seq_27_attack_dash_slash/frame_06.png"
+    ]
+  },
+  {
+    "id": "seq_28_hang_charge_slash",
+    "cat": "Combat (Saber)",
+    "label": "HANG_CHARGE_SLASH (Pendurado Soltando Slash Carregado)",
+    "fps": 18,
+    "loop": false,
+    "gif": "sprites_extracted/seq_28_hang_charge_slash/animation.gif",
+    "strip": "sprites_extracted/seq_28_hang_charge_slash/strip.png",
+    "frames": [
+      "sprites_extracted/seq_28_hang_charge_slash/frame_00.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_01.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_02.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_03.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_04.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_05.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_06.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_07.png",
+      "sprites_extracted/seq_28_hang_charge_slash/frame_08.png"
+    ]
+  },
+  {
+    "id": "seq_29_buster_shoot_stand",
+    "cat": "Buster & Effects",
+    "label": "BUSTER_SHOOT_STAND (Disparando Buster Parado)",
+    "fps": 12,
+    "loop": false,
+    "gif": "sprites_extracted/seq_29_buster_shoot_stand/animation.gif",
+    "strip": "sprites_extracted/seq_29_buster_shoot_stand/strip.png",
+    "frames": [
+      "sprites_extracted/seq_29_buster_shoot_stand/frame_00.png",
+      "sprites_extracted/seq_29_buster_shoot_stand/frame_01.png",
+      "sprites_extracted/seq_29_buster_shoot_stand/frame_02.png"
+    ]
+  },
+  {
+    "id": "seq_30_buster_shoot_rapid",
+    "cat": "Buster & Effects",
+    "label": "BUSTER_SHOOT_RAPID (Disparo Buster Rapido Parado)",
+    "fps": 12,
+    "loop": false,
+    "gif": "sprites_extracted/seq_30_buster_shoot_rapid/animation.gif",
+    "strip": "sprites_extracted/seq_30_buster_shoot_rapid/strip.png",
+    "frames": [
+      "sprites_extracted/seq_30_buster_shoot_rapid/frame_00.png",
+      "sprites_extracted/seq_30_buster_shoot_rapid/frame_01.png",
+      "sprites_extracted/seq_30_buster_shoot_rapid/frame_02.png"
+    ]
+  },
+  {
+    "id": "seq_31_buster_charge_and_shoot",
+    "cat": "Buster & Effects",
+    "label": "BUSTER_CHARGE_SHOOT (Carregando Tiro e Disparando)",
+    "fps": 14,
+    "loop": false,
+    "gif": "sprites_extracted/seq_31_buster_charge_and_shoot/animation.gif",
+    "strip": "sprites_extracted/seq_31_buster_charge_and_shoot/strip.png",
+    "frames": [
+      "sprites_extracted/seq_31_buster_charge_and_shoot/frame_00.png",
+      "sprites_extracted/seq_31_buster_charge_and_shoot/frame_01.png",
+      "sprites_extracted/seq_31_buster_charge_and_shoot/frame_02.png",
+      "sprites_extracted/seq_31_buster_charge_and_shoot/frame_03.png",
+      "sprites_extracted/seq_31_buster_charge_and_shoot/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_32_buster_shoot_aim",
+    "cat": "Buster & Effects",
+    "label": "BUSTER_SHOOT_AIM (Disparando Buster Mirando)",
+    "fps": 12,
+    "loop": false,
+    "gif": "sprites_extracted/seq_32_buster_shoot_aim/animation.gif",
+    "strip": "sprites_extracted/seq_32_buster_shoot_aim/strip.png",
+    "frames": [
+      "sprites_extracted/seq_32_buster_shoot_aim/frame_00.png",
+      "sprites_extracted/seq_32_buster_shoot_aim/frame_01.png",
+      "sprites_extracted/seq_32_buster_shoot_aim/frame_02.png",
+      "sprites_extracted/seq_32_buster_shoot_aim/frame_03.png",
+      "sprites_extracted/seq_32_buster_shoot_aim/frame_04.png"
+    ]
+  },
+  {
+    "id": "seq_33_run_and_shoot_buster",
+    "cat": "Buster & Effects",
+    "label": "RUN_AND_SHOOT (Correndo e Atirando com Buster)",
+    "fps": 14,
+    "loop": true,
+    "gif": "sprites_extracted/seq_33_run_and_shoot_buster/animation.gif",
+    "strip": "sprites_extracted/seq_33_run_and_shoot_buster/strip.png",
+    "frames": [
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_00.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_01.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_02.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_03.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_04.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_05.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_06.png",
+      "sprites_extracted/seq_33_run_and_shoot_buster/frame_07.png"
+    ]
+  },
+  {
+    "id": "seq_34_run_aim_buster",
+    "cat": "Buster & Effects",
+    "label": "RUN_AIM_BUSTER (Correndo com Buster Apontado)",
+    "fps": 14,
+    "loop": true,
+    "gif": "sprites_extracted/seq_34_run_aim_buster/animation.gif",
+    "strip": "sprites_extracted/seq_34_run_aim_buster/strip.png",
+    "frames": [
+      "sprites_extracted/seq_34_run_aim_buster/frame_00.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_01.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_02.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_03.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_04.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_05.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_06.png",
+      "sprites_extracted/seq_34_run_aim_buster/frame_07.png"
+    ]
+  }
+]

@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mega Man Zero - HSM State Machine & Sequence Studio</title>
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --panel-bg: rgba(14, 18, 28, 0.95);
+      --panel-border: #1e293b;
+      --accent-red: #ff2a5f;
+      --accent-green: #00ffaa;
+      --accent-cyan: #00e5ff;
+      --accent-gold: #ffb703;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: linear-gradient(180deg, #131926 0%, #0a0d14 100%);
+      border-bottom: 2px solid #1e293b;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-tag {
+      background: var(--accent-red);
+      color: #fff;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sub-title {
+      font-size: 12px;
+      color: var(--accent-cyan);
+    }
+
+    /* Tab Controls */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: #141a29;
+      border: 1px solid #283548;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent-cyan);
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    /* Main Container */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 16px;
+      padding: 16px 24px;
+      flex: 1;
+      max-width: 1650px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+
+    .panel-header {
+      background: rgba(22, 28, 44, 0.7);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Game Canvas */
+    .canvas-wrapper {
+      position: relative;
+      background: #05070c;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #1a2234;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    canvas#gameCanvas {
+      width: 100%;
+      height: 460px;
+      background: radial-gradient(circle at 50% 25%, #111726 0%, #05070c 100%);
+      image-rendering: pixelated;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Controls Bar below canvas */
+    .controls-legend {
+      background: #0a0e18;
+      border-top: 1px solid var(--panel-border);
+      padding: 10px 16px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .key-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    kbd {
+      background: #192233;
+      color: var(--accent-gold);
+      border: 1px solid #334155;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+      font-size: 11px;
+      box-shadow: 0 2px 0 #000;
+    }
+
+    /* State Machine Hierarchy Display */
+    .hsm-tree {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .super-state-box {
+      border: 1px dashed #2d3748;
+      border-radius: 6px;
+      padding: 10px;
+      background: rgba(15, 20, 32, 0.4);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .super-state-box.active {
+      border: 1px solid var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.06);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.12);
+    }
+
+    .super-state-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .super-state-box.active .super-state-title {
+      color: var(--accent-cyan);
+    }
+
+    .sub-states-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .state-pill {
+      background: #141c2b;
+      border: 1px solid #233044;
+      color: #94a3b8;
+      padding: 5px 9px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: bold;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .state-pill:hover {
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .state-pill.active {
+      background: var(--accent-green);
+      color: #032014;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px rgba(0, 255, 170, 0.4);
+      transform: scale(1.04);
+    }
+
+    /* Diagnostics & Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding: 12px 14px;
+      background: #090c14;
+      border-bottom: 1px solid var(--panel-border);
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      background: #121826;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border-left: 2px solid var(--accent-cyan);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* Event Dispatch Log */
+    .event-log {
+      flex: 1;
+      height: 180px;
+      overflow-y: auto;
+      padding: 8px 12px;
+      font-family: monospace;
+      font-size: 11px;
+      background: #06080e;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 4px;
+    }
+
+    .log-entry {
+      padding: 3px 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.02);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .log-entry.event-fired {
+      border-left: 2px solid var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .log-entry.state-trans {
+      border-left: 2px solid var(--accent-green);
+      color: #a7f3d0;
+      background: rgba(0, 255, 170, 0.05);
+    }
+
+    /* Sequence Studio Section */
+    .sequence-studio {
+      margin-top: 16px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .studio-filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #141c2c;
+      border: 1px solid #26354a;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    .sequences-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      max-height: 540px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .seq-card {
+      background: #0e131f;
+      border: 1px solid #1e283b;
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .seq-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .seq-card.active-preview {
+      border-color: var(--accent-green);
+      background: rgba(0, 255, 170, 0.05);
+    }
+
+    .seq-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .seq-id {
+      font-family: monospace;
+      font-size: 10px;
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    .seq-cat {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #1e293b;
+      color: var(--text-muted);
+    }
+
+    .seq-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-main);
+    }
+
+    .seq-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #06080e;
+      border-radius: 4px;
+      padding: 6px;
+      min-height: 80px;
+    }
+
+    .seq-preview-row img {
+      image-rendering: pixelated;
+      max-height: 70px;
+      object-fit: contain;
+    }
+
+    .seq-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .btn-test-seq {
+      background: #1e293b;
+      color: var(--accent-cyan);
+      border: 1px solid #334155;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-test-seq:hover {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="logo-area">
+      <span class="badge-tag">Mega Man Zero</span>
+      <h1>StateSmith HSM & Sequence Studio <span class="sub-title">| Interactive C# Architecture</span></h1>
+    </div>
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="btnTabSandbox" onclick="switchView('sandbox')">🎮 Physics Sandbox</button>
+      <button class="tab-btn" id="btnTabStudio" onclick="switchView('studio')">🎞️ Sequence Studio (34 Sequências)</button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container">
+
+    <!-- Left Column: Interactive Sandbox & Visual Game Canvas -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <div class="panel" id="panelSandbox">
+        <div class="panel-header">
+          <span>🎮 Interactive Physics Sandbox (Zero Controller)</span>
+          <span style="font-size:11px; color:var(--accent-green);" id="fpsDisplay">60 FPS</span>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="gameCanvas" width="840" height="460"></canvas>
+          <div class="controls-legend">
+            <div class="key-hint"><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> Move (Walk/Run)</div>
+            <div class="key-hint"><kbd>Space</kbd> / <kbd>K</kbd> / <kbd>Z</kbd> Jump / Wall-Kick</div>
+            <div class="key-hint"><kbd>J</kbd> / <kbd>X</kbd> Z-Saber Attack (Slash / Air / Dash / Wall)</div>
+            <div class="key-hint"><kbd>Shift</kbd> / <kbd>L</kbd> / <kbd>C</kbd> Ground Dash</div>
+            <div class="key-hint"><kbd>Hold J</kbd> Charge Saber</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sequence Studio: Full catalog of all 34 extracted sequences -->
+      <div class="sequence-studio" id="panelStudio">
+        <div class="panel-header" style="background:none; padding:0 0 12px 0;">
+          <span>🎞️ Sprite Sequence Studio (34 Sequências com Nomenclatura Oficial MMZ)</span>
+          <span style="font-size:11px; color:var(--text-muted);">Clique em uma sequência para testar no Zero</span>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="studio-filter-bar">
+          <button class="filter-btn active" onclick="filterSequences('all')">Todas (34)</button>
+          <button class="filter-btn" onclick="filterSequences('Movement')">Movimentação (17)</button>
+          <button class="filter-btn" onclick="filterSequences('Combat (Saber)')">Z-Saber (11)</button>
+          <button class="filter-btn" onclick="filterSequences('Buster & Effects')">Buster & Efeitos (6)</button>
+        </div>
+
+        <!-- Sequences Grid -->
+        <div class="sequences-grid" id="sequencesGrid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: State Machine Tree, Event Triggers & Diagnostics -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <!-- HSM Hierarchy Viewer -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>⚡ Hierarchical State Machine</span>
+          <span style="font-size:10px; color:var(--accent-gold);" id="currentStateTag">GROUNDED :: IDLE</span>
+        </div>
+
+        <div class="hsm-tree">
+
+          <!-- GROUNDED Super State -->
+          <div class="super-state-box active" id="super_GROUNDED">
+            <div class="super-state-title">
+              <span>● SUPER STATE: GROUNDED</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill active" id="state_IDLE">IDLE</div>
+              <div class="state-pill" id="state_RUN">RUN</div>
+              <div class="state-pill" id="state_DASH">DASH</div>
+              <div class="state-pill" id="state_ATTACK_IDLE">ATTACK_IDLE</div>
+              <div class="state-pill" id="state_ATTACK_RUN">ATTACK_RUN</div>
+              <div class="state-pill" id="state_ATTACK_DASH">ATTACK_DASH</div>
+            </div>
+          </div>
+
+          <!-- AIRBORNE Super State -->
+          <div class="super-state-box" id="super_AIRBORNE">
+            <div class="super-state-title">
+              <span>● SUPER STATE: AIRBORNE</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_JUMP">JUMP</div>
+              <div class="state-pill" id="state_FALL">FALL</div>
+              <div class="state-pill" id="state_ATTACK_AIR">ATTACK_AIR</div>
+            </div>
+          </div>
+
+          <!-- WALL_SLIDE Super State -->
+          <div class="super-state-box" id="super_WALL_SLIDE">
+            <div class="super-state-title">
+              <span>● SUPER STATE: WALL_SLIDE</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_GRAB_WALL">GRAB_WALL</div>
+              <div class="state-pill" id="state_ATTACK_GRAB_WALL">ATTACK_GRAB_WALL</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Real-time Variables / Stats -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Velocity X</span>
+            <span class="stat-val" id="stat_vx">0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Velocity Y</span>
+            <span class="stat-val" id="stat_vy">0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Grounded</span>
+            <span class="stat-val" id="stat_ground">TRUE</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Wall Cling</span>
+            <span class="stat-val" id="stat_wall">NONE</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Dash Timer</span>
+            <span class="stat-val" id="stat_dash">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Charge Level</span>
+            <span class="stat-val" id="stat_charge">0%</span>
+          </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="panel-header" style="border-top:1px solid var(--panel-border); font-size:11px;">
+          <span>📋 Event Dispatch Log</span>
+        </div>
+        <div class="event-log" id="eventLog">
+          <div class="log-entry state-trans"><span>[INIT] PlayerSm initialized in GROUNDED::IDLE</span></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* =========================================================================
+       Master Animation Catalog
+       ========================================================================= */
+    const SPRITE_CATALOG = [
+      {"id": "seq_01_stage_intro", "cat": "Movement", "label": "STAGE_INTRO (Entrada da Base / Transição)", "fps": 8, "loop": false, "gif": "sprites_extracted/seq_01_stage_intro/animation.gif", "frames": ["sprites_extracted/seq_01_stage_intro/frame_00.png", "sprites_extracted/seq_01_stage_intro/frame_01.png", "sprites_extracted/seq_01_stage_intro/frame_02.png", "sprites_extracted/seq_01_stage_intro/frame_03.png"]},
+      {"id": "seq_02_idle", "cat": "Movement", "label": "IDLE (Chegando na Fase / Parado Respirando)", "fps": 6, "loop": true, "gif": "sprites_extracted/seq_02_idle/animation.gif", "frames": ["sprites_extracted/seq_02_idle/frame_00.png", "sprites_extracted/seq_02_idle/frame_01.png", "sprites_extracted/seq_02_idle/frame_02.png", "sprites_extracted/seq_02_idle/frame_03.png", "sprites_extracted/seq_02_idle/frame_04.png", "sprites_extracted/seq_02_idle/frame_05.png"]},
+      {"id": "seq_03_idle_arm_raised", "cat": "Movement", "label": "IDLE_ARM_RAISED (Idle com Braço Levantado)", "fps": 8, "loop": true, "gif": "sprites_extracted/seq_03_idle_arm_raised/animation.gif", "frames": ["sprites_extracted/seq_03_idle_arm_raised/frame_00.png", "sprites_extracted/seq_03_idle_arm_raised/frame_01.png", "sprites_extracted/seq_03_idle_arm_raised/frame_02.png", "sprites_extracted/seq_03_idle_arm_raised/frame_03.png", "sprites_extracted/seq_03_idle_arm_raised/frame_04.png", "sprites_extracted/seq_03_idle_arm_raised/frame_05.png"]},
+      {"id": "seq_04_hurt_idle_low_hp", "cat": "Movement", "label": "HURT_IDLE (Idle Machucado / Pouca Vida)", "fps": 8, "loop": true, "gif": "sprites_extracted/seq_04_hurt_idle_low_hp/animation.gif", "frames": ["sprites_extracted/seq_04_hurt_idle_low_hp/frame_00.png", "sprites_extracted/seq_04_hurt_idle_low_hp/frame_01.png", "sprites_extracted/seq_04_hurt_idle_low_hp/frame_02.png"]},
+      {"id": "seq_05_hurt_damage", "cat": "Movement", "label": "HURT_DAMAGE (Zero Machucado / Levando Dano)", "fps": 8, "loop": false, "gif": "sprites_extracted/seq_05_hurt_damage/animation.gif", "frames": ["sprites_extracted/seq_05_hurt_damage/frame_00.png"]},
+      {"id": "seq_06_walk", "cat": "Movement", "label": "WALK (Zero Andando / Movimento)", "fps": 12, "loop": true, "gif": "sprites_extracted/seq_06_walk/animation.gif", "frames": ["sprites_extracted/seq_06_walk/frame_00.png", "sprites_extracted/seq_06_walk/frame_01.png", "sprites_extracted/seq_06_walk/frame_02.png", "sprites_extracted/seq_06_walk/frame_03.png"]},
+      {"id": "seq_07_run", "cat": "Movement", "label": "RUN (Zero Correndo)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_07_run/animation.gif", "frames": ["sprites_extracted/seq_07_run/frame_00.png", "sprites_extracted/seq_07_run/frame_01.png", "sprites_extracted/seq_07_run/frame_02.png", "sprites_extracted/seq_07_run/frame_03.png", "sprites_extracted/seq_07_run/frame_04.png"]},
+      {"id": "seq_08_jump", "cat": "Movement", "label": "JUMP (Zero Pulando / Subida no Ar)", "fps": 10, "loop": false, "gif": "sprites_extracted/seq_08_jump/animation.gif", "frames": ["sprites_extracted/seq_08_jump/frame_00.png", "sprites_extracted/seq_08_jump/frame_01.png", "sprites_extracted/seq_08_jump/frame_02.png", "sprites_extracted/seq_08_jump/frame_03.png", "sprites_extracted/seq_08_jump/frame_04.png"]},
+      {"id": "seq_09_land", "cat": "Movement", "label": "LAND (Zero Chegando do Pulo no Chão)", "fps": 12, "loop": false, "gif": "sprites_extracted/seq_09_land/animation.gif", "frames": ["sprites_extracted/seq_09_land/frame_00.png", "sprites_extracted/seq_09_land/frame_01.png", "sprites_extracted/seq_09_land/frame_02.png", "sprites_extracted/seq_09_land/frame_03.png", "sprites_extracted/seq_09_land/frame_04.png", "sprites_extracted/seq_09_land/frame_05.png"]},
+      {"id": "seq_10_jump_somersault", "cat": "Movement", "label": "JUMP_SOMERSAULT (Pulo Agachando no Final)", "fps": 10, "loop": false, "gif": "sprites_extracted/seq_10_jump_somersault/animation.gif", "frames": ["sprites_extracted/seq_10_jump_somersault/frame_00.png", "sprites_extracted/seq_10_jump_somersault/frame_01.png", "sprites_extracted/seq_10_jump_somersault/frame_02.png", "sprites_extracted/seq_10_jump_somersault/frame_03.png", "sprites_extracted/seq_10_jump_somersault/frame_04.png"]},
+      {"id": "seq_11_dash", "cat": "Movement", "label": "DASH (Arrancada / Dash Terrestre)", "fps": 16, "loop": true, "gif": "sprites_extracted/seq_11_dash/animation.gif", "frames": ["sprites_extracted/seq_11_dash/frame_00.png", "sprites_extracted/seq_11_dash/frame_01.png", "sprites_extracted/seq_11_dash/frame_02.png", "sprites_extracted/seq_11_dash/frame_03.png", "sprites_extracted/seq_11_dash/frame_04.png"]},
+      {"id": "seq_12_wall_grab_slide", "cat": "Movement", "label": "WALL_GRAB_SLIDE (Deslizando na Parede)", "fps": 10, "loop": true, "gif": "sprites_extracted/seq_12_wall_grab_slide/animation.gif", "frames": ["sprites_extracted/seq_12_wall_grab_slide/frame_00.png", "sprites_extracted/seq_12_wall_grab_slide/frame_01.png", "sprites_extracted/seq_12_wall_grab_slide/frame_02.png", "sprites_extracted/seq_12_wall_grab_slide/frame_03.png", "sprites_extracted/seq_12_wall_grab_slide/frame_04.png"]},
+      {"id": "seq_13_wall_slide_floor_contact", "cat": "Movement", "label": "WALL_CONTACT_FLOOR (Fim do Deslize Tocando Chão)", "fps": 10, "loop": false, "gif": "sprites_extracted/seq_13_wall_slide_floor_contact/animation.gif", "frames": ["sprites_extracted/seq_13_wall_slide_floor_contact/frame_00.png", "sprites_extracted/seq_13_wall_slide_floor_contact/frame_01.png", "sprites_extracted/seq_13_wall_slide_floor_contact/frame_02.png"]},
+      {"id": "seq_14_wall_kick_jump", "cat": "Movement", "label": "WALL_KICK_JUMP (Pulo Saindo da Parede)", "fps": 12, "loop": false, "gif": "sprites_extracted/seq_14_wall_kick_jump/animation.gif", "frames": ["sprites_extracted/seq_14_wall_kick_jump/frame_00.png", "sprites_extracted/seq_14_wall_kick_jump/frame_01.png", "sprites_extracted/seq_14_wall_kick_jump/frame_02.png", "sprites_extracted/seq_14_wall_kick_jump/frame_03.png", "sprites_extracted/seq_14_wall_kick_jump/frame_04.png"]},
+      {"id": "seq_15_ladder_climb", "cat": "Movement", "label": "LADDER_CLIMB (Subindo Escada / Idle Escada)", "fps": 10, "loop": true, "gif": "sprites_extracted/seq_15_ladder_climb/animation.gif", "frames": ["sprites_extracted/seq_15_ladder_climb/frame_00.png", "sprites_extracted/seq_15_ladder_climb/frame_01.png", "sprites_extracted/seq_15_ladder_climb/frame_02.png", "sprites_extracted/seq_15_ladder_climb/frame_03.png", "sprites_extracted/seq_15_ladder_climb/frame_04.png", "sprites_extracted/seq_15_ladder_climb/frame_05.png", "sprites_extracted/seq_15_ladder_climb/frame_06.png", "sprites_extracted/seq_15_ladder_climb/frame_07.png", "sprites_extracted/seq_15_ladder_climb/frame_08.png"]},
+      {"id": "seq_16_hang_ceiling_one_hand", "cat": "Movement", "label": "HANG_CEILING (Pendurado por uma das Mãos)", "fps": 10, "loop": true, "gif": "sprites_extracted/seq_16_hang_ceiling_one_hand/animation.gif", "frames": ["sprites_extracted/seq_16_hang_ceiling_one_hand/frame_00.png", "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_01.png", "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_02.png", "sprites_extracted/seq_16_hang_ceiling_one_hand/frame_03.png"]},
+
+      {"id": "seq_17_saber_slash_1", "cat": "Combat (Saber)", "label": "SABER_SLASH_1 (Golpe Simples de Sabre 1)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_17_saber_slash_1/animation.gif", "frames": ["sprites_extracted/seq_17_saber_slash_1/frame_00.png", "sprites_extracted/seq_17_saber_slash_1/frame_01.png", "sprites_extracted/seq_17_saber_slash_1/frame_02.png", "sprites_extracted/seq_17_saber_slash_1/frame_03.png"]},
+      {"id": "seq_18_saber_slash_2", "cat": "Combat (Saber)", "label": "SABER_SLASH_2 (Golpe Simples de Sabre 2)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_18_saber_slash_2/animation.gif", "frames": ["sprites_extracted/seq_18_saber_slash_2/frame_00.png", "sprites_extracted/seq_18_saber_slash_2/frame_01.png", "sprites_extracted/seq_18_saber_slash_2/frame_02.png", "sprites_extracted/seq_18_saber_slash_2/frame_03.png", "sprites_extracted/seq_18_saber_slash_2/frame_04.png"]},
+      {"id": "seq_19_saber_slash_moving_step", "cat": "Combat (Saber)", "label": "SABER_SLASH_STEP (Golpe de Sabre Avançando)", "fps": 18, "loop": false, "gif": "sprites_extracted/seq_19_saber_slash_moving_step/animation.gif", "frames": ["sprites_extracted/seq_19_saber_slash_moving_step/frame_00.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_01.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_02.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_03.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_04.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_05.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_06.png", "sprites_extracted/seq_19_saber_slash_moving_step/frame_07.png"]},
+      {"id": "seq_20_saber_slash_heavy", "cat": "Combat (Saber)", "label": "SABER_SLASH_HEAVY (Slash Comum em Pé)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_20_saber_slash_heavy/animation.gif", "frames": ["sprites_extracted/seq_20_saber_slash_heavy/frame_00.png", "sprites_extracted/seq_20_saber_slash_heavy/frame_01.png", "sprites_extracted/seq_20_saber_slash_heavy/frame_02.png", "sprites_extracted/seq_20_saber_slash_heavy/frame_03.png", "sprites_extracted/seq_20_saber_slash_heavy/frame_04.png", "sprites_extracted/seq_20_saber_slash_heavy/frame_05.png"]},
+      {"id": "seq_21_saber_slash_link", "cat": "Combat (Saber)", "label": "SABER_SLASH_LINK (Slash de Concatenação)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_21_saber_slash_link/animation.gif", "frames": ["sprites_extracted/seq_21_saber_slash_link/frame_00.png", "sprites_extracted/seq_21_saber_slash_link/frame_01.png", "sprites_extracted/seq_21_saber_slash_link/frame_02.png", "sprites_extracted/seq_21_saber_slash_link/frame_03.png", "sprites_extracted/seq_21_saber_slash_link/frame_04.png"]},
+      {"id": "seq_22_run_forward", "cat": "Movement", "label": "RUN_FORWARD (Apenas Correndo Frente)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_22_run_forward/animation.gif", "frames": ["sprites_extracted/seq_22_run_forward/frame_00.png", "sprites_extracted/seq_22_run_forward/frame_01.png", "sprites_extracted/seq_22_run_forward/frame_02.png", "sprites_extracted/seq_22_run_forward/frame_03.png", "sprites_extracted/seq_22_run_forward/frame_04.png", "sprites_extracted/seq_22_run_forward/frame_05.png", "sprites_extracted/seq_22_run_forward/frame_06.png", "sprites_extracted/seq_22_run_forward/frame_07.png"]},
+      {"id": "seq_23_run_arm_raised", "cat": "Movement", "label": "RUN_ARM_RAISED (Correndo com Braço Levantado)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_23_run_arm_raised/animation.gif", "frames": ["sprites_extracted/seq_23_run_arm_raised/frame_00.png", "sprites_extracted/seq_23_run_arm_raised/frame_01.png", "sprites_extracted/seq_23_run_arm_raised/frame_02.png", "sprites_extracted/seq_23_run_arm_raised/frame_03.png", "sprites_extracted/seq_23_run_arm_raised/frame_04.png", "sprites_extracted/seq_23_run_arm_raised/frame_05.png", "sprites_extracted/seq_23_run_arm_raised/frame_06.png", "sprites_extracted/seq_23_run_arm_raised/frame_07.png"]},
+      {"id": "seq_24_saber_blade_fx", "cat": "Combat (Saber)", "label": "SABER_BLADE_FX (Lâmina / Efeito do Sabre)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_24_saber_blade_fx/animation.gif", "frames": ["sprites_extracted/seq_24_saber_blade_fx/frame_00.png", "sprites_extracted/seq_24_saber_blade_fx/frame_01.png", "sprites_extracted/seq_24_saber_blade_fx/frame_02.png", "sprites_extracted/seq_24_saber_blade_fx/frame_03.png", "sprites_extracted/seq_24_saber_blade_fx/frame_04.png"]},
+      {"id": "seq_25_attack_walk_slash", "cat": "Combat (Saber)", "label": "ATTACK_WALK_SLASH (Ataque Simples Andando)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_25_attack_walk_slash/animation.gif", "frames": ["sprites_extracted/seq_25_attack_walk_slash/frame_00.png", "sprites_extracted/seq_25_attack_walk_slash/frame_01.png", "sprites_extracted/seq_25_attack_walk_slash/frame_02.png", "sprites_extracted/seq_25_attack_walk_slash/frame_03.png", "sprites_extracted/seq_25_attack_walk_slash/frame_04.png", "sprites_extracted/seq_25_attack_walk_slash/frame_05.png", "sprites_extracted/seq_25_attack_walk_slash/frame_06.png"]},
+      {"id": "seq_26_attack_air_jump_slash", "cat": "Combat (Saber)", "label": "ATTACK_AIR_SLASH (Ataque no Ar / Pular e Atacar)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_26_attack_air_jump_slash/animation.gif", "frames": ["sprites_extracted/seq_26_attack_air_jump_slash/frame_00.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_01.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_02.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_03.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_04.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_05.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_06.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_07.png", "sprites_extracted/seq_26_attack_air_jump_slash/frame_08.png"]},
+      {"id": "seq_27_attack_dash_slash", "cat": "Combat (Saber)", "label": "ATTACK_DASH_SLASH (Ataque ao dar Dash / Dash Slash)", "fps": 16, "loop": false, "gif": "sprites_extracted/seq_27_attack_dash_slash/animation.gif", "frames": ["sprites_extracted/seq_27_attack_dash_slash/frame_00.png", "sprites_extracted/seq_27_attack_dash_slash/frame_01.png", "sprites_extracted/seq_27_attack_dash_slash/frame_02.png", "sprites_extracted/seq_27_attack_dash_slash/frame_03.png", "sprites_extracted/seq_27_attack_dash_slash/frame_04.png", "sprites_extracted/seq_27_attack_dash_slash/frame_05.png", "sprites_extracted/seq_27_attack_dash_slash/frame_06.png"]},
+      {"id": "seq_28_hang_charge_slash", "cat": "Combat (Saber)", "label": "HANG_CHARGE_SLASH (Pendurado Soltando Slash Carregado)", "fps": 18, "loop": false, "gif": "sprites_extracted/seq_28_hang_charge_slash/animation.gif", "frames": ["sprites_extracted/seq_28_hang_charge_slash/frame_00.png", "sprites_extracted/seq_28_hang_charge_slash/frame_01.png", "sprites_extracted/seq_28_hang_charge_slash/frame_02.png", "sprites_extracted/seq_28_hang_charge_slash/frame_03.png", "sprites_extracted/seq_28_hang_charge_slash/frame_04.png", "sprites_extracted/seq_28_hang_charge_slash/frame_05.png", "sprites_extracted/seq_28_hang_charge_slash/frame_06.png", "sprites_extracted/seq_28_hang_charge_slash/frame_07.png", "sprites_extracted/seq_28_hang_charge_slash/frame_08.png"]},
+
+      {"id": "seq_29_buster_shoot_stand", "cat": "Buster & Effects", "label": "BUSTER_SHOOT_STAND (Disparando Buster Parado)", "fps": 12, "loop": false, "gif": "sprites_extracted/seq_29_buster_shoot_stand/animation.gif", "frames": ["sprites_extracted/seq_29_buster_shoot_stand/frame_00.png", "sprites_extracted/seq_29_buster_shoot_stand/frame_01.png", "sprites_extracted/seq_29_buster_shoot_stand/frame_02.png"]},
+      {"id": "seq_30_buster_shoot_rapid", "cat": "Buster & Effects", "label": "BUSTER_SHOOT_RAPID (Disparo Buster Rápido Parado)", "fps": 12, "loop": false, "gif": "sprites_extracted/seq_30_buster_shoot_rapid/animation.gif", "frames": ["sprites_extracted/seq_30_buster_shoot_rapid/frame_00.png", "sprites_extracted/seq_30_buster_shoot_rapid/frame_01.png", "sprites_extracted/seq_30_buster_shoot_rapid/frame_02.png"]},
+      {"id": "seq_31_buster_charge_and_shoot", "cat": "Buster & Effects", "label": "BUSTER_CHARGE_SHOOT (Carregando Tiro e Disparando)", "fps": 14, "loop": false, "gif": "sprites_extracted/seq_31_buster_charge_and_shoot/animation.gif", "frames": ["sprites_extracted/seq_31_buster_charge_and_shoot/frame_00.png", "sprites_extracted/seq_31_buster_charge_and_shoot/frame_01.png", "sprites_extracted/seq_31_buster_charge_and_shoot/frame_02.png", "sprites_extracted/seq_31_buster_charge_and_shoot/frame_03.png", "sprites_extracted/seq_31_buster_charge_and_shoot/frame_04.png"]},
+      {"id": "seq_32_buster_shoot_aim", "cat": "Buster & Effects", "label": "BUSTER_SHOOT_AIM (Disparando Buster Mirando)", "fps": 12, "loop": false, "gif": "sprites_extracted/seq_32_buster_shoot_aim/animation.gif", "frames": ["sprites_extracted/seq_32_buster_shoot_aim/frame_00.png", "sprites_extracted/seq_32_buster_shoot_aim/frame_01.png", "sprites_extracted/seq_32_buster_shoot_aim/frame_02.png", "sprites_extracted/seq_32_buster_shoot_aim/frame_03.png", "sprites_extracted/seq_32_buster_shoot_aim/frame_04.png"]},
+      {"id": "seq_33_run_and_shoot_buster", "cat": "Buster & Effects", "label": "RUN_AND_SHOOT (Correndo e Atirando com Buster)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_33_run_and_shoot_buster/animation.gif", "frames": ["sprites_extracted/seq_33_run_and_shoot_buster/frame_00.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_01.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_02.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_03.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_04.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_05.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_06.png", "sprites_extracted/seq_33_run_and_shoot_buster/frame_07.png"]},
+      {"id": "seq_34_run_aim_buster", "cat": "Buster & Effects", "label": "RUN_AIM_BUSTER (Correndo com Buster Apontado)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_34_run_aim_buster/animation.gif", "frames": ["sprites_extracted/seq_34_run_aim_buster/frame_00.png", "sprites_extracted/seq_34_run_aim_buster/frame_01.png", "sprites_extracted/seq_34_run_aim_buster/frame_02.png", "sprites_extracted/seq_34_run_aim_buster/frame_03.png", "sprites_extracted/seq_34_run_aim_buster/frame_04.png", "sprites_extracted/seq_34_run_aim_buster/frame_05.png", "sprites_extracted/seq_34_run_aim_buster/frame_06.png", "sprites_extracted/seq_34_run_aim_buster/frame_07.png"]}
+    ];
+
+    // Preload loaded frame images
+    const loadedImages = {};
+    function preloadAllImages() {
+      SPRITE_CATALOG.forEach(seq => {
+        seq.frames.forEach(path => {
+          if (!loadedImages[path]) {
+            const imgObj = new Image();
+            imgObj.src = path;
+            loadedImages[path] = imgObj;
+          }
+        });
+      });
+    }
+    preloadAllImages();
+
+    // Mapping State Machine States to Sequences (100% Accurate)
+    const STATE_ANIM_MAP = {
+      'IDLE': 'seq_02_idle',
+      'RUN': 'seq_07_run',
+      'DASH': 'seq_11_dash',
+      'JUMP': 'seq_08_jump',
+      'FALL': 'seq_10_jump_somersault',
+      'GRAB_WALL': 'seq_12_wall_grab_slide',
+      'ATTACK_IDLE': 'seq_17_saber_slash_1',
+      'ATTACK_RUN': 'seq_25_attack_walk_slash',
+      'ATTACK_DASH': 'seq_27_attack_dash_slash',
+      'ATTACK_AIR': 'seq_26_attack_air_jump_slash',
+      'ATTACK_GRAB_WALL': 'seq_18_saber_slash_2'
+    };
+
+    /* =========================================================================
+       Arena / World Constants
+       ========================================================================= */
+    const ARENA = {
+      GROUND_Y: 380,       // Floor Y position (player feet)
+      CEILING_Y: 40,       // Ceiling Y position (top boundary)
+      LEFT_WALL_X: 80,     // Left wall inner edge
+      RIGHT_WALL_X: 760,   // Right wall inner edge
+      CANVAS_W: 840,
+      CANVAS_H: 460,
+    };
+
+    /* =========================================================================
+       Physics Tuning Constants (Mega Man Zero feel)
+       ========================================================================= */
+    const PHYS = {
+      // Movement
+      RUN_SPEED: 5.2,
+      DASH_SPEED: 10.0,
+      DASH_DURATION: 0.35,
+
+      // Jump & Gravity
+      JUMP_VY: -13.0,
+      GRAVITY: 28.0,
+      MAX_FALL_SPEED: 14.0,
+      WALL_KICK_VX: 7.0,
+      WALL_KICK_VY: -13.0,
+
+      // Air control
+      AIR_ACCEL: 0.45,
+      AIR_MAX_SPEED: 5.2,
+      AIR_DRAG: 0.94,
+
+      // Wall slide
+      WALL_SLIDE_GRAVITY: 7.0,
+      WALL_SLIDE_MAX_SPEED: 2.8,
+
+      // Attack movement (keep momentum while attacking)
+      ATTACK_RUN_SPEED: 3.5,
+
+      // Sprite rendering
+      SPRITE_SCALE: 2.2,   // Scale factor for 80x80 sprite frames
+    };
+
+    /* =========================================================================
+       StateSmith Hierarchical State Machine (JS Engine Implementation)
+       ========================================================================= */
+    class PlayerSm {
+      constructor(actor) {
+        this.actor = actor;
+        this.state = 'IDLE';
+        this.superState = 'GROUNDED';
+      }
+
+      start() {
+        this.transitionTo('GROUNDED', 'IDLE');
+      }
+
+      transitionTo(superState, subState) {
+        if (this.state === subState && this.superState === superState) return;
+        
+        const oldState = this.state;
+        const oldSuper = this.superState;
+
+        // Dash Jump tracking
+        if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && subState === 'JUMP') {
+          this.actor.isDashJumping = true;
+        } else if (superState === 'GROUNDED' || superState === 'WALL_SLIDE') {
+          this.actor.isDashJumping = false;
+        }
+
+        // Exit actions
+        this.exitState(oldState, subState);
+
+        this.superState = superState;
+        this.state = subState;
+
+        // Enter actions
+        this.enterState(subState);
+
+        logEvent(`[HSM] [${oldSuper}::${oldState}] ➔ [${superState}::${subState}]`, 'state-trans');
+        updateHsmUi(superState, subState);
+      }
+
+      enterState(state) {
+        switch (state) {
+          case 'ATTACK_1':
+            this.actor.currentSeqId = 'seq_17_saber_slash_1';
+            this.actor.animFrame = 0;
+            this.actor.animTimer = 0;
+            this.actor.attackFinishedDispatched = false;
+            break;
+          case 'ATTACK_2':
+            this.actor.currentSeqId = 'seq_18_saber_slash_2';
+            this.actor.animFrame = 0;
+            this.actor.animTimer = 0;
+            this.actor.attackFinishedDispatched = false;
+            break;
+          case 'ATTACK_3':
+            this.actor.currentSeqId = 'seq_21_saber_slash_link';
+            this.actor.animFrame = 0;
+            this.actor.animTimer = 0;
+            this.actor.attackFinishedDispatched = false;
+            break;
+          case 'CHARGE_SLASH':
+            this.actor.currentSeqId = 'seq_20_saber_slash_heavy';
+            this.actor.animFrame = 0;
+            this.actor.animTimer = 0;
+            this.actor.attackFinishedDispatched = false;
+            break;
+          default:
+            this.actor.animTimer = 0;
+            this.actor.animFrame = 0;
+            this.actor.attackFinishedDispatched = false;
+
+            const mappedSeqId = STATE_ANIM_MAP[state] || 'seq_02_idle';
+            this.actor.playSequence(mappedSeqId);
+        }
+
+        switch (state) {
+          case 'DASH':
+            this.actor.dashTimer = PHYS.DASH_DURATION;
+            this.actor.createDashDust();
+            break;
+          case 'ATTACK_DASH':
+            if (this.actor.dashTimer <= 0) this.actor.dashTimer = PHYS.DASH_DURATION;
+            break;
+          case 'JUMP':
+            // Física agora é tratada diretamente no JUMP_PRESS
+            break;
+          case 'GRAB_WALL':
+            this.actor.vy = 0;
+            break;
+          case 'ATTACK_GRAB_WALL':
+            this.actor.vy = 0;
+            break;
+        }
+      }
+
+      exitState(oldState, newState) {
+        if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && (newState !== 'DASH' && newState !== 'ATTACK_DASH')) {
+          this.actor.dashTimer = 0;
+        }
+      }
+
+      dispatchEvent(event) {
+        logEvent(`Event Fired: ${event}`, 'event-fired');
+
+        switch (this.superState) {
+
+          /* ------------------- GROUNDED ------------------- */
+          case 'GROUNDED':
+            if (event === 'FALL') {
+              if (this.state.startsWith('ATTACK_') || this.state === 'CHARGE_SLASH') {
+                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+              } else {
+                this.transitionTo('AIRBORNE', 'FALL');
+              }
+              return;
+            }
+            if (event === 'JUMP_PRESS') {
+              const isDashHeld = keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL'];
+              if (isDashHeld || this.state === 'DASH' || this.state === 'ATTACK_DASH') {
+                this.actor.isDashJumping = true;
+              }
+
+              // Applica a física do pulo imediatamente
+              this.actor.vy = PHYS.JUMP_VY;
+              this.actor.isGrounded = false;
+              if (this.actor.isDashJumping) {
+                this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
+              }
+
+              if (this.state.startsWith('ATTACK_') || this.state === 'CHARGE_SLASH') {
+                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+              } else {
+                this.transitionTo('AIRBORNE', 'JUMP');
+              }
+              return;
+            }
+
+            switch (this.state) {
+              case 'IDLE':
+                if (event === 'MOVE_INPUT') this.transitionTo('GROUNDED', 'RUN');
+                else if (event === 'DASH_PRESS') this.transitionTo('GROUNDED', 'DASH');
+                else if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_1');
+                else if (event === 'CHARGE_RELEASE') this.transitionTo('GROUNDED', 'CHARGE_SLASH');
+                break;
+
+              case 'RUN':
+                if (event === 'STOP_INPUT') this.transitionTo('GROUNDED', 'IDLE');
+                else if (event === 'DASH_PRESS') this.transitionTo('GROUNDED', 'DASH');
+                else if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_RUN');
+                else if (event === 'CHARGE_RELEASE') this.transitionTo('GROUNDED', 'CHARGE_SLASH');
+                break;
+
+              case 'DASH':
+                if (event === 'DASH_FINISHED') {
+                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+                }
+                else if (event === 'ATTACK_PRESS') {
+                  this.transitionTo('GROUNDED', 'ATTACK_DASH');
+                }
+                break;
+
+              case 'ATTACK_1':
+              case 'ATTACK_2':
+              case 'ATTACK_3':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+                } else if (event === 'ATTACK_PRESS') {
+                  if (this.state === 'ATTACK_1') this.transitionTo('GROUNDED', 'ATTACK_2');
+                  else if (this.state === 'ATTACK_2') this.transitionTo('GROUNDED', 'ATTACK_3');
+                }
+                break;
+                
+              case 'CHARGE_SLASH':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+                }
+                break;
+
+              case 'ATTACK_RUN':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+                }
+                break;
+
+              case 'ATTACK_DASH':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+                }
+                break;
+            }
+            break;
+
+          /* ------------------- AIRBORNE ------------------- */
+          case 'AIRBORNE':
+            // Super-state level transitions
+            if (event === 'LANDED') {
+              this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+              return;
+            }
+            if (event === 'WALL_TOUCH') {
+              this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
+              return;
+            }
+
+            switch (this.state) {
+              case 'JUMP':
+                if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+                else if (event === 'APEX_REACHED') this.transitionTo('AIRBORNE', 'FALL');
+                else if (event === 'DASH_PRESS') {
+                  // Input Leniency (Grace Period): Se apertar Dash logo depois do pulo, converte pra Dash Jump
+                  if (this.actor.vy < PHYS.JUMP_VY + 3.0 && !this.actor.isDashJumping) {
+                    this.actor.isDashJumping = true;
+                    this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
+                    this.actor.createDashDust(); // Feedback visual
+                  }
+                }
+                break;
+
+              case 'FALL':
+                if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+                break;
+
+              case 'ATTACK_AIR':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('AIRBORNE', this.actor.vy < 0 ? 'JUMP' : 'FALL');
+                } else if (event === 'DASH_PRESS') {
+                  // Leniency também vale se você atacou no exato instante do pulo
+                  if (this.actor.vy < PHYS.JUMP_VY + 3.0 && !this.actor.isDashJumping) {
+                    this.actor.isDashJumping = true;
+                    this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
+                  }
+                }
+                break;
+            }
+            break;
+
+          /* ------------------- WALL_SLIDE ------------------- */
+          case 'WALL_SLIDE':
+            if (event === 'LANDED') {
+              this.transitionTo('GROUNDED', 'IDLE');
+              return;
+            }
+            if (event === 'WALL_DETACH') {
+              this.transitionTo('AIRBORNE', 'FALL');
+              return;
+            }
+            if (event === 'JUMP_PRESS') {
+              // Wall Kick Jump: Impulse up & away from wall!
+              // Check if dash is held for a Dash Wall Jump
+              const isDashHeld = keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL'];
+              
+              if (isDashHeld) {
+                this.actor.isDashJumping = true; // Activa a física do Dash Jump no ar
+              }
+              
+              const jumpVx = this.actor.isDashJumping ? PHYS.DASH_SPEED : PHYS.WALL_KICK_VX;
+              this.actor.vx = (this.actor.wallSide === 'left') ? jumpVx : -jumpVx;
+              this.actor.vy = PHYS.WALL_KICK_VY;
+              this.actor.facing = (this.actor.wallSide === 'left') ? 1 : -1;
+              
+              if (this.state === 'ATTACK_GRAB_WALL') {
+                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+              } else {
+                this.transitionTo('AIRBORNE', 'JUMP');
+              }
+              return;
+            }
+
+            switch (this.state) {
+              case 'GRAB_WALL':
+                if (event === 'ATTACK_PRESS') {
+                  this.transitionTo('WALL_SLIDE', 'ATTACK_GRAB_WALL');
+                }
+                break;
+              case 'ATTACK_GRAB_WALL':
+                if (event === 'ATTACK_FINISHED') {
+                  this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
+                }
+                break;
+            }
+            break;
+        }
+      }
+    }
+
+    /* =========================================================================
+       Player Physics & Actor Entity
+       ========================================================================= */
+    class PlayerActor {
+      constructor() {
+        this.x = 420;
+        this.y = ARENA.GROUND_Y;
+        this.vx = 0;
+        this.vy = 0;
+        this.facing = 1;
+        this.isGrounded = true;
+        this.wallSide = null;
+        this.dashTimer = 0;
+        this.chargeTime = 0;
+        this.attackFinishedDispatched = false;
+
+        this.currentSeqId = 'seq_02_idle';
+        this.animFrame = 0;
+        this.animTimer = 0;
+        this.chargeTime = 0;
+        
+        // Combo & Buster state
+        this.comboCount = 0;
+        this.attackBuffered = false;
+        this.isChargeRelease = false;
+        this.busterTimer = 0;
+        this.busterShotCount = 0;
+        
+        this.facing = 1;
+        this.sm = new PlayerSm(this);
+        this.sm.start();
+
+        this.particles = [];
+      }
+
+      playSequence(seqId) {
+        if (this.currentSeqId !== seqId) {
+          this.currentSeqId = seqId;
+          this.animFrame = 0;
+          this.animTimer = 0;
+          this.attackFinishedDispatched = false;
+        }
+      }
+
+      isAttackState() {
+        return this.sm.state.startsWith('ATTACK_') || this.sm.state === 'CHARGE_SLASH';
+      }
+
+      createDashDust() {
+        for (let i = 0; i < 8; i++) {
+          this.particles.push({
+            x: this.x - this.facing * 18,
+            y: this.y + 16 + (Math.random() * 6 - 3),
+            vx: -this.facing * (Math.random() * 3 + 1),
+            vy: Math.random() * -1.5,
+            size: Math.random() * 4 + 2,
+            alpha: 1,
+            color: '#00e5ff'
+          });
+        }
+      }
+
+      createWallSparks() {
+        if (Math.random() < 0.4) {
+          this.particles.push({
+            x: (this.wallSide === 'left') ? this.x - 14 : this.x + 14,
+            y: this.y + 8,
+            vx: (this.wallSide === 'left' ? 1 : -1) * (Math.random() * 2 + 1),
+            vy: Math.random() * -2 - 1,
+            size: 3,
+            alpha: 1,
+            color: '#ffb703'
+          });
+        }
+      }
+
+      createLandDust() {
+        for (let i = 0; i < 5; i++) {
+          this.particles.push({
+            x: this.x + (Math.random() * 20 - 10),
+            y: ARENA.GROUND_Y + 14,
+            vx: (Math.random() - 0.5) * 4,
+            vy: Math.random() * -2,
+            size: Math.random() * 3 + 1,
+            alpha: 0.8,
+            color: '#94a3b8'
+          });
+        }
+      }
+
+      update(dt) {
+        // --- Charge tracking ---
+        if (keys['KeyJ'] || keys['KeyX']) {
+          this.chargeTime += dt;
+        } else {
+          this.chargeTime = 0;
+        }
+
+        const isDashing = this.sm.state === 'DASH' || this.sm.state === 'ATTACK_DASH';
+        const isWallSliding = this.sm.superState === 'WALL_SLIDE';
+
+        // =====================================================
+        // HORIZONTAL MOVEMENT per super-state
+        // =====================================================
+        if (isDashing) {
+          // --- DASH: Fixed speed in facing direction ---
+          this.dashTimer -= dt;
+          this.vx = this.facing * PHYS.DASH_SPEED;
+          if (Math.random() < 0.5) this.createDashDust();
+          if (this.dashTimer <= 0) {
+            this.sm.dispatchEvent('DASH_FINISHED');
+          }
+        } else if (this.sm.superState === 'GROUNDED') {
+          // --- GROUNDED: Direct velocity from input ---
+          if (this.sm.state === 'ATTACK_RUN') {
+            // Keep moving while slashing, but slower
+            this.vx = this.inputX * PHYS.ATTACK_RUN_SPEED;
+          } else if (this.sm.state === 'ATTACK_IDLE') {
+            // Stand still during idle attack
+            this.vx = 0;
+          } else {
+            if (Math.abs(this.inputX) > 0.1) {
+              this.vx = this.inputX * PHYS.RUN_SPEED;
+              this.facing = this.inputX > 0 ? 1 : -1;
+            } else {
+              this.vx = 0;
+            }
+          }
+        } else if (this.sm.superState === 'AIRBORNE') {
+          // --- AIRBORNE: Smooth air control with acceleration ---
+          const maxAirSpeed = this.isDashJumping ? PHYS.DASH_SPEED : PHYS.AIR_MAX_SPEED;
+          
+          if (Math.abs(this.inputX) > 0.1) {
+            this.vx += this.inputX * PHYS.AIR_ACCEL;
+            this.vx = Math.max(-maxAirSpeed, Math.min(maxAirSpeed, this.vx));
+            this.facing = this.inputX > 0 ? 1 : -1;
+          } else {
+            this.vx *= PHYS.AIR_DRAG;
+          }
+          // Apply gravity
+          this.vy += PHYS.GRAVITY * dt;
+          if (this.vy > PHYS.MAX_FALL_SPEED) this.vy = PHYS.MAX_FALL_SPEED;
+
+          // Apex detection: JUMP → FALL when vy crosses zero
+          if (this.sm.state === 'JUMP' && this.vy >= 0) {
+            this.sm.dispatchEvent('APEX_REACHED');
+          }
+        } else if (isWallSliding) {
+          // --- WALL_SLIDE: Slow slide down ---
+          this.vy += PHYS.WALL_SLIDE_GRAVITY * dt;
+          if (this.vy > PHYS.WALL_SLIDE_MAX_SPEED) this.vy = PHYS.WALL_SLIDE_MAX_SPEED;
+          this.createWallSparks();
+          // Face away from wall (visual: Zero looks outward from wall)
+          this.facing = (this.wallSide === 'left') ? 1 : -1;
+
+          // *** FIX: WALL DETACH when pressing AWAY from the wall ***
+          if (this.wallSide === 'left' && this.inputX > 0.1) {
+            this.wallSide = null;
+            this.sm.dispatchEvent('WALL_DETACH');
+          } else if (this.wallSide === 'right' && this.inputX < -0.1) {
+            this.wallSide = null;
+            this.sm.dispatchEvent('WALL_DETACH');
+          }
+        }
+
+        // =====================================================
+        // POSITION UPDATE (framerate-independent via dt * 60)
+        // Velocities are tuned for 60fps, so we scale by (dt * 60) 
+        // to maintain consistent speed across refresh rates.
+        // =====================================================
+        const dtScale = dt * 60;
+        this.x += this.vx * dtScale;
+        this.y += this.vy * dtScale;
+
+        // =====================================================
+        // COLLISION DETECTION
+        // =====================================================
+
+        // --- FLOOR collision ---
+        if (this.y >= ARENA.GROUND_Y) {
+          this.y = ARENA.GROUND_Y;
+          if (this.vy > 2) this.createLandDust(); // Dust only for meaningful falls
+          this.vy = 0;
+          if (!this.isGrounded) {
+            this.isGrounded = true;
+            this.wallSide = null;
+            this.sm.dispatchEvent('LANDED');
+          }
+        } else {
+          if (this.isGrounded && this.sm.superState === 'GROUNDED') {
+            // Player walked off an edge → transition to FALL
+            this.isGrounded = false;
+            this.sm.dispatchEvent('FALL');
+          }
+          this.isGrounded = false;
+        }
+
+        // --- CEILING collision ---
+        if (this.y <= ARENA.CEILING_Y) {
+          this.y = ARENA.CEILING_Y;
+          if (this.vy < 0) this.vy = 0; // Stop upward momentum, start falling
+        }
+
+        // --- WALL collision & wall grab ---
+        if (this.x <= ARENA.LEFT_WALL_X) {
+          this.x = ARENA.LEFT_WALL_X;
+          // Wall touch: grab wall if airborne and moving toward wall
+          if (!this.isGrounded && this.sm.superState === 'AIRBORNE' && this.inputX < -0.1) {
+            if (this.wallSide !== 'left') {
+              this.wallSide = 'left';
+              this.vx = 0;
+              this.sm.dispatchEvent('WALL_TOUCH');
+            }
+          }
+        } else if (this.x >= ARENA.RIGHT_WALL_X) {
+          this.x = ARENA.RIGHT_WALL_X;
+          // Wall touch: grab wall if airborne and moving toward wall
+          if (!this.isGrounded && this.sm.superState === 'AIRBORNE' && this.inputX > 0.1) {
+            if (this.wallSide !== 'right') {
+              this.wallSide = 'right';
+              this.vx = 0;
+              this.sm.dispatchEvent('WALL_TOUCH');
+            }
+          }
+        } else {
+          // Player left the wall zone (e.g., after wall kick)
+          if (this.wallSide !== null && this.sm.superState === 'WALL_SLIDE') {
+            this.wallSide = null;
+            this.sm.dispatchEvent('WALL_DETACH');
+          } else if (this.wallSide !== null) {
+            this.wallSide = null;
+          }
+        }
+
+        // =====================================================
+        // ANIMATION FRAME ADVANCING (ONE-SHOT SAFE DISPATCH)
+        // =====================================================
+        const seq = SPRITE_CATALOG.find(s => s.id === this.currentSeqId) || SPRITE_CATALOG[1];
+        this.animTimer += dt;
+        const frameDuration = 1 / seq.fps;
+
+        if (this.animTimer >= frameDuration) {
+          this.animTimer -= frameDuration;
+          if (this.animFrame < seq.frames.length - 1) {
+            this.animFrame++;
+          } else {
+            if (seq.loop) {
+              this.animFrame = 0;
+            } else {
+              // Frame reached end: dispatch ATTACK_FINISHED ONCE if in an attack state
+              if (this.isAttackState() && !this.attackFinishedDispatched) {
+                this.attackFinishedDispatched = true;
+                this.sm.dispatchEvent('ATTACK_FINISHED');
+              }
+            }
+          }
+        }
+
+        // =====================================================
+        // PARTICLE UPDATE
+        // =====================================================
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= dt * 2.5;
+          if (p.alpha <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+      }
+
+      draw(ctx) {
+        // --- Charge Aura ---
+        if (this.chargeTime > 0.3) {
+          ctx.save();
+          ctx.beginPath();
+          const chargeLevel = Math.min(1.0, (this.chargeTime - 0.3) / 1.2);
+          ctx.arc(this.x, this.y, 26 + Math.sin(Date.now() * 0.02) * 5, 0, Math.PI * 2);
+          ctx.fillStyle = chargeLevel > 0.8 ? 'rgba(255, 42, 95, 0.35)' : 'rgba(0, 229, 255, 0.3)';
+          ctx.shadowColor = chargeLevel > 0.8 ? '#ff2a5f' : '#00e5ff';
+          ctx.shadowBlur = 18;
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // --- Buster Timer ---
+        if (this.busterTimer > 0) {
+          this.busterTimer -= dt;
+        }
+
+        // --- Sprite Rendering ---
+        let renderSeqId = this.currentSeqId;
+
+        // Buster Override Logic
+        if (this.busterTimer > 0) {
+          if (renderSeqId === 'seq_02_idle' || renderSeqId === 'seq_03_idle_arm_raised') {
+            renderSeqId = this.chargeTime > 1.2 ? 'seq_31_buster_charge_and_shoot' : 'seq_29_buster_shoot_stand';
+          } else if (renderSeqId === 'seq_07_run') {
+            renderSeqId = 'seq_33_run_and_shoot_buster';
+          } else if (renderSeqId === 'seq_08_jump' || renderSeqId === 'seq_10_jump_somersault') {
+            renderSeqId = 'seq_29_buster_shoot_stand'; // (Air shoot uses similar frame in our catalog)
+          }
+        }
+
+        const seq = SPRITE_CATALOG.find(s => s.id === renderSeqId) || SPRITE_CATALOG[1];
+        const frameIndex = Math.min(this.animFrame, seq.frames.length - 1);
+        const framePath = seq.frames[frameIndex];
+        const imgObj = loadedImages[framePath];
+
+        if (imgObj && imgObj.complete && imgObj.naturalWidth > 0) {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+
+          // Use natural image dimensions × scale factor
+          // Sprites are 80x80 frames, centered. We draw them at SPRITE_SCALE
+          // with the anchor point at the character's feet (bottom center).
+          const sw = imgObj.naturalWidth;
+          const sh = imgObj.naturalHeight;
+          const scale = PHYS.SPRITE_SCALE;
+
+          ctx.scale(this.facing * scale, scale);
+          // Draw with bottom-center anchor: offset by half-width left, full height up
+          ctx.drawImage(imgObj, -sw / 2, -sh + 10, sw, sh);
+          ctx.restore();
+        } else {
+          // Fallback: colored rectangle
+          ctx.fillStyle = '#ff2a5f';
+          ctx.fillRect(this.x - 16, this.y - 48, 32, 52);
+        }
+
+        // --- Particles ---
+        for (const p of this.particles) {
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 6;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.restore();
+        }
+      }
+    }
+
+    /* =========================================================================
+       Main Game Loop & Input Event Handling
+       ========================================================================= */
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const player = new PlayerActor();
+
+    const keys = {};
+    window.addEventListener('keydown', (e) => {
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+        e.preventDefault();
+      }
+
+      if (keys[e.code]) return;
+      keys[e.code] = true;
+
+      if (e.code === 'Space' || e.code === 'KeyK' || e.code === 'KeyZ') {
+        player.sm.dispatchEvent('JUMP_PRESS');
+      }
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyL' || e.code === 'KeyC') {
+        player.sm.dispatchEvent('DASH_PRESS');
+      }
+      if (e.code === 'KeyJ' || e.code === 'KeyX') {
+        // Attack Press
+        player.sm.dispatchEvent('ATTACK_PRESS');
+      }
+      if (e.code === 'KeyF' || e.code === 'KeyV') {
+        // Buster Press (Sub-weapon)
+        player.busterTimer = 0.4; // 400ms override animation
+        player.busterShotCount++;
+        // Emit bullet particle
+        player.particles.push({
+          x: player.x + player.facing * 25,
+          y: player.y - 25,
+          vx: player.facing * 15,
+          vy: 0,
+          alpha: 1,
+          size: 6,
+          color: '#ffff00'
+        });
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+        e.preventDefault();
+      }
+      keys[e.code] = false;
+
+      // Charge Slash Release
+      if (e.code === 'KeyJ' || e.code === 'KeyX') {
+        if (player.chargeTime >= 1.2) {
+           player.isChargeRelease = true;
+           player.sm.dispatchEvent('CHARGE_RELEASE'); // Dispara o evento que você criou no drawio!
+        }
+        player.chargeTime = 0;
+      }
+    });
+
+    function handleContinuousInput() {
+      let move = 0;
+      if (keys['ArrowLeft'] || keys['KeyA']) move -= 1;
+      if (keys['ArrowRight'] || keys['KeyD']) move += 1;
+
+      if (move !== player.inputX) {
+        player.inputX = move;
+        if (move !== 0) {
+          player.sm.dispatchEvent('MOVE_INPUT');
+        } else {
+          player.sm.dispatchEvent('STOP_INPUT');
+        }
+      }
+    }
+
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fpsTime = 0;
+
+    function gameLoop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      frameCount++;
+      fpsTime += dt;
+      if (fpsTime >= 1.0) {
+        document.getElementById('fpsDisplay').innerText = `${frameCount} FPS`;
+        frameCount = 0;
+        fpsTime = 0;
+      }
+
+      handleContinuousInput();
+      player.update(dt);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawArena(ctx);
+      player.draw(ctx);
+      updateStatsUi();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function drawArena(ctx) {
+      // Grid
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.04)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // Left Wall
+      const gradLeft = ctx.createLinearGradient(0, 0, ARENA.LEFT_WALL_X, 0);
+      gradLeft.addColorStop(0, '#0c111a');
+      gradLeft.addColorStop(1, '#1b253c');
+      ctx.fillStyle = gradLeft;
+      ctx.fillRect(0, 0, ARENA.LEFT_WALL_X, canvas.height);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, ARENA.LEFT_WALL_X, canvas.height);
+
+      // Right Wall
+      const gradRight = ctx.createLinearGradient(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W, 0);
+      gradRight.addColorStop(0, '#1b253c');
+      gradRight.addColorStop(1, '#0c111a');
+      ctx.fillStyle = gradRight;
+      ctx.fillRect(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W - ARENA.RIGHT_WALL_X, canvas.height);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.strokeRect(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W - ARENA.RIGHT_WALL_X, canvas.height);
+
+      // Ceiling
+      const gradCeiling = ctx.createLinearGradient(0, 0, 0, ARENA.CEILING_Y);
+      gradCeiling.addColorStop(0, '#090d16');
+      gradCeiling.addColorStop(1, '#1e293b');
+      ctx.fillStyle = gradCeiling;
+      ctx.fillRect(0, 0, canvas.width, ARENA.CEILING_Y);
+      ctx.strokeStyle = '#ff2a5f';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(ARENA.LEFT_WALL_X, ARENA.CEILING_Y);
+      ctx.lineTo(ARENA.RIGHT_WALL_X, ARENA.CEILING_Y);
+      ctx.stroke();
+
+      // Floor
+      const gradFloor = ctx.createLinearGradient(0, ARENA.GROUND_Y + 15, 0, ARENA.CANVAS_H);
+      gradFloor.addColorStop(0, '#1e293b');
+      gradFloor.addColorStop(1, '#090d16');
+      ctx.fillStyle = gradFloor;
+      ctx.fillRect(0, ARENA.GROUND_Y + 15, canvas.width, ARENA.CANVAS_H - ARENA.GROUND_Y - 15);
+      ctx.strokeStyle = '#ff2a5f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(ARENA.LEFT_WALL_X, ARENA.GROUND_Y + 15);
+      ctx.lineTo(ARENA.RIGHT_WALL_X, ARENA.GROUND_Y + 15);
+      ctx.stroke();
+
+      // Labels
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '10px monospace';
+      ctx.fillText('◀ PAREDE (WALL-SLIDE / KICK / ATTACK)', 90, 220);
+      ctx.fillText('PAREDE (WALL-SLIDE / KICK / ATTACK) ▶', 520, 220);
+      ctx.fillText('CHÃO (COLLISION LEVEL)', 360, ARENA.GROUND_Y + 35);
+      ctx.fillText('TETO (CEILING)', 360, ARENA.CEILING_Y - 5);
+    }
+
+    /* =========================================================================
+       UI Diagnostics & Logger
+       ========================================================================= */
+    function updateHsmUi(superState, subState) {
+      document.getElementById('currentStateTag').innerText = `${superState} :: ${subState}`;
+
+      ['GROUNDED', 'AIRBORNE', 'WALL_SLIDE'].forEach(s => {
+        const el = document.getElementById(`super_${s}`);
+        if (el) el.classList.toggle('active', s === superState);
+      });
+
+      const allPills = document.querySelectorAll('.state-pill');
+      allPills.forEach(p => {
+        p.classList.toggle('active', p.id === `state_${subState}`);
+      });
+    }
+
+    function updateStatsUi() {
+      document.getElementById('stat_vx').innerText = player.vx.toFixed(2);
+      document.getElementById('stat_vy').innerText = player.vy.toFixed(2);
+      document.getElementById('stat_ground').innerText = player.isGrounded ? 'TRUE' : 'FALSE';
+      document.getElementById('stat_wall').innerText = player.wallSide ? player.wallSide.toUpperCase() : 'NONE';
+      document.getElementById('stat_dash').innerText = `${Math.max(0, player.dashTimer).toFixed(2)}s`;
+      document.getElementById('stat_charge').innerText = `${Math.min(100, (player.chargeTime / 1.5 * 100)).toFixed(0)}%`;
+    }
+
+    function logEvent(msg, type = '') {
+      const log = document.getElementById('eventLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      const time = new Date().toLocaleTimeString().split(' ')[0];
+      entry.innerHTML = `<span>${msg}</span><span style="color:#64748b;">${time}</span>`;
+      log.prepend(entry);
+
+      while (log.children.length > 30) {
+        log.removeChild(log.lastChild);
+      }
+    }
+
+    /* =========================================================================
+       Populate Sequence Studio
+       ========================================================================= */
+    let currentFilter = 'all';
+
+    function renderSequenceStudio() {
+      const grid = document.getElementById('sequencesGrid');
+      grid.innerHTML = '';
+
+      const filtered = SPRITE_CATALOG.filter(s => {
+        if (currentFilter === 'all') return true;
+        return s.cat === currentFilter;
+      });
+
+      filtered.forEach(seq => {
+        const card = document.createElement('div');
+        card.className = `seq-card ${player.currentSeqId === seq.id ? 'active-preview' : ''}`;
+        card.id = `card_${seq.id}`;
+
+        card.innerHTML = `
+          <div class="seq-header">
+            <span class="seq-id">${seq.id}</span>
+            <span class="seq-cat">${seq.cat}</span>
+          </div>
+          <div class="seq-title">${seq.label}</div>
+          <div class="seq-preview-row">
+            <img src="${seq.gif}" alt="${seq.label}" />
+          </div>
+          <div class="seq-footer">
+            <span>${seq.frames.length} frames (${seq.fps} FPS)</span>
+            <button class="btn-test-seq" onclick="testSequence('${seq.id}', event)">Testar no Zero</button>
+          </div>
+        `;
+
+        card.onclick = () => testSequence(seq.id);
+        grid.appendChild(card);
+      });
+    }
+
+    function testSequence(seqId, e) {
+      if (e) e.stopPropagation();
+      player.playSequence(seqId);
+      logEvent(`Testando sequência: ${seqId}`, 'state-trans');
+
+      document.querySelectorAll('.seq-card').forEach(c => c.classList.remove('active-preview'));
+      const activeCard = document.getElementById(`card_${seqId}`);
+      if (activeCard) activeCard.classList.add('active-preview');
+    }
+
+    function filterSequences(cat) {
+      currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.innerText.includes(cat) || (cat === 'all' && b.innerText.includes('Todas')));
+      });
+      renderSequenceStudio();
+    }
+
+    function switchView(tab) {
+      document.getElementById('btnTabSandbox').classList.toggle('active', tab === 'sandbox');
+      document.getElementById('btnTabStudio').classList.toggle('active', tab === 'studio');
+
+      if (tab === 'sandbox') {
+        document.getElementById('panelSandbox').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        document.getElementById('panelStudio').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    renderSequenceStudio();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

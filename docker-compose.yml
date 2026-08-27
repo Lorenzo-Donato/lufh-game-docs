@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  game-engine:
+    build: .
+    container_name: lufh_game_engine
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: python3 -m http.server 8000
