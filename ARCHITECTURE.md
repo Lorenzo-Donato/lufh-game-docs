@@ -125,3 +125,32 @@ Quando o evento `ATTACK_PRESS` faz a máquina transitar para `ATTACK_1`, a Engin
 2. **Prepara:** Chama a função `playSequence('seq_17_saber_slash_1')`, que zera o relógio da animação (`animTimer = 0`) e zera o quadro atual (`animFrame = 0`).
 3. **Desenha:** A cada frame (60x por segundo), o Canvas HTML consulta o arquivo `sprites_catalog_full.json` para saber quantas imagens existem nessa pasta, e desenha o `frame_00.png`, `frame_01.png`, etc., na tela.
 4. **Finaliza:** Quando o último quadro é desenhado, a própria Engine grita o evento `ATTACK_FINISHED` de volta para a máquina de estados, fazendo o personagem voltar para `IDLE`.
+
+## 7. Boas Práticas: Prevenindo "Explosão de Estados" (State Explosion)
+
+Um erro muito comum ao projetar Máquinas de Estados é criar uma nova "caixa" (Estado) para cada pequena variação de uma mecânica. Por exemplo, ao criar o *Wall Dash Jump* (Pulo da Parede com velocidade de Dash), a primeira intuição é desenhar um novo estado chamado `WALL_DASH_JUMP`. 
+
+O problema é que isso gera um efeito dominó: você logo precisaria de um `RUNNING_JUMP`, `WALKING_JUMP`, etc. Isso transforma o diagrama num caos chamado **Explosão de Estados (State Explosion)**. Visualmente e logicamente, o pulo da parede com dash é apenas um "Pulo" (`JUMP`) com uma inércia inicial maior.
+
+### A Solução: Variáveis e Guardas (Guards)
+A forma profissional de modelar isso no StateSmith é usar a caixa `$CONFIG : toml` para criar variáveis e dividir as **setas** (transições), não as caixas.
+
+**1. Declare a variável na caixa de Configuração:**
+```toml
+[RenderConfig]
+VariableDeclarations = """
+    public float vx;
+    public float vy;
+    public bool isDashHeld; // <--- Declaramos a variável aqui
+"""
+```
+
+**2. Use Guardas (Condições) nas setas do Draw.io:**
+Em vez de criar uma caixa nova, você puxa **duas setas** saindo do super-estado `WALL_SLIDE` apontando para o estado `JUMP` (no Ar). Ambas reagem ao evento `JUMP_PRESS`, mas executam lógicas diferentes baseadas na *Guarda* (a condição entre colchetes):
+
+* **Seta 1:** `JUMP_PRESS [vars.isDashHeld] / ApplyWallDashJump();`
+* **Seta 2:** `JUMP_PRESS [!vars.isDashHeld] / ApplyWallNormalJump();`
+*(Nota: O sinal `!` significa negação. Ou seja, se o botão Dash NÃO estiver pressionado).*
+
+**O Resultado:**
+O seu diagrama continua elegante, com poucas caixas. O **Contrato Lógico** agora obriga a Game Engine a avisar ao Cérebro se a tecla Dash está pressionada, e aplica o impulso físico correto (músculos) sem sujar a arquitetura da Máquina de Estados!
