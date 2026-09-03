@@ -44,29 +44,30 @@ namespace MegaManZero
             DEATH = 6,
             DYING = 7,
             GROUNDED = 8,
-            ATTACK_1 = 9,
-            ATTACK_2 = 10,
-            ATTACK_3 = 11,
-            ATTACK_DASH = 12,
-            ATTACK_RUN = 13,
-            CHARGE_SLASH = 14,
-            DASH = 15,
-            IDLE = 16,
-            RUN = 17,
-            HURT = 18,
-            HURT_AIR = 19,
-            HURT_GROUND = 20,
-            WALL_SLIDE = 21,
-            ATTACK_GRAB_WALL = 22,
-            CHARGE_WALL_SLASH = 23,
-            GRAB_WALL = 24,
+            DASH = 9,
+            GROUND_ATTACK = 10,
+            ATTACK_1 = 11,
+            ATTACK_2 = 12,
+            ATTACK_3 = 13,
+            ATTACK_DASH = 14,
+            ATTACK_RUN = 15,
+            CHARGE_SLASH = 16,
+            IDLE = 17,
+            RUN = 18,
+            HURT = 19,
+            HURT_AIR = 20,
+            HURT_GROUND = 21,
+            WALL_SLIDE = 22,
+            ATTACK_GRAB_WALL = 23,
+            CHARGE_WALL_SLASH = 24,
+            GRAB_WALL = 25,
         }
 
-        public const int StateIdCount = 25;
+        public const int StateIdCount = 26;
 
         // Subtree meta data generation can be disabled in settings.
         // Details: https://github.com/StateSmith/StateSmith/issues/538
-        public const int ROOT_SubtreeEndId = 24;  // State 'PlayerSm' subtree extends from itself (id: 0) to state 'GRAB_WALL' (id: 24)
+        public const int ROOT_SubtreeEndId = 25;  // State 'PlayerSm' subtree extends from itself (id: 0) to state 'GRAB_WALL' (id: 25)
         public const int AIRBORNE_SubtreeEndId = 5;  // State 'AIRBORNE' subtree extends from itself (id: 1) to state 'JUMP' (id: 5)
         public const int ATTACK_AIR_SubtreeEndId = 2;  // State 'ATTACK_AIR' subtree extends from itself (id: 2) to state 'ATTACK_AIR' (id: 2)
         public const int CHARGE_AIR_SLASH_SubtreeEndId = 3;  // State 'CHARGE_AIR_SLASH' subtree extends from itself (id: 3) to state 'CHARGE_AIR_SLASH' (id: 3)
@@ -74,23 +75,24 @@ namespace MegaManZero
         public const int JUMP_SubtreeEndId = 5;  // State 'JUMP' subtree extends from itself (id: 5) to state 'JUMP' (id: 5)
         public const int DEATH_SubtreeEndId = 7;  // State 'DEATH' subtree extends from itself (id: 6) to state 'DYING' (id: 7)
         public const int DYING_SubtreeEndId = 7;  // State 'DYING' subtree extends from itself (id: 7) to state 'DYING' (id: 7)
-        public const int GROUNDED_SubtreeEndId = 17;  // State 'GROUNDED' subtree extends from itself (id: 8) to state 'RUN' (id: 17)
-        public const int ATTACK_1_SubtreeEndId = 9;  // State 'ATTACK_1' subtree extends from itself (id: 9) to state 'ATTACK_1' (id: 9)
-        public const int ATTACK_2_SubtreeEndId = 10;  // State 'ATTACK_2' subtree extends from itself (id: 10) to state 'ATTACK_2' (id: 10)
-        public const int ATTACK_3_SubtreeEndId = 11;  // State 'ATTACK_3' subtree extends from itself (id: 11) to state 'ATTACK_3' (id: 11)
-        public const int ATTACK_DASH_SubtreeEndId = 12;  // State 'ATTACK_DASH' subtree extends from itself (id: 12) to state 'ATTACK_DASH' (id: 12)
-        public const int ATTACK_RUN_SubtreeEndId = 13;  // State 'ATTACK_RUN' subtree extends from itself (id: 13) to state 'ATTACK_RUN' (id: 13)
-        public const int CHARGE_SLASH_SubtreeEndId = 14;  // State 'CHARGE_SLASH' subtree extends from itself (id: 14) to state 'CHARGE_SLASH' (id: 14)
-        public const int DASH_SubtreeEndId = 15;  // State 'DASH' subtree extends from itself (id: 15) to state 'DASH' (id: 15)
-        public const int IDLE_SubtreeEndId = 16;  // State 'IDLE' subtree extends from itself (id: 16) to state 'IDLE' (id: 16)
-        public const int RUN_SubtreeEndId = 17;  // State 'RUN' subtree extends from itself (id: 17) to state 'RUN' (id: 17)
-        public const int HURT_SubtreeEndId = 20;  // State 'HURT' subtree extends from itself (id: 18) to state 'HURT_GROUND' (id: 20)
-        public const int HURT_AIR_SubtreeEndId = 19;  // State 'HURT_AIR' subtree extends from itself (id: 19) to state 'HURT_AIR' (id: 19)
-        public const int HURT_GROUND_SubtreeEndId = 20;  // State 'HURT_GROUND' subtree extends from itself (id: 20) to state 'HURT_GROUND' (id: 20)
-        public const int WALL_SLIDE_SubtreeEndId = 24;  // State 'WALL_SLIDE' subtree extends from itself (id: 21) to state 'GRAB_WALL' (id: 24)
-        public const int ATTACK_GRAB_WALL_SubtreeEndId = 22;  // State 'ATTACK_GRAB_WALL' subtree extends from itself (id: 22) to state 'ATTACK_GRAB_WALL' (id: 22)
-        public const int CHARGE_WALL_SLASH_SubtreeEndId = 23;  // State 'CHARGE_WALL_SLASH' subtree extends from itself (id: 23) to state 'CHARGE_WALL_SLASH' (id: 23)
-        public const int GRAB_WALL_SubtreeEndId = 24;  // State 'GRAB_WALL' subtree extends from itself (id: 24) to state 'GRAB_WALL' (id: 24)
+        public const int GROUNDED_SubtreeEndId = 18;  // State 'GROUNDED' subtree extends from itself (id: 8) to state 'RUN' (id: 18)
+        public const int DASH_SubtreeEndId = 9;  // State 'DASH' subtree extends from itself (id: 9) to state 'DASH' (id: 9)
+        public const int GROUND_ATTACK_SubtreeEndId = 16;  // State 'GROUND_ATTACK' subtree extends from itself (id: 10) to state 'CHARGE_SLASH' (id: 16)
+        public const int ATTACK_1_SubtreeEndId = 11;  // State 'ATTACK_1' subtree extends from itself (id: 11) to state 'ATTACK_1' (id: 11)
+        public const int ATTACK_2_SubtreeEndId = 12;  // State 'ATTACK_2' subtree extends from itself (id: 12) to state 'ATTACK_2' (id: 12)
+        public const int ATTACK_3_SubtreeEndId = 13;  // State 'ATTACK_3' subtree extends from itself (id: 13) to state 'ATTACK_3' (id: 13)
+        public const int ATTACK_DASH_SubtreeEndId = 14;  // State 'ATTACK_DASH' subtree extends from itself (id: 14) to state 'ATTACK_DASH' (id: 14)
+        public const int ATTACK_RUN_SubtreeEndId = 15;  // State 'ATTACK_RUN' subtree extends from itself (id: 15) to state 'ATTACK_RUN' (id: 15)
+        public const int CHARGE_SLASH_SubtreeEndId = 16;  // State 'CHARGE_SLASH' subtree extends from itself (id: 16) to state 'CHARGE_SLASH' (id: 16)
+        public const int IDLE_SubtreeEndId = 17;  // State 'IDLE' subtree extends from itself (id: 17) to state 'IDLE' (id: 17)
+        public const int RUN_SubtreeEndId = 18;  // State 'RUN' subtree extends from itself (id: 18) to state 'RUN' (id: 18)
+        public const int HURT_SubtreeEndId = 21;  // State 'HURT' subtree extends from itself (id: 19) to state 'HURT_GROUND' (id: 21)
+        public const int HURT_AIR_SubtreeEndId = 20;  // State 'HURT_AIR' subtree extends from itself (id: 20) to state 'HURT_AIR' (id: 20)
+        public const int HURT_GROUND_SubtreeEndId = 21;  // State 'HURT_GROUND' subtree extends from itself (id: 21) to state 'HURT_GROUND' (id: 21)
+        public const int WALL_SLIDE_SubtreeEndId = 25;  // State 'WALL_SLIDE' subtree extends from itself (id: 22) to state 'GRAB_WALL' (id: 25)
+        public const int ATTACK_GRAB_WALL_SubtreeEndId = 23;  // State 'ATTACK_GRAB_WALL' subtree extends from itself (id: 23) to state 'ATTACK_GRAB_WALL' (id: 23)
+        public const int CHARGE_WALL_SLASH_SubtreeEndId = 24;  // State 'CHARGE_WALL_SLASH' subtree extends from itself (id: 24) to state 'CHARGE_WALL_SLASH' (id: 24)
+        public const int GRAB_WALL_SubtreeEndId = 25;  // State 'GRAB_WALL' subtree extends from itself (id: 25) to state 'GRAB_WALL' (id: 25)
 
         // Used internally by state machine. Feel free to inspect, but don't modify.
         public StateId stateId;
@@ -105,6 +107,7 @@ namespace MegaManZero
             public bool isTouchingWall;
             public bool isDashHeld;
             public bool canStandUp;
+            public float attackStateTimer;
             public bool isInvincible;
             public int facing;
             public int hp;
@@ -249,82 +252,6 @@ namespace MegaManZero
                     }
                     break;
 
-                // STATE: ATTACK_1
-                case StateId.ATTACK_1:
-                    switch (eventId)
-                    {
-                        case EventId.ATTACK_FINISHED: ATTACK_1_attack_finished(); break;
-                        case EventId.ATTACK_PRESS: ATTACK_1_attack_press(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
-                // STATE: ATTACK_2
-                case StateId.ATTACK_2:
-                    switch (eventId)
-                    {
-                        case EventId.ATTACK_PRESS: ATTACK_2_attack_press(); break;
-                        case EventId.ATTACK_FINISHED: ATTACK_2_attack_finished(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
-                // STATE: ATTACK_3
-                case StateId.ATTACK_3:
-                    switch (eventId)
-                    {
-                        case EventId.ATTACK_FINISHED: ATTACK_3_attack_finished(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
-                // STATE: ATTACK_DASH
-                case StateId.ATTACK_DASH:
-                    switch (eventId)
-                    {
-                        case EventId.DO: ATTACK_DASH_do(); break;
-                        case EventId.ATTACK_FINISHED: ATTACK_DASH_attack_finished(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
-                // STATE: ATTACK_RUN
-                case StateId.ATTACK_RUN:
-                    switch (eventId)
-                    {
-                        case EventId.DO: ATTACK_RUN_do(); break;
-                        case EventId.ATTACK_FINISHED: ATTACK_RUN_attack_finished(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
-                // STATE: CHARGE_SLASH
-                case StateId.CHARGE_SLASH:
-                    switch (eventId)
-                    {
-                        case EventId.ATTACK_FINISHED: CHARGE_SLASH_attack_finished(); break;
-                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
-                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
-                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
-                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
-                    }
-                    break;
-
                 // STATE: DASH
                 case StateId.DASH:
                     switch (eventId)
@@ -340,15 +267,110 @@ namespace MegaManZero
                     }
                     break;
 
+                // STATE: GROUND_ATTACK
+                case StateId.GROUND_ATTACK:
+                    switch (eventId)
+                    {
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break;
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break;
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: ATTACK_1
+                case StateId.ATTACK_1:
+                    switch (eventId)
+                    {
+                        case EventId.ATTACK_PRESS: ATTACK_1_attack_press(); break;
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: ATTACK_2
+                case StateId.ATTACK_2:
+                    switch (eventId)
+                    {
+                        case EventId.ATTACK_PRESS: ATTACK_2_attack_press(); break;
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: ATTACK_3
+                case StateId.ATTACK_3:
+                    switch (eventId)
+                    {
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: ATTACK_DASH
+                case StateId.ATTACK_DASH:
+                    switch (eventId)
+                    {
+                        case EventId.DO: ATTACK_DASH_do(); break;
+                        case EventId.ATTACK_FINISHED: ATTACK_DASH_attack_finished(); break;
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: ATTACK_RUN
+                case StateId.ATTACK_RUN:
+                    switch (eventId)
+                    {
+                        case EventId.DO: ATTACK_RUN_do(); break;
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break; // First ancestor handler for this event
+                    }
+                    break;
+
+                // STATE: CHARGE_SLASH
+                case StateId.CHARGE_SLASH:
+                    switch (eventId)
+                    {
+                        case EventId.CHARGE_RELEASE: GROUNDED_charge_release(); break; // First ancestor handler for this event
+                        case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
+                        case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
+                        case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
+                        case EventId.DASH_PRESS: GROUND_ATTACK_dash_press(); break; // First ancestor handler for this event
+                        case EventId.ATTACK_FINISHED: GROUND_ATTACK_attack_finished(); break; // First ancestor handler for this event
+                    }
+                    break;
+
                 // STATE: IDLE
                 case StateId.IDLE:
                     switch (eventId)
                     {
                         case EventId.DO: IDLE_do(); break;
                         case EventId.MOVE_INPUT: IDLE_move_input(); break;
-                        case EventId.ATTACK_PRESS: IDLE_attack_press(); break;
                         case EventId.CHARGE_RELEASE: IDLE_charge_release(); break;
                         case EventId.DASH_PRESS: IDLE_dash_press(); break;
+                        case EventId.ATTACK_PRESS: IDLE_attack_press(); break;
                         case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
                         case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
                         case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
@@ -362,8 +384,8 @@ namespace MegaManZero
                         case EventId.DO: RUN_do(); break;
                         case EventId.DASH_PRESS: RUN_dash_press(); break;
                         case EventId.STOP_INPUT: RUN_stop_input(); break;
-                        case EventId.ATTACK_PRESS: RUN_attack_press(); break;
                         case EventId.CHARGE_RELEASE: RUN_charge_release(); break;
+                        case EventId.ATTACK_PRESS: RUN_attack_press(); break;
                         case EventId.JUMP_PRESS: GROUNDED_jump_press(); break; // First ancestor handler for this event
                         case EventId.FALL: GROUNDED_fall(); break; // First ancestor handler for this event
                         case EventId.HIT_RECEIVED: GROUNDED_hit_received(); break; // First ancestor handler for this event
@@ -475,6 +497,10 @@ namespace MegaManZero
 
                     case StateId.GROUNDED: GROUNDED_exit(); break;
 
+                    case StateId.DASH: DASH_exit(); break;
+
+                    case StateId.GROUND_ATTACK: GROUND_ATTACK_exit(); break;
+
                     case StateId.ATTACK_1: ATTACK_1_exit(); break;
 
                     case StateId.ATTACK_2: ATTACK_2_exit(); break;
@@ -486,8 +512,6 @@ namespace MegaManZero
                     case StateId.ATTACK_RUN: ATTACK_RUN_exit(); break;
 
                     case StateId.CHARGE_SLASH: CHARGE_SLASH_exit(); break;
-
-                    case StateId.DASH: DASH_exit(); break;
 
                     case StateId.IDLE: IDLE_exit(); break;
 
@@ -583,7 +607,8 @@ namespace MegaManZero
         private void AIRBORNE_landed()
         {
             // AIRBORNE behavior
-            // uml: LANDED / { PlayAnim("seq_09_land"); } TransitionTo(GROUNDED)
+            // uml: LANDED [!move] / { PlayAnim("seq_09_land"); } TransitionTo(GROUNDED)
+            if (!move)
             {
                 // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
                 ExitUpToStateHandler(StateId.ROOT);
@@ -596,6 +621,25 @@ namespace MegaManZero
 
                 // Finish transition by calling pseudo state transition function.
                 GROUNDED_InitialState_transition();
+                return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
+            } // end of behavior for AIRBORNE
+
+            // AIRBORNE behavior
+            // uml: LANDED [move] / { PlayAnim("seq_09_land"); } TransitionTo(GROUNDED.<EntryPoint>(moving))
+            if (move)
+            {
+                // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.ROOT);
+
+                // Step 2: Transition action: `PlayAnim("seq_09_land");`.
+                PlayAnim("seq_09_land");
+
+                // Step 3: Enter/move towards transition target `GROUNDED.<EntryPoint>(moving)`.
+                GROUNDED_enter();
+                // GROUNDED.<EntryPoint>(moving) is a pseudo state and cannot have an `enter` trigger.
+
+                // Finish transition by calling pseudo state transition function.
+                GROUNDED_EntryPoint_moving__transition();
                 return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
             } // end of behavior for AIRBORNE
 
@@ -659,7 +703,23 @@ namespace MegaManZero
         private void ATTACK_AIR_attack_finished()
         {
             // ATTACK_AIR behavior
-            // uml: ATTACK_FINISHED TransitionTo(FALL)
+            // uml: ATTACK_FINISHED [vars.vy < 0] TransitionTo(JUMP)
+            if (vars.vy < 0)
+            {
+                // Step 1: Exit states until we reach `AIRBORNE` state (Least Common Ancestor for transition).
+                ATTACK_AIR_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `JUMP`.
+                JUMP_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for ATTACK_AIR
+
+            // ATTACK_AIR behavior
+            // uml: else ATTACK_FINISHED TransitionTo(FALL)
             {
                 // Step 1: Exit states until we reach `AIRBORNE` state (Least Common Ancestor for transition).
                 ATTACK_AIR_exit();
@@ -727,7 +787,23 @@ namespace MegaManZero
         private void CHARGE_AIR_SLASH_attack_finished()
         {
             // CHARGE_AIR_SLASH behavior
-            // uml: ATTACK_FINISHED TransitionTo(FALL)
+            // uml: ATTACK_FINISHED [vars.vy < 0] TransitionTo(JUMP)
+            if (vars.vy < 0)
+            {
+                // Step 1: Exit states until we reach `AIRBORNE` state (Least Common Ancestor for transition).
+                CHARGE_AIR_SLASH_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `JUMP`.
+                JUMP_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for CHARGE_AIR_SLASH
+
+            // CHARGE_AIR_SLASH behavior
+            // uml: else ATTACK_FINISHED TransitionTo(FALL)
             {
                 // Step 1: Exit states until we reach `AIRBORNE` state (Least Common Ancestor for transition).
                 CHARGE_AIR_SLASH_exit();
@@ -962,6 +1038,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `CHARGE_SLASH`.
+                GROUND_ATTACK_enter();
                 CHARGE_SLASH_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1055,297 +1132,12 @@ namespace MegaManZero
             } // end of behavior for GROUNDED.<InitialState>
         }
 
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state ATTACK_1
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void ATTACK_1_enter()
+        private void GROUNDED_EntryPoint_moving__transition()
         {
-            this.stateId = StateId.ATTACK_1;
-
-            // ATTACK_1 behavior
-            // uml: enter / { PlayAnim("seq_17_saber_slash_1"); }
+            // GROUNDED.<EntryPoint>(moving) behavior
+            // uml: TransitionTo(RUN)
             {
-                // Step 1: execute action `PlayAnim("seq_17_saber_slash_1");`
-                PlayAnim("seq_17_saber_slash_1");
-            } // end of behavior for ATTACK_1
-
-            // ATTACK_1 behavior
-            // uml: enter / { StartAttackHitbox(); }
-            {
-                // Step 1: execute action `StartAttackHitbox();`
-                StartAttackHitbox();
-            } // end of behavior for ATTACK_1
-        }
-
-        private void ATTACK_1_exit()
-        {
-            // ATTACK_1 behavior
-            // uml: exit / { EndAttackHitbox(); }
-            {
-                // Step 1: execute action `EndAttackHitbox();`
-                EndAttackHitbox();
-            } // end of behavior for ATTACK_1
-
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void ATTACK_1_attack_finished()
-        {
-            // ATTACK_1 behavior
-            // uml: ATTACK_FINISHED TransitionTo(IDLE)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_1_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `IDLE`.
-                IDLE_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_1
-
-            // No ancestor handles this event.
-        }
-
-        private void ATTACK_1_attack_press()
-        {
-            // ATTACK_1 behavior
-            // uml: ATTACK_PRESS TransitionTo(ATTACK_2)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_1_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `ATTACK_2`.
-                ATTACK_2_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_1
-
-            // No ancestor handles this event.
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state ATTACK_2
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void ATTACK_2_enter()
-        {
-            this.stateId = StateId.ATTACK_2;
-
-            // ATTACK_2 behavior
-            // uml: enter / { PlayAnim("seq_18_saber_slash_1"); }
-            {
-                // Step 1: execute action `PlayAnim("seq_18_saber_slash_1");`
-                PlayAnim("seq_18_saber_slash_1");
-            } // end of behavior for ATTACK_2
-
-            // ATTACK_2 behavior
-            // uml: enter / { StartAttackHitbox(); }
-            {
-                // Step 1: execute action `StartAttackHitbox();`
-                StartAttackHitbox();
-            } // end of behavior for ATTACK_2
-        }
-
-        private void ATTACK_2_exit()
-        {
-            // ATTACK_2 behavior
-            // uml: exit / { EndAttackHitbox(); }
-            {
-                // Step 1: execute action `EndAttackHitbox();`
-                EndAttackHitbox();
-            } // end of behavior for ATTACK_2
-
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void ATTACK_2_attack_finished()
-        {
-            // ATTACK_2 behavior
-            // uml: ATTACK_FINISHED TransitionTo(IDLE)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_2_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `IDLE`.
-                IDLE_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_2
-
-            // No ancestor handles this event.
-        }
-
-        private void ATTACK_2_attack_press()
-        {
-            // ATTACK_2 behavior
-            // uml: ATTACK_PRESS TransitionTo(ATTACK_3)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_2_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `ATTACK_3`.
-                ATTACK_3_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_2
-
-            // No ancestor handles this event.
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state ATTACK_3
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void ATTACK_3_enter()
-        {
-            this.stateId = StateId.ATTACK_3;
-
-            // ATTACK_3 behavior
-            // uml: enter / { PlayAnim("seq_21_saber_slash_1"); }
-            {
-                // Step 1: execute action `PlayAnim("seq_21_saber_slash_1");`
-                PlayAnim("seq_21_saber_slash_1");
-            } // end of behavior for ATTACK_3
-
-            // ATTACK_3 behavior
-            // uml: enter / { StartAttackHitbox(); }
-            {
-                // Step 1: execute action `StartAttackHitbox();`
-                StartAttackHitbox();
-            } // end of behavior for ATTACK_3
-        }
-
-        private void ATTACK_3_exit()
-        {
-            // ATTACK_3 behavior
-            // uml: exit / { EndAttackHitbox(); }
-            {
-                // Step 1: execute action `EndAttackHitbox();`
-                EndAttackHitbox();
-            } // end of behavior for ATTACK_3
-
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void ATTACK_3_attack_finished()
-        {
-            // ATTACK_3 behavior
-            // uml: ATTACK_FINISHED TransitionTo(IDLE)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_3_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `IDLE`.
-                IDLE_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_3
-
-            // No ancestor handles this event.
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state ATTACK_DASH
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void ATTACK_DASH_enter()
-        {
-            this.stateId = StateId.ATTACK_DASH;
-
-            // ATTACK_DASH behavior
-            // uml: enter / { PlayAnim("seq_27_attack_dash_slash"); }
-            {
-                // Step 1: execute action `PlayAnim("seq_27_attack_dash_slash");`
-                PlayAnim("seq_27_attack_dash_slash");
-            } // end of behavior for ATTACK_DASH
-        }
-
-        private void ATTACK_DASH_exit()
-        {
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void ATTACK_DASH_attack_finished()
-        {
-            // ATTACK_DASH behavior
-            // uml: ATTACK_FINISHED TransitionTo(DASH)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_DASH_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `DASH`.
-                DASH_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for ATTACK_DASH
-
-            // No ancestor handles this event.
-        }
-
-        private void ATTACK_DASH_do()
-        {
-            // ATTACK_DASH behavior
-            // uml: do / { ApplyRunVelocity(); }
-            {
-                // Step 1: execute action `ApplyRunVelocity();`
-                ApplyRunVelocity();
-            } // end of behavior for ATTACK_DASH
-
-            // No ancestor handles this event.
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state ATTACK_RUN
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void ATTACK_RUN_enter()
-        {
-            this.stateId = StateId.ATTACK_RUN;
-
-            // ATTACK_RUN behavior
-            // uml: enter / { PlayAnim("seq_25_attack_walk_slash"); }
-            {
-                // Step 1: execute action `PlayAnim("seq_25_attack_walk_slash");`
-                PlayAnim("seq_25_attack_walk_slash");
-            } // end of behavior for ATTACK_RUN
-        }
-
-        private void ATTACK_RUN_exit()
-        {
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void ATTACK_RUN_attack_finished()
-        {
-            // ATTACK_RUN behavior
-            // uml: ATTACK_FINISHED TransitionTo(RUN)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                ATTACK_RUN_exit();
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition). Already at LCA, no exiting required.
 
                 // Step 2: Transition action: ``.
 
@@ -1354,77 +1146,7 @@ namespace MegaManZero
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
                 return;
-            } // end of behavior for ATTACK_RUN
-
-            // No ancestor handles this event.
-        }
-
-        private void ATTACK_RUN_do()
-        {
-            // ATTACK_RUN behavior
-            // uml: do / { ApplyRunVelocity(); }
-            {
-                // Step 1: execute action `ApplyRunVelocity();`
-                ApplyRunVelocity();
-            } // end of behavior for ATTACK_RUN
-
-            // No ancestor handles this event.
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////
-        // event handlers for state CHARGE_SLASH
-        ////////////////////////////////////////////////////////////////////////////////
-
-        private void CHARGE_SLASH_enter()
-        {
-            this.stateId = StateId.CHARGE_SLASH;
-
-            // CHARGE_SLASH behavior
-            // uml: enter / { PlayAnim("seq_20_saber_slash_1"); }
-            {
-                // Step 1: execute action `PlayAnim("seq_20_saber_slash_1");`
-                PlayAnim("seq_20_saber_slash_1");
-            } // end of behavior for CHARGE_SLASH
-
-            // CHARGE_SLASH behavior
-            // uml: enter / { StartAttackHitbox(); }
-            {
-                // Step 1: execute action `StartAttackHitbox();`
-                StartAttackHitbox();
-            } // end of behavior for CHARGE_SLASH
-        }
-
-        private void CHARGE_SLASH_exit()
-        {
-            // CHARGE_SLASH behavior
-            // uml: exit / { EndAttackHitbox(); }
-            {
-                // Step 1: execute action `EndAttackHitbox();`
-                EndAttackHitbox();
-            } // end of behavior for CHARGE_SLASH
-
-            this.stateId = StateId.GROUNDED;
-        }
-
-        private void CHARGE_SLASH_attack_finished()
-        {
-            // CHARGE_SLASH behavior
-            // uml: ATTACK_FINISHED TransitionTo(IDLE)
-            {
-                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
-                CHARGE_SLASH_exit();
-
-                // Step 2: Transition action: ``.
-
-                // Step 3: Enter/move towards transition target `IDLE`.
-                IDLE_enter();
-
-                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
-                return;
-            } // end of behavior for CHARGE_SLASH
-
-            // No ancestor handles this event.
+            } // end of behavior for GROUNDED.<EntryPoint>(moving)
         }
 
 
@@ -1467,6 +1189,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `ATTACK_DASH`.
+                GROUND_ATTACK_enter();
                 ATTACK_DASH_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1546,6 +1269,372 @@ namespace MegaManZero
 
 
         ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state GROUND_ATTACK
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void GROUND_ATTACK_enter()
+        {
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+        private void GROUND_ATTACK_exit()
+        {
+            this.stateId = StateId.GROUNDED;
+        }
+
+        private void GROUND_ATTACK_attack_finished()
+        {
+            // GROUND_ATTACK behavior
+            // uml: ATTACK_FINISHED [move] TransitionTo(RUN)
+            if (move)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.GROUNDED);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `RUN`.
+                RUN_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for GROUND_ATTACK
+
+            // GROUND_ATTACK behavior
+            // uml: else ATTACK_FINISHED TransitionTo(IDLE)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.GROUNDED);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `IDLE`.
+                IDLE_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for GROUND_ATTACK
+
+            // No ancestor handles this event.
+        }
+
+        private void GROUND_ATTACK_dash_press()
+        {
+            // GROUND_ATTACK behavior
+            // uml: DASH_PRESS [vars.isDashHeld || vars.attackStateTimer < 0.18] TransitionTo(ATTACK_DASH)
+            if (vars.isDashHeld || vars.attackStateTimer < 0.18)
+            {
+                // Step 1: Exit states until we reach `GROUND_ATTACK` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.GROUND_ATTACK);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `ATTACK_DASH`.
+                ATTACK_DASH_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for GROUND_ATTACK
+
+            // GROUND_ATTACK behavior
+            // uml: else DASH_PRESS TransitionTo(DASH)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.GROUNDED);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `DASH`.
+                DASH_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for GROUND_ATTACK
+
+            // No ancestor handles this event.
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state ATTACK_1
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void ATTACK_1_enter()
+        {
+            this.stateId = StateId.ATTACK_1;
+
+            // ATTACK_1 behavior
+            // uml: enter / { PlayAnim("seq_17_saber_slash_1"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_17_saber_slash_1");`
+                PlayAnim("seq_17_saber_slash_1");
+            } // end of behavior for ATTACK_1
+
+            // ATTACK_1 behavior
+            // uml: enter / { StartAttackHitbox(); }
+            {
+                // Step 1: execute action `StartAttackHitbox();`
+                StartAttackHitbox();
+            } // end of behavior for ATTACK_1
+        }
+
+        private void ATTACK_1_exit()
+        {
+            // ATTACK_1 behavior
+            // uml: exit / { EndAttackHitbox(); }
+            {
+                // Step 1: execute action `EndAttackHitbox();`
+                EndAttackHitbox();
+            } // end of behavior for ATTACK_1
+
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+        private void ATTACK_1_attack_press()
+        {
+            // ATTACK_1 behavior
+            // uml: ATTACK_PRESS TransitionTo(ATTACK_2)
+            {
+                // Step 1: Exit states until we reach `GROUND_ATTACK` state (Least Common Ancestor for transition).
+                ATTACK_1_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `ATTACK_2`.
+                ATTACK_2_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for ATTACK_1
+
+            // No ancestor handles this event.
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state ATTACK_2
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void ATTACK_2_enter()
+        {
+            this.stateId = StateId.ATTACK_2;
+
+            // ATTACK_2 behavior
+            // uml: enter / { PlayAnim("seq_18_saber_slash_1"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_18_saber_slash_1");`
+                PlayAnim("seq_18_saber_slash_1");
+            } // end of behavior for ATTACK_2
+
+            // ATTACK_2 behavior
+            // uml: enter / { StartAttackHitbox(); }
+            {
+                // Step 1: execute action `StartAttackHitbox();`
+                StartAttackHitbox();
+            } // end of behavior for ATTACK_2
+        }
+
+        private void ATTACK_2_exit()
+        {
+            // ATTACK_2 behavior
+            // uml: exit / { EndAttackHitbox(); }
+            {
+                // Step 1: execute action `EndAttackHitbox();`
+                EndAttackHitbox();
+            } // end of behavior for ATTACK_2
+
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+        private void ATTACK_2_attack_press()
+        {
+            // ATTACK_2 behavior
+            // uml: ATTACK_PRESS TransitionTo(ATTACK_3)
+            {
+                // Step 1: Exit states until we reach `GROUND_ATTACK` state (Least Common Ancestor for transition).
+                ATTACK_2_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `ATTACK_3`.
+                ATTACK_3_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for ATTACK_2
+
+            // No ancestor handles this event.
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state ATTACK_3
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void ATTACK_3_enter()
+        {
+            this.stateId = StateId.ATTACK_3;
+
+            // ATTACK_3 behavior
+            // uml: enter / { PlayAnim("seq_21_saber_slash_1"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_21_saber_slash_1");`
+                PlayAnim("seq_21_saber_slash_1");
+            } // end of behavior for ATTACK_3
+
+            // ATTACK_3 behavior
+            // uml: enter / { StartAttackHitbox(); }
+            {
+                // Step 1: execute action `StartAttackHitbox();`
+                StartAttackHitbox();
+            } // end of behavior for ATTACK_3
+        }
+
+        private void ATTACK_3_exit()
+        {
+            // ATTACK_3 behavior
+            // uml: exit / { EndAttackHitbox(); }
+            {
+                // Step 1: execute action `EndAttackHitbox();`
+                EndAttackHitbox();
+            } // end of behavior for ATTACK_3
+
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state ATTACK_DASH
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void ATTACK_DASH_enter()
+        {
+            this.stateId = StateId.ATTACK_DASH;
+
+            // ATTACK_DASH behavior
+            // uml: enter / { PlayAnim("seq_27_attack_dash_slash"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_27_attack_dash_slash");`
+                PlayAnim("seq_27_attack_dash_slash");
+            } // end of behavior for ATTACK_DASH
+        }
+
+        private void ATTACK_DASH_exit()
+        {
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+        private void ATTACK_DASH_attack_finished()
+        {
+            bool consume_event = false;
+
+            // ATTACK_DASH behavior
+            // uml: ATTACK_FINISHED [!vars.canStandUp] TransitionTo(DASH)
+            if (!vars.canStandUp)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.GROUNDED);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `DASH`.
+                DASH_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for ATTACK_DASH
+
+            // Check if event has been consumed before calling ancestor handler.
+            if (!consume_event)
+            {
+                GROUND_ATTACK_attack_finished();
+            }
+        }
+
+        private void ATTACK_DASH_do()
+        {
+            // ATTACK_DASH behavior
+            // uml: do / { ApplyRunVelocity(); }
+            {
+                // Step 1: execute action `ApplyRunVelocity();`
+                ApplyRunVelocity();
+            } // end of behavior for ATTACK_DASH
+
+            // No ancestor handles this event.
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state ATTACK_RUN
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void ATTACK_RUN_enter()
+        {
+            this.stateId = StateId.ATTACK_RUN;
+
+            // ATTACK_RUN behavior
+            // uml: enter / { PlayAnim("seq_25_attack_walk_slash"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_25_attack_walk_slash");`
+                PlayAnim("seq_25_attack_walk_slash");
+            } // end of behavior for ATTACK_RUN
+        }
+
+        private void ATTACK_RUN_exit()
+        {
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+        private void ATTACK_RUN_do()
+        {
+            // ATTACK_RUN behavior
+            // uml: do / { ApplyRunVelocity(); }
+            {
+                // Step 1: execute action `ApplyRunVelocity();`
+                ApplyRunVelocity();
+            } // end of behavior for ATTACK_RUN
+
+            // No ancestor handles this event.
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // event handlers for state CHARGE_SLASH
+        ////////////////////////////////////////////////////////////////////////////////
+
+        private void CHARGE_SLASH_enter()
+        {
+            this.stateId = StateId.CHARGE_SLASH;
+
+            // CHARGE_SLASH behavior
+            // uml: enter / { PlayAnim("seq_20_saber_slash_1"); }
+            {
+                // Step 1: execute action `PlayAnim("seq_20_saber_slash_1");`
+                PlayAnim("seq_20_saber_slash_1");
+            } // end of behavior for CHARGE_SLASH
+
+            // CHARGE_SLASH behavior
+            // uml: enter / { StartAttackHitbox(); }
+            {
+                // Step 1: execute action `StartAttackHitbox();`
+                StartAttackHitbox();
+            } // end of behavior for CHARGE_SLASH
+        }
+
+        private void CHARGE_SLASH_exit()
+        {
+            // CHARGE_SLASH behavior
+            // uml: exit / { EndAttackHitbox(); }
+            {
+                // Step 1: execute action `EndAttackHitbox();`
+                EndAttackHitbox();
+            } // end of behavior for CHARGE_SLASH
+
+            this.stateId = StateId.GROUND_ATTACK;
+        }
+
+
+        ////////////////////////////////////////////////////////////////////////////////
         // event handlers for state IDLE
         ////////////////////////////////////////////////////////////////////////////////
 
@@ -1569,7 +1658,24 @@ namespace MegaManZero
         private void IDLE_attack_press()
         {
             // IDLE behavior
-            // uml: ATTACK_PRESS TransitionTo(ATTACK_1)
+            // uml: ATTACK_PRESS [vars.isDashHeld] TransitionTo(ATTACK_DASH)
+            if (vars.isDashHeld)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                IDLE_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `ATTACK_DASH`.
+                GROUND_ATTACK_enter();
+                ATTACK_DASH_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for IDLE
+
+            // IDLE behavior
+            // uml: else ATTACK_PRESS TransitionTo(ATTACK_1)
             {
                 // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
                 IDLE_exit();
@@ -1577,6 +1683,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `ATTACK_1`.
+                GROUND_ATTACK_enter();
                 ATTACK_1_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1599,6 +1706,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `CHARGE_SLASH`.
+                GROUND_ATTACK_enter();
                 CHARGE_SLASH_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1689,7 +1797,24 @@ namespace MegaManZero
         private void RUN_attack_press()
         {
             // RUN behavior
-            // uml: ATTACK_PRESS TransitionTo(ATTACK_RUN)
+            // uml: ATTACK_PRESS [vars.isDashHeld] TransitionTo(ATTACK_DASH)
+            if (vars.isDashHeld)
+            {
+                // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
+                RUN_exit();
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `ATTACK_DASH`.
+                GROUND_ATTACK_enter();
+                ATTACK_DASH_enter();
+
+                // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
+                return;
+            } // end of behavior for RUN
+
+            // RUN behavior
+            // uml: else ATTACK_PRESS TransitionTo(ATTACK_RUN)
             {
                 // Step 1: Exit states until we reach `GROUNDED` state (Least Common Ancestor for transition).
                 RUN_exit();
@@ -1697,6 +1822,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `ATTACK_RUN`.
+                GROUND_ATTACK_enter();
                 ATTACK_RUN_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1719,6 +1845,7 @@ namespace MegaManZero
                 // Step 2: Transition action: ``.
 
                 // Step 3: Enter/move towards transition target `CHARGE_SLASH`.
+                GROUND_ATTACK_enter();
                 CHARGE_SLASH_enter();
 
                 // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
@@ -1872,8 +1999,8 @@ namespace MegaManZero
             bool consume_event = false;
 
             // HURT_AIR behavior
-            // uml: HURT_FINISHED [vars.hp > 0] TransitionTo(AIRBORNE)
-            if (vars.hp > 0)
+            // uml: HURT_FINISHED [vars.hp > 0 && !vars.isGrounded] TransitionTo(AIRBORNE)
+            if (vars.hp > 0 && !vars.isGrounded)
             {
                 // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
                 ExitUpToStateHandler(StateId.ROOT);
@@ -1896,6 +2023,41 @@ namespace MegaManZero
                     // Step 4: complete transition. Ends event dispatch. No other behaviors are checked.
                     return;
                 } // end of behavior for AIRBORNE.<InitialState>
+            } // end of behavior for HURT_AIR
+
+            // HURT_AIR behavior
+            // uml: HURT_FINISHED [vars.hp > 0 && vars.isGrounded && !move] TransitionTo(GROUNDED)
+            if (vars.hp > 0 && vars.isGrounded && !move)
+            {
+                // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.ROOT);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `GROUNDED`.
+                GROUNDED_enter();
+
+                // Finish transition by calling pseudo state transition function.
+                GROUNDED_InitialState_transition();
+                return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
+            } // end of behavior for HURT_AIR
+
+            // HURT_AIR behavior
+            // uml: HURT_FINISHED [vars.hp > 0 && vars.isGrounded && move] TransitionTo(GROUNDED.<EntryPoint>(moving))
+            if (vars.hp > 0 && vars.isGrounded && move)
+            {
+                // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.ROOT);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `GROUNDED.<EntryPoint>(moving)`.
+                GROUNDED_enter();
+                // GROUNDED.<EntryPoint>(moving) is a pseudo state and cannot have an `enter` trigger.
+
+                // Finish transition by calling pseudo state transition function.
+                GROUNDED_EntryPoint_moving__transition();
+                return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
             } // end of behavior for HURT_AIR
 
             // Check if event has been consumed before calling ancestor handler.
@@ -1946,8 +2108,8 @@ namespace MegaManZero
             bool consume_event = false;
 
             // HURT_GROUND behavior
-            // uml: HURT_FINISHED [vars.hp > 0] TransitionTo(GROUNDED)
-            if (vars.hp > 0)
+            // uml: HURT_FINISHED [vars.hp > 0 && !move] TransitionTo(GROUNDED)
+            if (vars.hp > 0 && !move)
             {
                 // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
                 ExitUpToStateHandler(StateId.ROOT);
@@ -1959,6 +2121,24 @@ namespace MegaManZero
 
                 // Finish transition by calling pseudo state transition function.
                 GROUNDED_InitialState_transition();
+                return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
+            } // end of behavior for HURT_GROUND
+
+            // HURT_GROUND behavior
+            // uml: HURT_FINISHED [vars.hp > 0 && move] TransitionTo(GROUNDED.<EntryPoint>(moving))
+            if (vars.hp > 0 && move)
+            {
+                // Step 1: Exit states until we reach `ROOT` state (Least Common Ancestor for transition).
+                ExitUpToStateHandler(StateId.ROOT);
+
+                // Step 2: Transition action: ``.
+
+                // Step 3: Enter/move towards transition target `GROUNDED.<EntryPoint>(moving)`.
+                GROUNDED_enter();
+                // GROUNDED.<EntryPoint>(moving) is a pseudo state and cannot have an `enter` trigger.
+
+                // Finish transition by calling pseudo state transition function.
+                GROUNDED_EntryPoint_moving__transition();
                 return; // event processing immediately stops when a transition finishes. No other behaviors for this state are checked.
             } // end of behavior for HURT_GROUND
 
@@ -2281,13 +2461,14 @@ namespace MegaManZero
                 case StateId.DEATH: return "DEATH";
                 case StateId.DYING: return "DYING";
                 case StateId.GROUNDED: return "GROUNDED";
+                case StateId.DASH: return "DASH";
+                case StateId.GROUND_ATTACK: return "GROUND_ATTACK";
                 case StateId.ATTACK_1: return "ATTACK_1";
                 case StateId.ATTACK_2: return "ATTACK_2";
                 case StateId.ATTACK_3: return "ATTACK_3";
                 case StateId.ATTACK_DASH: return "ATTACK_DASH";
                 case StateId.ATTACK_RUN: return "ATTACK_RUN";
                 case StateId.CHARGE_SLASH: return "CHARGE_SLASH";
-                case StateId.DASH: return "DASH";
                 case StateId.IDLE: return "IDLE";
                 case StateId.RUN: return "RUN";
                 case StateId.HURT: return "HURT";
@@ -2341,13 +2522,14 @@ namespace MegaManZero
                 case StateId.DEATH: return StateId.ROOT;
                 case StateId.DYING: return StateId.DEATH;
                 case StateId.GROUNDED: return StateId.ROOT;
-                case StateId.ATTACK_1: return StateId.GROUNDED;
-                case StateId.ATTACK_2: return StateId.GROUNDED;
-                case StateId.ATTACK_3: return StateId.GROUNDED;
-                case StateId.ATTACK_DASH: return StateId.GROUNDED;
-                case StateId.ATTACK_RUN: return StateId.GROUNDED;
-                case StateId.CHARGE_SLASH: return StateId.GROUNDED;
                 case StateId.DASH: return StateId.GROUNDED;
+                case StateId.GROUND_ATTACK: return StateId.GROUNDED;
+                case StateId.ATTACK_1: return StateId.GROUND_ATTACK;
+                case StateId.ATTACK_2: return StateId.GROUND_ATTACK;
+                case StateId.ATTACK_3: return StateId.GROUND_ATTACK;
+                case StateId.ATTACK_DASH: return StateId.GROUND_ATTACK;
+                case StateId.ATTACK_RUN: return StateId.GROUND_ATTACK;
+                case StateId.CHARGE_SLASH: return StateId.GROUND_ATTACK;
                 case StateId.IDLE: return StateId.GROUNDED;
                 case StateId.RUN: return StateId.GROUNDED;
                 case StateId.HURT: return StateId.ROOT;

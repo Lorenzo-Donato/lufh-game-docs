@@ -108,22 +108,30 @@ Utilize a ferramenta de **Swimlane** do draw.io (`shape=swimlane`):
        do / UpdateDashTimer();
        exit / EndDash();
        ```
-     * **`ATTACK_IDLE`**:
-       ```text
-       enter / PlayAnim("seq_17_saber_slash_1");
-       enter / StartAttackHitbox();
-       exit / EndAttackHitbox();
-       ```
-     * **`ATTACK_RUN`**:
-       ```text
-       enter / PlayAnim("seq_25_attack_walk_slash");
-       do / ApplyRunVelocity();
-       ```
-     * **`ATTACK_DASH`**:
-       ```text
-       enter / PlayAnim("seq_27_attack_dash_slash");
-       do / ApplyDashVelocity();
-       ```
+     * **`GROUND_ATTACK`** (uma segunda swimlane *dentro* de `GROUNDED`, cor laranja):
+       Agrupa todos os ataques no chão para que as saídas em comum (`ATTACK_FINISHED`, `DASH_PRESS`) sejam desenhadas **uma única vez** na borda do grupo, em vez de repetidas em cada ataque. Dentro dele, crie:
+       * **`ATTACK_1`** / **`ATTACK_2`** / **`ATTACK_3`** (combo de 3 golpes):
+         ```text
+         enter / PlayAnim("seq_17_saber_slash_1");   // seq_18 no ATTACK_2, seq_21 no ATTACK_3
+         enter / StartAttackHitbox();
+         exit / EndAttackHitbox();
+         ```
+       * **`ATTACK_RUN`**:
+         ```text
+         enter / PlayAnim("seq_25_attack_walk_slash");
+         do / ApplyRunVelocity();
+         ```
+       * **`ATTACK_DASH`**:
+         ```text
+         enter / PlayAnim("seq_27_attack_dash_slash");
+         do / ApplyDashVelocity();
+         ```
+       * **`CHARGE_SLASH`** (golpe carregado):
+         ```text
+         enter / PlayAnim("seq_20_saber_slash_heavy");
+         enter / StartAttackHitbox();
+         exit / EndAttackHitbox();
+         ```
 
 2. **`AIRBORNE`** (Swimlane Laranja/Amarelo):
    * Dentro dele, crie:
@@ -169,19 +177,29 @@ Conecte as setas entre os estados e dê duplo clique na linha para definir o eve
 * `IDLE` ➔ `DASH`: `DASH_PRESS`
 * `RUN` ➔ `DASH`: `DASH_PRESS`
 * `DASH` ➔ `RUN`: `DASH_FINISHED [move]`
-* `DASH` ➔ `IDLE`: `DASH_FINISHED [!move]`
-* `IDLE` ➔ `ATTACK_IDLE`: `ATTACK_PRESS`
-* `ATTACK_IDLE` ➔ `IDLE`: `ATTACK_FINISHED`
-* `RUN` ➔ `ATTACK_RUN`: `ATTACK_PRESS`
-* `ATTACK_RUN` ➔ `RUN`: `ATTACK_FINISHED`
+* `DASH` ➔ `IDLE`: `DASH_FINISHED [else]`
+* `IDLE` ➔ `ATTACK_DASH`: `ATTACK_PRESS [vars.isDashHeld]`
+* `IDLE` ➔ `ATTACK_1`: `ATTACK_PRESS [else]`
+* `RUN` ➔ `ATTACK_DASH`: `ATTACK_PRESS [vars.isDashHeld]`
+* `RUN` ➔ `ATTACK_RUN`: `ATTACK_PRESS [else]`
 * `DASH` ➔ `ATTACK_DASH`: `ATTACK_PRESS`
-* `ATTACK_DASH` ➔ `DASH`: `ATTACK_FINISHED`
+* `ATTACK_1` ➔ `ATTACK_2` ➔ `ATTACK_3`: `ATTACK_PRESS` (combo)
+
+**Saídas dos ataques (setas na borda de `GROUND_ATTACK`)** — um ataque **nunca precisa passar por `IDLE`** para continuar a ação; a saída é decidida pelo input no momento em que a animação acaba:
+* `GROUND_ATTACK` ➔ `RUN`: `ATTACK_FINISHED [move]`
+* `GROUND_ATTACK` ➔ `IDLE`: `ATTACK_FINISHED [else]`
+* `GROUND_ATTACK` ➔ `ATTACK_DASH`: `DASH_PRESS [vars.isDashHeld || vars.attackStateTimer < 0.18]` (dash-cancel nos primeiros 0.18s ou com o dash segurado)
+* `GROUND_ATTACK` ➔ `DASH`: `DASH_PRESS [else]`
+* `ATTACK_DASH` ➔ `DASH`: `ATTACK_FINISHED [!vars.canStandUp]` (continua deslizando se houver teto baixo; senão herda a saída do grupo)
+* `JUMP_PRESS`, `FALL` e `CHARGE_RELEASE` na borda de `GROUNDED` valem para todos os ataques também (cancelar ataque com pulo vai direto para `JUMP`).
 
 ### 2. Transições Internas de `AIRBORNE`:
 * `JUMP` ➔ `FALL`: `APEX [vars.vy >= 0]`
 * `JUMP` ➔ `ATTACK_AIR`: `ATTACK_PRESS`
 * `FALL` ➔ `ATTACK_AIR`: `ATTACK_PRESS`
-* `ATTACK_AIR` ➔ `FALL`: `ATTACK_FINISHED`
+* `ATTACK_AIR` ➔ `JUMP`: `ATTACK_FINISHED [vars.vy < 0]` (ainda subindo)
+* `ATTACK_AIR` ➔ `FALL`: `ATTACK_FINISHED [else]`
+* `CHARGE_AIR_SLASH` ➔ `JUMP` / `FALL`: mesma regra do `ATTACK_AIR`
 
 ### 3. Transições Internas de `WALL_SLIDE`:
 * `GRAB_WALL` ➔ `ATTACK_GRAB_WALL`: `ATTACK_PRESS`
@@ -192,7 +210,9 @@ Conecte as setas entre os estados e dê duplo clique na linha para definir o eve
   * `JUMP_PRESS / ApplyJumpImpulse();`
   * `FALL [!vars.isGrounded]`
 * **Da borda da Swimlane `AIRBORNE` para a Swimlane `GROUNDED`**:
-  * `LANDED / PlayAnim("seq_09_land");`
+  * `LANDED [move] / PlayAnim("seq_09_land"); via entry moving` (pousa já correndo)
+  * `LANDED [!move] / PlayAnim("seq_09_land");` (pousa em `IDLE`)
+  * O `entry : moving` é um **ponto de entrada** (caixinha laranja dentro de `GROUNDED`) com uma seta para `RUN`. Assim, setas vindas de fora podem entrar em `GROUNDED` direto em `RUN` sem passar por `IDLE`, e sem precisar cruzar o diagrama até a caixa de `RUN`.
 * **Da borda da Swimlane `AIRBORNE` para a Swimlane `WALL_SLIDE`**:
   * `WALL_TOUCH [vars.vy > 0 && isTouchingWall]`
 * **Da borda da Swimlane `WALL_SLIDE` para a Swimlane `AIRBORNE`**:
