@@ -124,7 +124,7 @@ Quando o evento `ATTACK_PRESS` faz a máquina transitar para `ATTACK_1`, a Engin
 1. **Consulta:** Olha o dicionário e descobre que `ATTACK_1` = `seq_17_saber_slash_1`.
 2. **Prepara:** Chama a função `playSequence('seq_17_saber_slash_1')`, que zera o relógio da animação (`animTimer = 0`) e zera o quadro atual (`animFrame = 0`).
 3. **Desenha:** A cada frame (60x por segundo), o Canvas HTML consulta o arquivo `sprites_catalog_full.json` para saber quantas imagens existem nessa pasta, e desenha o `frame_00.png`, `frame_01.png`, etc., na tela.
-4. **Finaliza:** Quando o último quadro é desenhado, a própria Engine grita o evento `ATTACK_FINISHED` de volta para a máquina de estados, fazendo o personagem voltar para `IDLE`.
+4. **Finaliza:** Quando o último quadro é desenhado, a própria Engine grita o evento `ATTACK_FINISHED` de volta para a máquina de estados. A saída não passa obrigatoriamente por `IDLE`: o sub-super estado `GROUND_ATTACK` manda o personagem para `RUN` se houver input de direção (`[move]`) ou para `IDLE` caso contrário; o `ATTACK_DASH` volta para `DASH` se não puder levantar (`[!vars.canStandUp]`). Durante o ataque, `DASH_PRESS` e `JUMP_PRESS` também cancelam direto para `DASH`/`ATTACK_DASH` ou `JUMP`.
 
 ## 7. Boas Práticas: Prevenindo "Explosão de Estados" (State Explosion)
 

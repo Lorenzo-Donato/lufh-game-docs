@@ -48,6 +48,9 @@ public bool isInvincible;       // Flag de invencibilidade após dano
 public float chargeTimer;       // Tempo segurando botão de ataque
 public float hurtTimer;         // Duração do stun de dano
 public bool isDead;             // Flag de morte
+public bool isDashHeld;         // Botão de dash segurado (ataque vira ATTACK_DASH)
+public bool canStandUp;         // Falso sob teto baixo (dash não pode terminar em pé)
+public float attackStateTimer;  // Tempo desde o início do ataque atual (janela de dash-cancel)
 """
 ```
 
@@ -135,12 +138,17 @@ Puxe **3 setas saindo da borda externa de cada Super Estado** apontando para o S
   `HIT_RECEIVED [!vars.isInvincible] / TakeDamage();`
 
 ### B. Transições de Recuperação e Morte (Saindo de `HURT`):
-* **`HURT_GROUND` ➔ `GROUNDED` (ou estado `IDLE`)**:
-  `HURT_FINISHED [vars.hp > 0]`
-* **`HURT_AIR` ➔ `AIRBORNE` (ou estado `FALL`)**:
-  `HURT_FINISHED [vars.hp > 0]`
+A recuperação não passa obrigatoriamente por `IDLE`: se o jogador já estiver segurando direção, o Zero volta direto em `RUN` através do ponto de entrada `entry : moving` de `GROUNDED` (caixinha laranja com seta para `RUN`).
+* **`HURT_GROUND` ➔ `GROUNDED`**:
+  `HURT_FINISHED [vars.hp > 0 && move] via entry moving` (volta correndo)
+  `HURT_FINISHED [vars.hp > 0 && !move]` (volta em `IDLE`)
+* **`HURT_AIR` ➔ `GROUNDED`** (se já tocou o chão durante o stun):
+  `HURT_FINISHED [vars.hp > 0 && vars.isGrounded && move] via entry moving`
+  `HURT_FINISHED [vars.hp > 0 && vars.isGrounded && !move]`
+* **`HURT_AIR` ➔ `AIRBORNE` (estado `FALL`)**:
+  `HURT_FINISHED [vars.hp > 0 && !vars.isGrounded]`
 * **Borda de `HURT` ➔ `DEATH` (estado `DYING`)**:
-  `HURT_FINISHED [vars.hp <= 0]`
+  `HURT_FINISHED [vars.hp <= 0]` — fica na borda de `HURT`; as guardas dos sub-estados acima excluem `hp <= 0` de propósito, para o evento subir até esta seta (regra da HSM: sub-estado primeiro, depois o pai).
 
 ### C. Transições de `CHARGE_RELEASE` no Nível de Super Estado:
 Em vez de colocar setas saindo apenas de `IDLE` ou `RUN`, conecte no **Super Estado**:
@@ -148,10 +156,20 @@ Em vez de colocar setas saindo apenas de `IDLE` ou `RUN`, conecte no **Super Est
 * **Borda de `AIRBORNE` ➔ `CHARGE_AIR_SLASH`**: `CHARGE_RELEASE`
 * **Borda de `WALL_SLIDE` ➔ `CHARGE_WALL_SLASH`**: `CHARGE_RELEASE`
 
-### D. Retornos dos Ataques Carregados:
-* **`CHARGE_SLASH` ➔ `IDLE`**: `ATTACK_FINISHED`
-* **`CHARGE_AIR_SLASH` ➔ `FALL`**: `ATTACK_FINISHED`
+### D. Retornos dos Ataques (sem passar por `IDLE`):
+* **`CHARGE_SLASH`** fica dentro de `GROUND_ATTACK` e herda as saídas do grupo (abaixo).
+* **`CHARGE_AIR_SLASH` ➔ `JUMP`**: `ATTACK_FINISHED [vars.vy < 0]` (ainda subindo)
+* **`CHARGE_AIR_SLASH` ➔ `FALL`**: `ATTACK_FINISHED [else]`
 * **`CHARGE_WALL_SLASH` ➔ `GRAB_WALL`**: `ATTACK_FINISHED`
+
+### E. Sub-Super Estado `GROUND_ATTACK` (saídas compartilhadas dos ataques no chão):
+Desenhe uma swimlane laranja **dentro** de `GROUNDED` contendo `ATTACK_1`, `ATTACK_2`, `ATTACK_3`, `ATTACK_RUN`, `ATTACK_DASH` e `CHARGE_SLASH`. As setas saem da **borda do grupo**, valendo para todos os seis:
+* **`GROUND_ATTACK` ➔ `RUN`**: `ATTACK_FINISHED [move]`
+* **`GROUND_ATTACK` ➔ `IDLE`**: `ATTACK_FINISHED [else]`
+* **`GROUND_ATTACK` ➔ `ATTACK_DASH`**: `DASH_PRESS [vars.isDashHeld || vars.attackStateTimer < 0.18]`
+* **`GROUND_ATTACK` ➔ `DASH`**: `DASH_PRESS [else]`
+* **`ATTACK_DASH` ➔ `DASH`**: `ATTACK_FINISHED [!vars.canStandUp]` — seta no sub-estado, tem prioridade sobre a do grupo (regra da HSM).
+* `JUMP_PRESS` na borda de `GROUNDED` já cobre o pulo-cancel de qualquer ataque, direto para `JUMP`.
 
 ---
 
@@ -178,19 +196,26 @@ stateDiagram-v2
         DASH --> IDLE : DASH_FINISHED [!move]
         DASH --> RUN : DASH_FINISHED [move]
 
-        IDLE --> ATTACK_1 : ATTACK_PRESS
-        ATTACK_1 --> ATTACK_2 : ATTACK_PRESS
-        ATTACK_2 --> ATTACK_3 : ATTACK_PRESS
-        ATTACK_1 --> IDLE : ATTACK_FINISHED
-        ATTACK_2 --> IDLE : ATTACK_FINISHED
-        ATTACK_3 --> IDLE : ATTACK_FINISHED
-
-        RUN --> ATTACK_RUN : ATTACK_PRESS
-        ATTACK_RUN --> RUN : ATTACK_FINISHED
+        IDLE --> ATTACK_1 : ATTACK_PRESS [else]
+        IDLE --> ATTACK_DASH : ATTACK_PRESS [vars.isDashHeld]
+        RUN --> ATTACK_RUN : ATTACK_PRESS [else]
+        RUN --> ATTACK_DASH : ATTACK_PRESS [vars.isDashHeld]
         DASH --> ATTACK_DASH : ATTACK_PRESS
-        ATTACK_DASH --> DASH : ATTACK_FINISHED
 
-        CHARGE_SLASH --> IDLE : ATTACK_FINISHED
+        state "GROUND_ATTACK (Sub-Super Estado)" as GROUND_ATTACK {
+            ATTACK_1 --> ATTACK_2 : ATTACK_PRESS
+            ATTACK_2 --> ATTACK_3 : ATTACK_PRESS
+            ATTACK_RUN
+            ATTACK_DASH
+            CHARGE_SLASH
+        }
+
+        %% Saídas compartilhadas: nenhum ataque precisa passar por IDLE
+        GROUND_ATTACK --> RUN : ATTACK_FINISHED [move]
+        GROUND_ATTACK --> IDLE : ATTACK_FINISHED [else]
+        GROUND_ATTACK --> ATTACK_DASH : DASH_PRESS [vars.isDashHeld || vars.attackStateTimer < 0.18]
+        GROUND_ATTACK --> DASH : DASH_PRESS [else]
+        ATTACK_DASH --> DASH : ATTACK_FINISHED [!vars.canStandUp]
     }
 
     state "AIRBORNE (Super Estado)" as AIRBORNE {
@@ -198,8 +223,10 @@ stateDiagram-v2
         JUMP --> FALL : APEX [vars.vy >= 0]
         JUMP --> ATTACK_AIR : ATTACK_PRESS
         FALL --> ATTACK_AIR : ATTACK_PRESS
-        ATTACK_AIR --> FALL : ATTACK_FINISHED
-        CHARGE_AIR_SLASH --> FALL : ATTACK_FINISHED
+        ATTACK_AIR --> JUMP : ATTACK_FINISHED [vars.vy < 0]
+        ATTACK_AIR --> FALL : ATTACK_FINISHED [else]
+        CHARGE_AIR_SLASH --> JUMP : ATTACK_FINISHED [vars.vy < 0]
+        CHARGE_AIR_SLASH --> FALL : ATTACK_FINISHED [else]
     }
 
     state "WALL_SLIDE (Super Estado)" as WALL_SLIDE {
@@ -223,7 +250,8 @@ stateDiagram-v2
     GROUNDED --> AIRBORNE : FALL [!vars.isGrounded]
     GROUNDED --> CHARGE_SLASH : CHARGE_RELEASE
     
-    AIRBORNE --> GROUNDED : LANDED / PlayAnim("seq_09_land")
+    AIRBORNE --> GROUNDED : LANDED [!move] / PlayAnim("seq_09_land")
+    AIRBORNE --> RUN : LANDED [move] / PlayAnim("seq_09_land") via entry moving
     AIRBORNE --> WALL_SLIDE : WALL_TOUCH [vars.vy > 0 && vars.isTouchingWall]
     AIRBORNE --> CHARGE_AIR_SLASH : CHARGE_RELEASE
 
@@ -237,7 +265,8 @@ stateDiagram-v2
     AIRBORNE --> HURT : HIT_RECEIVED [!vars.isInvincible] / TakeDamage()
     WALL_SLIDE --> HURT : HIT_RECEIVED [!vars.isInvincible] / TakeDamage()
 
-    HURT --> GROUNDED : HURT_FINISHED [vars.hp > 0 && vars.isGrounded]
+    HURT --> GROUNDED : HURT_FINISHED [vars.hp > 0 && vars.isGrounded && !move]
+    HURT --> RUN : HURT_FINISHED [vars.hp > 0 && vars.isGrounded && move] via entry moving
     HURT --> AIRBORNE : HURT_FINISHED [vars.hp > 0 && !vars.isGrounded]
     HURT --> DEATH : HURT_FINISHED [vars.hp <= 0]
 
