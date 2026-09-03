@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mega Man Zero - HSM State Machine & Sequence Studio</title>
+  <title>StateSmith HSM & Sequence Studio | Mega Man Zero Sandbox</title>
   <style>
-    :root {
+:root {
       --bg-dark: #07090e;
       --panel-bg: rgba(14, 18, 28, 0.95);
       --panel-border: #1e293b;
@@ -151,6 +151,86 @@
       letter-spacing: 0.5px;
     }
 
+    /* Sandbox Action Toolbar */
+    .sandbox-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #0d121f;
+      border-bottom: 1px solid var(--panel-border);
+      align-items: center;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      color: #fff;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .action-btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-reset {
+      background: #1e3a8a;
+      border-color: #3b82f6;
+    }
+    .btn-reset:hover {
+      background: #2563eb;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn-respawn {
+      background: #064e3b;
+      border-color: #10b981;
+    }
+    .btn-respawn:hover {
+      background: #059669;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-hit {
+      background: #7f1d1d;
+      border-color: #ef4444;
+    }
+    .btn-hit:hover {
+      background: #dc2626;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-charge {
+      background: #78350f;
+      border-color: #f59e0b;
+    }
+    .btn-charge:hover {
+      background: #d97706;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-heal {
+      background: #065f46;
+      border-color: #34d399;
+    }
+    .btn-heal:hover {
+      background: #047857;
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.5);
+    }
+
     /* Game Canvas */
     .canvas-wrapper {
       position: relative;
@@ -243,22 +323,26 @@
     }
 
     .sub-states-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      gap: 5px;
     }
 
     .state-pill {
       background: #141c2b;
       border: 1px solid #233044;
       color: #94a3b8;
-      padding: 5px 9px;
+      padding: 4px 6px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 10px;
       font-family: monospace;
       font-weight: bold;
       transition: all 0.15s ease;
       cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: center;
     }
 
     .state-pill:hover {
@@ -271,7 +355,72 @@
       color: #032014;
       border-color: var(--accent-green);
       box-shadow: 0 0 10px rgba(0, 255, 170, 0.4);
-      transform: scale(1.04);
+      transform: scale(1.02);
+    }
+
+    /* Charge Mechanic Orthogonal Banner */
+    .charge-indicator {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .charge-indicator.charging {
+      background: linear-gradient(135deg, rgba(27, 161, 226, 0.1) 0%, rgba(27, 161, 226, 0.25) 100%);
+      border-color: #1ba1e2;
+      color: #1ba1e2;
+      box-shadow: 0 0 8px rgba(27, 161, 226, 0.5);
+    }
+
+    .charge-indicator.ready {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.35) 100%);
+      border-color: #ef4444;
+      color: #ef4444;
+      animation: charge-pulse-red 0.5s ease-in-out infinite;
+    }
+
+    .charge-indicator .charge-icon {
+      font-size: 14px;
+    }
+
+    .charge-indicator .charge-states {
+      font-weight: 400;
+      font-size: 9px;
+      color: inherit;
+    }
+
+    @keyframes charge-pulse-red {
+      0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(239, 68, 68, 0.8); }
+    }
+
+    /* Transition Hints */
+    .transition-hints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.06);
+    }
+
+    .transition-hint {
+      font-size: 9px;
+      font-family: monospace;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .transition-hint .ev {
+      color: var(--accent-gold);
     }
 
     /* Diagnostics & Stats */
@@ -469,11 +618,11 @@
       background: var(--accent-cyan);
       color: #000;
     }
+
   </style>
 </head>
 <body>
-
-  <!-- Top Navigation -->
+<!-- Top Navigation -->
   <header>
     <div class="logo-area">
       <span class="badge-tag">Mega Man Zero</span>
@@ -497,14 +646,32 @@
           <span style="font-size:11px; color:var(--accent-green);" id="fpsDisplay">60 FPS</span>
         </div>
 
+        <!-- Quick Action Toolbar -->
+        <div class="sandbox-toolbar">
+          <button class="action-btn btn-reset" onclick="resetGame()" title="Tecla [R]: Restaura Zero e reinicia na Sala 1">🔄 Reiniciar (R)</button>
+          <button class="action-btn btn-respawn" onclick="respawnAllEnemies()" title="Tecla [T]: Recria os 3 Pantheons na Sala 2">🤖 Respawn 3 Inimigos (T)</button>
+          <button class="action-btn btn-hit" onclick="testHitPlayer()" title="Tecla [H]: Simula colisão para testar Super Estado HURT">💥 Simular Dano (H)</button>
+          <button class="action-btn btn-charge" onclick="testChargePlayer()" title="Tecla [G]: Dá carga instantânea no Z-Saber">⚡ Carga Sabre (G)</button>
+          <button class="action-btn btn-heal" onclick="healPlayer()" title="Restaura vida do Zero">❤️ Curar Zero</button>
+          <div style="margin-left:auto; display:flex; gap:6px;">
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(120)">📍 Sala 1 (Wall-Kick)</button>
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(900)">📍 Sala 2 (3 Pantheons)</button>
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(1750)">📍 Sala 3 (Duto Dash)</button>
+          </div>
+        </div>
+
         <div class="canvas-wrapper">
           <canvas id="gameCanvas" width="840" height="460"></canvas>
           <div class="controls-legend">
-            <div class="key-hint"><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> Move (Walk/Run)</div>
-            <div class="key-hint"><kbd>Space</kbd> / <kbd>K</kbd> / <kbd>Z</kbd> Jump / Wall-Kick</div>
-            <div class="key-hint"><kbd>J</kbd> / <kbd>X</kbd> Z-Saber Attack (Slash / Air / Dash / Wall)</div>
-            <div class="key-hint"><kbd>Shift</kbd> / <kbd>L</kbd> / <kbd>C</kbd> Ground Dash</div>
-            <div class="key-hint"><kbd>Hold J</kbd> Charge Saber</div>
+            <div class="key-hint"><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> Mover</div>
+            <div class="key-hint"><kbd>Space</kbd> / <kbd>K</kbd> / <kbd>Z</kbd> Pulo / Wall-Kick</div>
+            <div class="key-hint"><kbd>J</kbd> / <kbd>X</kbd> Corte Sabre (Combo 1-2-3)</div>
+            <div class="key-hint"><kbd>Segurar J/X</kbd> Carregar Sabre (Soltar em Dash/Ar/Solo/Parede)</div>
+            <div class="key-hint"><kbd>Shift</kbd> / <kbd>L</kbd> / <kbd>C</kbd> Dash Terrestre</div>
+            <div class="key-hint"><kbd>R</kbd> Reiniciar Jogo</div>
+            <div class="key-hint"><kbd>T</kbd> Respawn Inimigo</div>
+            <div class="key-hint"><kbd>H</kbd> Testar Dano</div>
+            <div class="key-hint"><kbd>G</kbd> Carga Instantânea</div>
           </div>
         </div>
       </div>
@@ -544,41 +711,104 @@
 
         <div class="hsm-tree">
 
+          <!-- CHARGE Orthogonal Banner -->
+          <div class="charge-indicator idle" id="ui-charge-indicator">
+            <span class="charge-icon">⚡</span>
+            <div>
+              <div id="ui-charge-title">CHARGE (Segurar J/X) — Inativo</div>
+              <div class="charge-states">Ativo em GROUNDED | AIRBORNE | WALL_SLIDE -> CHARGE_RELEASE dispara corte carregado</div>
+            </div>
+          </div>
+
           <!-- GROUNDED Super State -->
-          <div class="super-state-box active" id="super_GROUNDED">
-            <div class="super-state-title">
-              <span>● SUPER STATE: GROUNDED</span>
+          <div class="super-state-box active" id="super_GROUNDED" style="border-color:#1ba1e2;">
+            <div class="super-state-title" style="color:#1ba1e2;">
+              <span>● GROUNDED</span>
             </div>
             <div class="sub-states-grid">
               <div class="state-pill active" id="state_IDLE">IDLE</div>
               <div class="state-pill" id="state_RUN">RUN</div>
               <div class="state-pill" id="state_DASH">DASH</div>
-              <div class="state-pill" id="state_ATTACK_IDLE">ATTACK_IDLE</div>
-              <div class="state-pill" id="state_ATTACK_RUN">ATTACK_RUN</div>
-              <div class="state-pill" id="state_ATTACK_DASH">ATTACK_DASH</div>
+              <div class="state-pill" id="state_ATTACK_1">ATK_1</div>
+              <div class="state-pill" id="state_ATTACK_2">ATK_2</div>
+              <div class="state-pill" id="state_ATTACK_3">ATK_3</div>
+              <div class="state-pill" id="state_ATTACK_RUN">ATK_RUN</div>
+              <div class="state-pill" id="state_ATTACK_DASH">ATK_DASH</div>
+              <div class="state-pill" id="state_CHARGE_SLASH">CHG_SLASH</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">IDLE →<span class="ev">MOVE</span>→ RUN</span>
+              <span class="transition-hint">→<span class="ev">DASH</span>→ DASH</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_1</span>
+              <span class="transition-hint">ATK_1 →<span class="ev">ATK</span>→ ATK_2 →<span class="ev">ATK</span>→ ATK_3</span>
+              <span class="transition-hint">→<span class="ev">JUMP</span>→ AIRBORNE</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_SLASH</span>
             </div>
           </div>
 
           <!-- AIRBORNE Super State -->
-          <div class="super-state-box" id="super_AIRBORNE">
-            <div class="super-state-title">
-              <span>● SUPER STATE: AIRBORNE</span>
+          <div class="super-state-box" id="super_AIRBORNE" style="border-color:#e67e22;">
+            <div class="super-state-title" style="color:#e67e22;">
+              <span>● AIRBORNE</span>
             </div>
             <div class="sub-states-grid">
               <div class="state-pill" id="state_JUMP">JUMP</div>
               <div class="state-pill" id="state_FALL">FALL</div>
-              <div class="state-pill" id="state_ATTACK_AIR">ATTACK_AIR</div>
+              <div class="state-pill" id="state_ATTACK_AIR">ATK_AIR</div>
+              <div class="state-pill" id="state_CHARGE_AIR_SLASH">CHG_AIR_SL</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">JUMP →<span class="ev">APEX</span>→ FALL</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_AIR</span>
+              <span class="transition-hint">→<span class="ev">WALL</span>→ WALL_SLIDE</span>
+              <span class="transition-hint">→<span class="ev">LAND</span>→ GROUNDED</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_AIR_SL</span>
             </div>
           </div>
 
           <!-- WALL_SLIDE Super State -->
-          <div class="super-state-box" id="super_WALL_SLIDE">
-            <div class="super-state-title">
-              <span>● SUPER STATE: WALL_SLIDE</span>
+          <div class="super-state-box" id="super_WALL_SLIDE" style="border-color:#6f42c1;">
+            <div class="super-state-title" style="color:#6f42c1;">
+              <span>● WALL_SLIDE</span>
             </div>
             <div class="sub-states-grid">
               <div class="state-pill" id="state_GRAB_WALL">GRAB_WALL</div>
-              <div class="state-pill" id="state_ATTACK_GRAB_WALL">ATTACK_GRAB_WALL</div>
+              <div class="state-pill" id="state_ATTACK_GRAB_WALL">ATK_WALL</div>
+              <div class="state-pill" id="state_CHARGE_WALL_SLASH">CHG_WALL_SL</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">→<span class="ev">JUMP</span>→ WALL-KICK (AIRBORNE)</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_WALL</span>
+              <span class="transition-hint">→<span class="ev">DETACH</span>→ FALL</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_WALL_SL</span>
+            </div>
+          </div>
+
+          <!-- HURT Super State -->
+          <div class="super-state-box" id="super_HURT" style="border-color:#dc3545;">
+            <div class="super-state-title" style="color:#dc3545;">
+              <span>● HURT</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_HURT_GROUND">HURT_GND</div>
+              <div class="state-pill" id="state_HURT_AIR">HURT_AIR</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint"><span class="ev">HIT_RECEIVED</span> (qualquer estado) → HURT</span>
+              <span class="transition-hint">→<span class="ev">HURT_FIN</span>→ GROUNDED/AIRBORNE ou DEATH</span>
+            </div>
+          </div>
+
+          <!-- DEATH Super State -->
+          <div class="super-state-box" id="super_DEATH" style="border-color:#6c757d;">
+            <div class="super-state-title" style="color:#6c757d;">
+              <span>● DEATH</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_DYING">DYING</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">HP ≤ 0 após <span class="ev">HURT_FIN</span> → DYING</span>
             </div>
           </div>
 
@@ -610,6 +840,22 @@
             <span class="stat-label">Charge Level</span>
             <span class="stat-val" id="stat_charge">0%</span>
           </div>
+          <div class="stat-item">
+            <span class="stat-label">HP</span>
+            <span class="stat-val" id="stat_hp" style="color:#00ffaa;">4/4</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Invincible</span>
+            <span class="stat-val" id="stat_invincible">NO</span>
+          </div>
+          <div class="stat-item" style="border-left-color:#ffb703;">
+            <span class="stat-label">Can Stand Up</span>
+            <span class="stat-val" id="stat_standup" style="color:#ffb703;">TRUE</span>
+          </div>
+          <div class="stat-item" style="border-left-color:#00e5ff;">
+            <span class="stat-label">Setor / Sala</span>
+            <span class="stat-val" id="stat_room" style="color:#00e5ff;">Sala 1</span>
+          </div>
         </div>
 
         <!-- Event Log -->
@@ -627,10 +873,113 @@
   </div>
 
   <script>
-    /* =========================================================================
-       Master Animation Catalog
-       ========================================================================= */
-    const SPRITE_CATALOG = [
+// ===== MODULE: constants.js =====
+/**
+ * Mega Man Zero - StateSmith HSM Architecture
+ * Game World, Physics & Animation Mapping Constants
+ */
+
+const WORLD = {
+  W: 3360,             // Total world width (4 interconnected rooms of 840px each)
+  H: 460,              // Total world height
+  GROUND_Y: 380,       // Floor Y level
+  CEILING_Y: 40,       // Global ceiling Y level
+  CANVAS_W: 840,
+  CANVAS_H: 460,
+
+  // Room horizontal boundaries
+  ROOM_1_START: 0,
+  ROOM_1_END: 800,
+  ROOM_2_START: 810,
+  ROOM_2_END: 1650,
+  ROOM_3_START: 1660,
+  ROOM_3_END: 2500,
+  ROOM_4_START: 2510,
+  ROOM_4_END: 3360,
+
+  // Room 3 Low Duct / Tunnel
+  TUNNEL_START: 1850,
+  TUNNEL_END: 2220,
+  TUNNEL_CEILING_Y: 342, // 38px clearance from GROUND_Y(380) -> Perfectly fitted for Zero's Dash!
+};
+
+const PHYS = {
+  // Movement
+  RUN_SPEED: 5.2,
+  DASH_SPEED: 10.0,
+  DASH_DURATION: 0.35,
+
+  // Jump & Gravity
+  JUMP_VY: -13.0,
+  GRAVITY: 28.0,
+  MAX_FALL_SPEED: 14.0,
+  WALL_KICK_VX: 7.0,
+  WALL_KICK_VY: -13.0,
+
+  // Air control
+  AIR_ACCEL: 0.45,
+  AIR_MAX_SPEED: 5.2,
+  AIR_DRAG: 0.94,
+
+  // Wall slide
+  WALL_SLIDE_GRAVITY: 7.0,
+  WALL_SLIDE_MAX_SPEED: 2.8,
+
+  // Attack movement
+  ATTACK_RUN_SPEED: 3.5,
+
+  // Sprite rendering
+  SPRITE_SCALE: 2.2,
+
+  // Collision Box Dimensions (Accurately calibrated to sprite frames)
+  STAND_HEIGHT: 50,    // Head at y=330 in standing/running/jumping (hits tunnel ceiling at 342)
+  STAND_WIDTH: 22,     // Half-width 11px
+  DASH_HEIGHT: 28,     // Head at y=352 in dash slide (comfortably under tunnel ceiling at 342)
+  DASH_WIDTH: 30,      // Half-width 15px
+
+  // Collision / Hurt
+  KNOCKBACK_VX: 4.5,
+  KNOCKBACK_VY: -6.0,
+  INVINCIBLE_DURATION: 1.5,  // 1.5s de I-Frames
+  HURT_STUN_DURATION: 0.4,   // 0.4s de stun de dano
+
+  // Player HP
+  MAX_HP: 4,
+};
+
+// 1-to-1 Mapping between StateMachine States and Sprite Sequence IDs
+const STATE_ANIM_MAP = {
+  'IDLE': 'seq_02_idle',
+  'RUN': 'seq_07_run',
+  'DASH': 'seq_11_dash',
+  'ATTACK_1': 'seq_17_saber_slash_1',
+  'ATTACK_2': 'seq_18_saber_slash_2',
+  'ATTACK_3': 'seq_21_saber_slash_link',
+  'ATTACK_RUN': 'seq_25_attack_walk_slash',
+  'ATTACK_DASH': 'seq_27_attack_dash_slash',
+  'CHARGE_SLASH': 'seq_20_saber_slash_heavy',
+  'JUMP': 'seq_08_jump',
+  'FALL': 'seq_10_jump_somersault',
+  'ATTACK_AIR': 'seq_26_attack_air_jump_slash',
+  'CHARGE_AIR_SLASH': 'seq_20_saber_slash_heavy',
+  'GRAB_WALL': 'seq_12_wall_grab_slide',
+  'ATTACK_GRAB_WALL': 'seq_18_saber_slash_2',
+  'CHARGE_WALL_SLASH': 'seq_28_hang_charge_slash',
+  'HURT_GROUND': 'seq_05_hurt_damage',
+  'HURT_AIR': 'seq_05_hurt_damage',
+  'DYING': 'seq_05_hurt_damage'
+};
+
+if (typeof module !== 'undefined') {
+  module.exports = { WORLD, PHYS, STATE_ANIM_MAP };
+}
+
+
+// ===== MODULE: sprite_catalog.js =====
+/**
+ * Zero Animation Sprite Catalog (34 Sequences)
+ */
+const SPRITE_CATALOG = [
       {"id": "seq_01_stage_intro", "cat": "Movement", "label": "STAGE_INTRO (Entrada da Base / Transição)", "fps": 8, "loop": false, "gif": "sprites_extracted/seq_01_stage_intro/animation.gif", "frames": ["sprites_extracted/seq_01_stage_intro/frame_00.png", "sprites_extracted/seq_01_stage_intro/frame_01.png", "sprites_extracted/seq_01_stage_intro/frame_02.png", "sprites_extracted/seq_01_stage_intro/frame_03.png"]},
       {"id": "seq_02_idle", "cat": "Movement", "label": "IDLE (Chegando na Fase / Parado Respirando)", "fps": 6, "loop": true, "gif": "sprites_extracted/seq_02_idle/animation.gif", "frames": ["sprites_extracted/seq_02_idle/frame_00.png", "sprites_extracted/seq_02_idle/frame_01.png", "sprites_extracted/seq_02_idle/frame_02.png", "sprites_extracted/seq_02_idle/frame_03.png", "sprites_extracted/seq_02_idle/frame_04.png", "sprites_extracted/seq_02_idle/frame_05.png"]},
       {"id": "seq_03_idle_arm_raised", "cat": "Movement", "label": "IDLE_ARM_RAISED (Idle com Braço Levantado)", "fps": 8, "loop": true, "gif": "sprites_extracted/seq_03_idle_arm_raised/animation.gif", "frames": ["sprites_extracted/seq_03_idle_arm_raised/frame_00.png", "sprites_extracted/seq_03_idle_arm_raised/frame_01.png", "sprites_extracted/seq_03_idle_arm_raised/frame_02.png", "sprites_extracted/seq_03_idle_arm_raised/frame_03.png", "sprites_extracted/seq_03_idle_arm_raised/frame_04.png", "sprites_extracted/seq_03_idle_arm_raised/frame_05.png"]},
@@ -669,990 +1018,2498 @@
       {"id": "seq_34_run_aim_buster", "cat": "Buster & Effects", "label": "RUN_AIM_BUSTER (Correndo com Buster Apontado)", "fps": 14, "loop": true, "gif": "sprites_extracted/seq_34_run_aim_buster/animation.gif", "frames": ["sprites_extracted/seq_34_run_aim_buster/frame_00.png", "sprites_extracted/seq_34_run_aim_buster/frame_01.png", "sprites_extracted/seq_34_run_aim_buster/frame_02.png", "sprites_extracted/seq_34_run_aim_buster/frame_03.png", "sprites_extracted/seq_34_run_aim_buster/frame_04.png", "sprites_extracted/seq_34_run_aim_buster/frame_05.png", "sprites_extracted/seq_34_run_aim_buster/frame_06.png", "sprites_extracted/seq_34_run_aim_buster/frame_07.png"]}
     ];
 
-    // Preload loaded frame images
-    const loadedImages = {};
-    function preloadAllImages() {
-      SPRITE_CATALOG.forEach(seq => {
-        seq.frames.forEach(path => {
-          if (!loadedImages[path]) {
-            const imgObj = new Image();
-            imgObj.src = path;
-            loadedImages[path] = imgObj;
-          }
-        });
+const loadedImages = {};
+
+function preloadAllImages() {
+  if (typeof Image === 'undefined') return;
+  SPRITE_CATALOG.forEach(seq => {
+    seq.frames.forEach(path => {
+      if (!loadedImages[path]) {
+        const imgObj = new Image();
+        imgObj.src = path;
+        loadedImages[path] = imgObj;
+      }
+    });
+  });
+}
+preloadAllImages();
+
+if (typeof module !== 'undefined') {
+  module.exports = {'SPRITE_CATALOG': 'SPRITE_CATALOG', 'loadedImages': 'loadedImages'};
+}
+
+
+// ===== MODULE: enemy_catalog.js =====
+/**
+ * Pantheon Guardian Sprite Catalog (Optimized FPS for silky smooth animation)
+ */
+const ENEMY_CATALOG = [
+  {"id": "enemy_pantheon_seq_01_idle", "cat": "Enemy", "label": "IDLE", "fps": 6, "loop": true, "frames": ["sprites_extracted/enemy_pantheon_seq_01_idle/frame_00.png", "sprites_extracted/enemy_pantheon_seq_01_idle/frame_01.png", "sprites_extracted/enemy_pantheon_seq_01_idle/frame_02.png"]},
+  {"id": "enemy_pantheon_seq_02_hurt", "cat": "Enemy", "label": "HURT", "fps": 8, "loop": false, "frames": ["sprites_extracted/enemy_pantheon_seq_02_hurt/frame_00.png"]},
+  {"id": "enemy_pantheon_seq_03_shoot", "cat": "Enemy", "label": "SHOOT", "fps": 10, "loop": false, "frames": ["sprites_extracted/enemy_pantheon_seq_03_shoot/frame_00.png", "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_01.png", "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_02.png", "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_03.png", "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_04.png"]},
+  {"id": "enemy_pantheon_seq_04_walk", "cat": "Enemy", "label": "WALK", "fps": 9, "loop": true, "frames": ["sprites_extracted/enemy_pantheon_seq_04_walk/frame_00.png", "sprites_extracted/enemy_pantheon_seq_04_walk/frame_01.png", "sprites_extracted/enemy_pantheon_seq_04_walk/frame_02.png", "sprites_extracted/enemy_pantheon_seq_04_walk/frame_03.png", "sprites_extracted/enemy_pantheon_seq_04_walk/frame_04.png", "sprites_extracted/enemy_pantheon_seq_04_walk/frame_05.png"]},
+  {"id": "enemy_pantheon_seq_05_death", "cat": "Enemy", "label": "DEATH", "fps": 10, "loop": false, "frames": ["sprites_extracted/enemy_pantheon_seq_05_death/frame_00.png", "sprites_extracted/enemy_pantheon_seq_05_death/frame_01.png"]}
+];
+
+function preloadEnemyImages() {
+  if (typeof Image === 'undefined') return;
+  ENEMY_CATALOG.forEach(seq => {
+    seq.frames.forEach(path => {
+      if (typeof loadedImages !== 'undefined' && !loadedImages[path]) {
+        const imgObj = new Image();
+        imgObj.src = path;
+        loadedImages[path] = imgObj;
+      }
+    });
+  });
+}
+preloadEnemyImages();
+
+if (typeof module !== 'undefined') {
+  module.exports = { 'ENEMY_CATALOG': ENEMY_CATALOG };
+}
+
+
+// ===== MODULE: world_geometry.js =====
+/**
+ * World Geometry Colliders & Raycast Checks
+ */
+
+let _WORLD = typeof WORLD !== 'undefined' ? WORLD : null;
+if (typeof require !== 'undefined') {
+  try {
+    const consts = require('./constants');
+    if (!_WORLD) _WORLD = consts.WORLD;
+  } catch (e) {}
+}
+
+const SOLIDS = [
+  // Outer Left Wall (Sala 1)
+  { id: 'left_wall', x: 0, y: 0, w: 60, h: 460, type: 'wall', label: 'PAREDE ESQUERDA' },
+
+  // Global Ceiling
+  { id: 'ceiling', x: 0, y: 0, w: 3360, h: 40, type: 'ceiling', label: 'TETO GLOBAL' },
+
+  // Global Floor
+  { id: 'floor', x: 0, y: 380, w: 3360, h: 80, type: 'floor', label: 'CHÃO DA ARENA' },
+
+  // Divider Wall 1 (Sala 1 -> Sala 2):
+  // Height 180 to 380 (200px height), leaves 140px open top for Wall-Kick climbing
+  { id: 'div_wall_1', x: 790, y: 180, w: 24, h: 200, type: 'divider', label: 'DIVISÓRIA 1 (WALL-KICK)' },
+
+  // Divider Wall 2 (Sala 2 -> Sala 3):
+  // Height 190 to 380 (190px height), leaves 150px open top
+  { id: 'div_wall_2', x: 1640, y: 190, w: 24, h: 190, type: 'divider', label: 'DIVISÓRIA 2 (ACESSO SALA 3)' },
+
+  // Low Tunnel Ceiling Block in Sala 3:
+  { id: 'low_tunnel_ceiling', x: 1850, y: 40, w: 370, h: 302, type: 'low_ceiling', label: 'DUTO BAIXO (APENAS DASH)' },
+
+  // Divider Wall 3 (Sala 3 -> Sala 4 (BOSS)):
+  // Height 200 to 380, leaves 160px open top
+  { id: 'div_wall_3', x: 2480, y: 200, w: 24, h: 180, type: 'divider', label: 'PORTÃO DO BOSS' },
+
+  // Outer Right Wall (Sala 4 Boss)
+  { id: 'right_wall', x: 3300, y: 0, w: 60, h: 460, type: 'wall', label: 'PAREDE FINAL' }
+];
+
+function checkCanStandUp(px, py) {
+  const headIfStanding = py - 50; // Zero standing head position
+  for (const b of SOLIDS) {
+    if (b.type === 'low_ceiling' || b.type === 'ceiling') {
+      if (px + 10 > b.x && px - 10 < b.x + b.w) {
+        if (headIfStanding < b.y + b.h && py > b.y) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+function getRoomName(x) {
+  const W = _WORLD || (typeof WORLD !== 'undefined' ? WORLD : { ROOM_1_END: 800, ROOM_2_END: 1650 });
+  if (x < W.ROOM_1_END) return 'Sala 1 (Treino/Wall-Kick)';
+  if (x < W.ROOM_2_END) return 'Sala 2 (3 Pantheons)';
+  return 'Sala 3 (Duto Dash / Goal)';
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { SOLIDS, checkCanStandUp, getRoomName };
+}
+
+
+// ===== MODULE: state_machine.js =====
+/**
+ * Mega Man Zero - Hierarchical State Machine (HSM)
+ * 1-to-1 JavaScript implementation of StateSmith PlayerSm.cs
+ * Refactored into clean sub-state handlers for low cyclomatic complexity.
+ */
+
+let _PHYS = typeof PHYS !== 'undefined' ? PHYS : null;
+let _STATE_ANIM_MAP = typeof STATE_ANIM_MAP !== 'undefined' ? STATE_ANIM_MAP : null;
+if (typeof require !== 'undefined') {
+  try {
+    const consts = require('./constants');
+    if (!_PHYS) _PHYS = consts.PHYS;
+    if (!_STATE_ANIM_MAP) _STATE_ANIM_MAP = consts.STATE_ANIM_MAP;
+  } catch (e) {}
+}
+
+class PlayerSm {
+  constructor(actor) {
+    this.actor = actor;
+    this.state = 'IDLE';
+    this.superState = 'GROUNDED';
+  }
+
+  start() {
+    this.transitionTo('GROUNDED', 'IDLE');
+  }
+
+  transitionTo(superState, subState) {
+    if (this.state === subState && this.superState === superState) return;
+
+    const oldState = this.state;
+    const oldSuper = this.superState;
+
+    if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && subState === 'JUMP') {
+      this.actor.isDashJumping = true;
+    } else if (superState === 'GROUNDED' || superState === 'WALL_SLIDE') {
+      this.actor.isDashJumping = false;
+    }
+
+    this.exitState(oldState, subState);
+    this.superState = superState;
+    this.state = subState;
+    this.enterState(subState);
+
+    if (typeof logEvent === 'function') {
+      logEvent(`[HSM] [${oldSuper}::${oldState}] ➔ [${superState}::${subState}]`, 'state-trans');
+    }
+    if (typeof updateHsmUi === 'function') {
+      updateHsmUi(superState, subState);
+    }
+  }
+
+  enterState(state) {
+    this.actor.animTimer = 0;
+    this.actor.animFrame = 0;
+    this.actor.attackFinishedDispatched = false;
+
+    if (this.actor.isAttackState && this.actor.isAttackState()) {
+      this.actor.attackId = (this.actor.attackId || 0) + 1;
+    }
+
+    const mappedSeqId = (_STATE_ANIM_MAP && _STATE_ANIM_MAP[state]) || (typeof STATE_ANIM_MAP !== 'undefined' && STATE_ANIM_MAP[state]) || 'seq_02_idle';
+    this.actor.playSequence(mappedSeqId);
+
+    const P = _PHYS || (typeof PHYS !== 'undefined' ? PHYS : { DASH_DURATION: 0.35, HURT_STUN_DURATION: 0.4, KNOCKBACK_VX: 4.5, KNOCKBACK_VY: -6.0, INVINCIBLE_DURATION: 1.5 });
+
+    if (state === 'DASH') {
+      this.actor.dashTimer = P.DASH_DURATION;
+      this.actor.createDashDust();
+    } else if (state === 'ATTACK_DASH') {
+      if (this.actor.dashTimer <= 0) this.actor.dashTimer = P.DASH_DURATION;
+      this.actor.createDashDust();
+    } else if (state === 'GRAB_WALL' || state === 'ATTACK_GRAB_WALL' || state === 'CHARGE_WALL_SLASH') {
+      this.actor.vy = 0;
+    } else if (state === 'HURT_GROUND' || state === 'HURT_AIR') {
+      this._enterHurt(state, P);
+    } else if (state === 'DYING') {
+      this._enterDying();
+    }
+  }
+
+  _enterHurt(state, P) {
+    this.actor.hurtTimer = P.HURT_STUN_DURATION;
+    this.actor.vx = -this.actor.facing * P.KNOCKBACK_VX;
+    this.actor.vy = (state === 'HURT_AIR') ? P.KNOCKBACK_VY : 0;
+    this.actor.invincibleTimer = P.INVINCIBLE_DURATION;
+    this.actor.isInvincible = true;
+  }
+
+  _enterDying() {
+    this.actor.vx = 0;
+    this.actor.vy = 0;
+    this.actor.isDead = true;
+    for (let i = 0; i < 24; i++) {
+      this.actor.particles.push({
+        x: this.actor.x + (Math.random() * 40 - 20),
+        y: this.actor.y - 20 + (Math.random() * 40 - 20),
+        vx: (Math.random() - 0.5) * 8,
+        vy: Math.random() * -6 - 2,
+        size: Math.random() * 6 + 2,
+        alpha: 1,
+        color: Math.random() > 0.5 ? '#ff2a5f' : '#ffb703'
       });
     }
-    preloadAllImages();
+  }
 
-    // Mapping State Machine States to Sequences (100% Accurate)
-    const STATE_ANIM_MAP = {
-      'IDLE': 'seq_02_idle',
-      'RUN': 'seq_07_run',
-      'DASH': 'seq_11_dash',
-      'JUMP': 'seq_08_jump',
-      'FALL': 'seq_10_jump_somersault',
-      'GRAB_WALL': 'seq_12_wall_grab_slide',
-      'ATTACK_IDLE': 'seq_17_saber_slash_1',
-      'ATTACK_RUN': 'seq_25_attack_walk_slash',
-      'ATTACK_DASH': 'seq_27_attack_dash_slash',
-      'ATTACK_AIR': 'seq_26_attack_air_jump_slash',
-      'ATTACK_GRAB_WALL': 'seq_18_saber_slash_2'
-    };
+  exitState(oldState, newState) {
+    if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && (newState !== 'DASH' && newState !== 'ATTACK_DASH')) {
+      this.actor.dashTimer = 0;
+    }
+  }
 
-    /* =========================================================================
-       Arena / World Constants
-       ========================================================================= */
-    const ARENA = {
-      GROUND_Y: 380,       // Floor Y position (player feet)
-      CEILING_Y: 40,       // Ceiling Y position (top boundary)
-      LEFT_WALL_X: 80,     // Left wall inner edge
-      RIGHT_WALL_X: 760,   // Right wall inner edge
-      CANVAS_W: 840,
-      CANVAS_H: 460,
-    };
-
-    /* =========================================================================
-       Physics Tuning Constants (Mega Man Zero feel)
-       ========================================================================= */
-    const PHYS = {
-      // Movement
-      RUN_SPEED: 5.2,
-      DASH_SPEED: 10.0,
-      DASH_DURATION: 0.35,
-
-      // Jump & Gravity
-      JUMP_VY: -13.0,
-      GRAVITY: 28.0,
-      MAX_FALL_SPEED: 14.0,
-      WALL_KICK_VX: 7.0,
-      WALL_KICK_VY: -13.0,
-
-      // Air control
-      AIR_ACCEL: 0.45,
-      AIR_MAX_SPEED: 5.2,
-      AIR_DRAG: 0.94,
-
-      // Wall slide
-      WALL_SLIDE_GRAVITY: 7.0,
-      WALL_SLIDE_MAX_SPEED: 2.8,
-
-      // Attack movement (keep momentum while attacking)
-      ATTACK_RUN_SPEED: 3.5,
-
-      // Sprite rendering
-      SPRITE_SCALE: 2.2,   // Scale factor for 80x80 sprite frames
-    };
-
-    /* =========================================================================
-       StateSmith Hierarchical State Machine (JS Engine Implementation)
-       ========================================================================= */
-    class PlayerSm {
-      constructor(actor) {
-        this.actor = actor;
-        this.state = 'IDLE';
-        this.superState = 'GROUNDED';
+  dispatchEvent(event) {
+    if (event === 'HIT_RECEIVED') {
+      if (this.actor.isInvincible || this.superState === 'HURT' || this.superState === 'DEATH' || this.actor.isDead) {
+        return;
       }
+      if (typeof logEvent === 'function') logEvent(`Event Fired: ${event}`, 'event-fired');
+      this.actor.hp -= 1;
+      const hurtSub = this.actor.isGrounded ? 'HURT_GROUND' : 'HURT_AIR';
+      this.transitionTo('HURT', hurtSub);
+      return;
+    }
 
-      start() {
-        this.transitionTo('GROUNDED', 'IDLE');
+    if (typeof logEvent === 'function') logEvent(`Event Fired: ${event}`, 'event-fired');
+
+    switch (this.superState) {
+      case 'GROUNDED': this._handleGroundedEvent(event); break;
+      case 'AIRBORNE': this._handleAirborneEvent(event); break;
+      case 'WALL_SLIDE': this._handleWallSlideEvent(event); break;
+      case 'HURT': this._handleHurtEvent(event); break;
+      case 'DEATH': break;
+    }
+  }
+
+  _handleGroundedEvent(event) {
+    const P = _PHYS || (typeof PHYS !== 'undefined' ? PHYS : { JUMP_VY: -13.0, DASH_SPEED: 10.0 });
+
+    if (event === 'FALL') {
+      this.transitionTo('AIRBORNE', 'FALL');
+      return;
+    }
+    if (event === 'JUMP_PRESS') {
+      this._handleGroundedJump(P);
+      return;
+    }
+    if (event === 'CHARGE_RELEASE') {
+      this.transitionTo('GROUNDED', 'CHARGE_SLASH');
+      return;
+    }
+
+    if (this.state === 'IDLE') this._handleIdleSub(event);
+    else if (this.state === 'RUN') this._handleRunSub(event);
+    else if (this.state === 'DASH') this._handleDashSub(event);
+    else if (this.state.startsWith('ATTACK_') || this.state === 'CHARGE_SLASH') this._handleAttackSub(event);
+  }
+
+  _handleGroundedJump(P) {
+    if (!this.actor.canStandUp) return;
+    const isDashHeld = (typeof keys !== 'undefined') && (keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL']);
+    if (isDashHeld || this.state === 'DASH' || this.state === 'ATTACK_DASH') {
+      this.actor.isDashJumping = true;
+    }
+    this.actor.vy = P.JUMP_VY;
+    this.actor.isGrounded = false;
+    if (this.actor.isDashJumping) {
+      this.actor.vx = this.actor.facing * P.DASH_SPEED;
+    }
+    // Ground jump always transitions cleanly to JUMP
+    this.transitionTo('AIRBORNE', 'JUMP');
+  }
+
+  _isDashHeld() {
+    return (typeof keys !== 'undefined') && Boolean(keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL']);
+  }
+
+  _handleIdleSub(event) {
+    if (event === 'MOVE_INPUT') {
+      this.transitionTo('GROUNDED', 'RUN');
+    } else if (event === 'DASH_PRESS') {
+      this.transitionTo('GROUNDED', 'DASH');
+    } else if (event === 'ATTACK_PRESS') {
+      this.transitionTo('GROUNDED', this._isDashHeld() ? 'ATTACK_DASH' : 'ATTACK_1');
+    }
+  }
+
+  _handleRunSub(event) {
+    if (event === 'STOP_INPUT') {
+      this.transitionTo('GROUNDED', 'IDLE');
+    } else if (event === 'DASH_PRESS') {
+      this.transitionTo('GROUNDED', 'DASH');
+    } else if (event === 'ATTACK_PRESS') {
+      this.transitionTo('GROUNDED', this._isDashHeld() ? 'ATTACK_DASH' : 'ATTACK_RUN');
+    }
+  }
+
+  _handleDashSub(event) {
+    if (event === 'DASH_FINISHED') {
+      if (!this.actor.canStandUp) {
+        this.actor.dashTimer = 0.15;
+      } else {
+        this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
       }
+    } else if (event === 'ATTACK_PRESS') {
+      this.transitionTo('GROUNDED', 'ATTACK_DASH');
+    }
+  }
 
-      transitionTo(superState, subState) {
-        if (this.state === subState && this.superState === superState) return;
-        
-        const oldState = this.state;
-        const oldSuper = this.superState;
+  _handleAttackSub(event) {
+    if (event === 'DASH_PRESS') {
+      if ((this.actor.attackStateTimer && this.actor.attackStateTimer < 0.18) || this._isDashHeld()) {
+        this.transitionTo('GROUNDED', 'ATTACK_DASH');
+      } else {
+        this.transitionTo('GROUNDED', 'DASH');
+      }
+      return;
+    }
 
-        // Dash Jump tracking
-        if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && subState === 'JUMP') {
+    if (this.state === 'ATTACK_1') {
+      if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_2');
+      else if (event === 'ATTACK_FINISHED') this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+    } else if (this.state === 'ATTACK_2') {
+      if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_3');
+      else if (event === 'ATTACK_FINISHED') this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+    } else if (this.state === 'ATTACK_DASH') {
+      if (event === 'ATTACK_FINISHED') {
+        this.transitionTo('GROUNDED', !this.actor.canStandUp ? 'DASH' : (Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE'));
+      }
+    } else if (event === 'ATTACK_FINISHED') {
+      this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+    }
+  }
+
+  _handleAirborneEvent(event) {
+    const P = _PHYS || (typeof PHYS !== 'undefined' ? PHYS : { JUMP_VY: -13.0, DASH_SPEED: 10.0 });
+
+    if (event === 'LANDED') {
+      this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+      return;
+    }
+    if (event === 'WALL_TOUCH') {
+      this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
+      return;
+    }
+    if (event === 'CHARGE_RELEASE') {
+      this.transitionTo('AIRBORNE', 'CHARGE_AIR_SLASH');
+      return;
+    }
+
+    if (this.state === 'JUMP') {
+      if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+      else if (event === 'APEX_REACHED') this.transitionTo('AIRBORNE', 'FALL');
+      else if (event === 'DASH_PRESS') {
+        if (this.actor.vy < P.JUMP_VY + 3.0 && !this.actor.isDashJumping) {
           this.actor.isDashJumping = true;
-        } else if (superState === 'GROUNDED' || superState === 'WALL_SLIDE') {
-          this.actor.isDashJumping = false;
-        }
-
-        // Exit actions
-        this.exitState(oldState, subState);
-
-        this.superState = superState;
-        this.state = subState;
-
-        // Enter actions
-        this.enterState(subState);
-
-        logEvent(`[HSM] [${oldSuper}::${oldState}] ➔ [${superState}::${subState}]`, 'state-trans');
-        updateHsmUi(superState, subState);
-      }
-
-      enterState(state) {
-        switch (state) {
-          case 'ATTACK_1':
-            this.actor.currentSeqId = 'seq_17_saber_slash_1';
-            this.actor.animFrame = 0;
-            this.actor.animTimer = 0;
-            this.actor.attackFinishedDispatched = false;
-            break;
-          case 'ATTACK_2':
-            this.actor.currentSeqId = 'seq_18_saber_slash_2';
-            this.actor.animFrame = 0;
-            this.actor.animTimer = 0;
-            this.actor.attackFinishedDispatched = false;
-            break;
-          case 'ATTACK_3':
-            this.actor.currentSeqId = 'seq_21_saber_slash_link';
-            this.actor.animFrame = 0;
-            this.actor.animTimer = 0;
-            this.actor.attackFinishedDispatched = false;
-            break;
-          case 'CHARGE_SLASH':
-            this.actor.currentSeqId = 'seq_20_saber_slash_heavy';
-            this.actor.animFrame = 0;
-            this.actor.animTimer = 0;
-            this.actor.attackFinishedDispatched = false;
-            break;
-          default:
-            this.actor.animTimer = 0;
-            this.actor.animFrame = 0;
-            this.actor.attackFinishedDispatched = false;
-
-            const mappedSeqId = STATE_ANIM_MAP[state] || 'seq_02_idle';
-            this.actor.playSequence(mappedSeqId);
-        }
-
-        switch (state) {
-          case 'DASH':
-            this.actor.dashTimer = PHYS.DASH_DURATION;
-            this.actor.createDashDust();
-            break;
-          case 'ATTACK_DASH':
-            if (this.actor.dashTimer <= 0) this.actor.dashTimer = PHYS.DASH_DURATION;
-            break;
-          case 'JUMP':
-            // Física agora é tratada diretamente no JUMP_PRESS
-            break;
-          case 'GRAB_WALL':
-            this.actor.vy = 0;
-            break;
-          case 'ATTACK_GRAB_WALL':
-            this.actor.vy = 0;
-            break;
+          this.actor.vx = this.actor.facing * P.DASH_SPEED;
+          this.actor.createDashDust();
         }
       }
+    } else if (this.state === 'FALL') {
+      if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
+    } else if (this.state === 'ATTACK_AIR' || this.state === 'CHARGE_AIR_SLASH') {
+      if (event === 'ATTACK_FINISHED') {
+        this.transitionTo('AIRBORNE', this.actor.vy < 0 ? 'JUMP' : 'FALL');
+      }
+    }
+  }
 
-      exitState(oldState, newState) {
-        if ((oldState === 'DASH' || oldState === 'ATTACK_DASH') && (newState !== 'DASH' && newState !== 'ATTACK_DASH')) {
-          this.actor.dashTimer = 0;
+  _handleWallSlideEvent(event) {
+    const P = _PHYS || (typeof PHYS !== 'undefined' ? PHYS : { WALL_KICK_VX: 7.0, WALL_KICK_VY: -13.0, DASH_SPEED: 10.0 });
+
+    if (event === 'LANDED') {
+      this.transitionTo('GROUNDED', 'IDLE');
+      return;
+    }
+    if (event === 'WALL_DETACH') {
+      this.transitionTo('AIRBORNE', 'FALL');
+      return;
+    }
+    if (event === 'JUMP_PRESS') {
+      const isDashHeld = (typeof keys !== 'undefined') && (keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL']);
+      if (isDashHeld) this.actor.isDashJumping = true;
+      const jumpVx = this.actor.isDashJumping ? P.DASH_SPEED : P.WALL_KICK_VX;
+      this.actor.vx = (this.actor.wallSide === 'left') ? jumpVx : -jumpVx;
+      this.actor.vy = P.WALL_KICK_VY;
+      this.actor.facing = (this.actor.wallSide === 'left') ? 1 : -1;
+      this.transitionTo('AIRBORNE', 'JUMP');
+      return;
+    }
+    if (event === 'CHARGE_RELEASE') {
+      this.transitionTo('WALL_SLIDE', 'CHARGE_WALL_SLASH');
+      return;
+    }
+
+    if (this.state === 'GRAB_WALL') {
+      if (event === 'ATTACK_PRESS') this.transitionTo('WALL_SLIDE', 'ATTACK_GRAB_WALL');
+    } else if (this.state === 'ATTACK_GRAB_WALL' || this.state === 'CHARGE_WALL_SLASH') {
+      if (event === 'ATTACK_FINISHED') this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
+    }
+  }
+
+  _handleHurtEvent(event) {
+    if (event === 'HURT_FINISHED') {
+      if (this.actor.hp <= 0) {
+        this.transitionTo('DEATH', 'DYING');
+      } else if (this.state === 'HURT_GROUND' || this.actor.isGrounded) {
+        this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
+      } else {
+        this.transitionTo('AIRBORNE', 'FALL');
+      }
+    }
+  }
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { PlayerSm };
+}
+
+
+// ===== MODULE: player_actor.js =====
+/**
+ * Zero Entity Player Actor (Physics, Animation, Dynamic Hurtboxes & Saber Hitbox)
+ * Refactored into clean sub-methods for low cyclomatic complexity.
+ */
+
+let _PLAYER_WORLD = null;
+let _PLAYER_PHYS = null;
+let _PLAYER_SOLIDS = null;
+let _checkCanStandUp = null;
+let _getRoomName = null;
+let _PlayerSmClass = null;
+
+if (typeof require !== 'undefined') {
+  try {
+    const consts = require('./constants');
+    _PLAYER_WORLD = consts.WORLD;
+    _PLAYER_PHYS = consts.PHYS;
+  } catch (e) {}
+  try {
+    const geo = require('./world_geometry');
+    _PLAYER_SOLIDS = geo.SOLIDS;
+    _checkCanStandUp = geo.checkCanStandUp;
+    _getRoomName = geo.getRoomName;
+  } catch (e) {}
+  try {
+    const smModule = require('./state_machine');
+    _PlayerSmClass = smModule.PlayerSm;
+  } catch (e) {}
+}
+
+if (typeof WORLD !== 'undefined' && !_PLAYER_WORLD) _PLAYER_WORLD = WORLD;
+if (typeof PHYS !== 'undefined' && !_PLAYER_PHYS) _PLAYER_PHYS = PHYS;
+if (typeof SOLIDS !== 'undefined' && !_PLAYER_SOLIDS) _PLAYER_SOLIDS = SOLIDS;
+if (typeof checkCanStandUp !== 'undefined' && !_checkCanStandUp) _checkCanStandUp = checkCanStandUp;
+if (typeof getRoomName !== 'undefined' && !_getRoomName) _getRoomName = getRoomName;
+if (typeof PlayerSm !== 'undefined' && !_PlayerSmClass) _PlayerSmClass = PlayerSm;
+
+class PlayerActor {
+  constructor() {
+    const W = _PLAYER_WORLD || (typeof WORLD !== 'undefined' ? WORLD : { GROUND_Y: 380 });
+    const P = _PLAYER_PHYS || (typeof PHYS !== 'undefined' ? PHYS : { MAX_HP: 4 });
+
+    this.x = 140;
+    this.y = W.GROUND_Y;
+    this.vx = 0;
+    this.vy = 0;
+    this.facing = 1;
+    this.isGrounded = true;
+    this.wallSide = null;
+    this.dashTimer = 0;
+    this.chargeTime = 0;
+    this.attackFinishedDispatched = false;
+    this.canStandUp = true;
+    this.isDashJumping = false;
+    this.attackId = 1;
+    this.attackStateTimer = 0;
+
+    // HP & Invincibility
+    this.hp = P.MAX_HP;
+    this.invincibleTimer = 0;
+    this.isInvincible = false;
+    this.hurtTimer = 0;
+    this.isDead = false;
+
+    this.currentSeqId = 'seq_02_idle';
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.busterTimer = 0;
+    this.busterShotCount = 0;
+
+    this.inputX = 0;
+    this.particles = [];
+
+    const SmConstructor = _PlayerSmClass || (typeof PlayerSm !== 'undefined' ? PlayerSm : null);
+    if (SmConstructor) {
+      this.sm = new SmConstructor(this);
+      this.sm.start();
+    }
+  }
+
+  reset(x = 140, y = 380) {
+    const P = _PLAYER_PHYS || (typeof PHYS !== 'undefined' ? PHYS : { MAX_HP: 4 });
+    this.x = x;
+    this.y = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.facing = 1;
+    this.isGrounded = true;
+    this.wallSide = null;
+    this.dashTimer = 0;
+    this.chargeTime = 0;
+    this.canStandUp = true;
+    this.attackFinishedDispatched = false;
+    this.isDashJumping = false;
+    this.attackId = 1;
+    this.attackStateTimer = 0;
+
+    this.hp = P.MAX_HP;
+    this.invincibleTimer = 0;
+    this.isInvincible = false;
+    this.hurtTimer = 0;
+    this.isDead = false;
+
+    this.currentSeqId = 'seq_02_idle';
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.particles = [];
+
+    if (this.sm) {
+      this.sm.superState = 'GROUNDED';
+      this.sm.state = 'IDLE';
+    }
+    if (typeof updateHsmUi === 'function') updateHsmUi('GROUNDED', 'IDLE');
+    if (typeof logEvent === 'function') logEvent(`[RESET] Zero reposicionado em x=${x} com HP ${P.MAX_HP}/${P.MAX_HP}!`, 'state-trans');
+  }
+
+  playSequence(seqId) {
+    if (this.currentSeqId !== seqId) {
+      this.currentSeqId = seqId;
+      this.animFrame = 0;
+      this.animTimer = 0;
+      this.attackFinishedDispatched = false;
+    }
+  }
+
+  isAttackState() {
+    if (!this.sm) return false;
+    return this.sm.state.startsWith('ATTACK_') || 
+           this.sm.state === 'CHARGE_SLASH' || 
+           this.sm.state === 'CHARGE_AIR_SLASH' || 
+           this.sm.state === 'CHARGE_WALL_SLASH';
+  }
+
+  getAttackHitbox() {
+    if (!this.isAttackState()) return null;
+    const state = this.sm ? this.sm.state : '';
+    const isHeavy = state.includes('CHARGE');
+    const isAir = state === 'ATTACK_AIR' || state === 'CHARGE_AIR_SLASH';
+    const isDash = state === 'ATTACK_DASH';
+
+    const forwardReach = isHeavy ? 115 : (isDash ? 95 : 82);
+    const backwardReach = 24;
+    const totalW = forwardReach + backwardReach;
+    const height = isAir ? 68 : (isHeavy ? 72 : 58);
+
+    const minX = this.facing === 1 ? this.x - backwardReach : this.x - forwardReach;
+    const minY = isAir ? this.y - 58 : this.y - height + 10;
+
+    return {
+      x: minX,
+      y: minY,
+      w: totalW,
+      h: height,
+      isHeavy: isHeavy,
+      attackId: this.attackId
+    };
+  }
+
+  getCurrentRoom() {
+    const fn = _getRoomName || (typeof getRoomName !== 'undefined' ? getRoomName : null);
+    return fn ? fn(this.x) : 'Arena';
+  }
+
+  createDashDust() {
+    for (let i = 0; i < 8; i++) {
+      this.particles.push({
+        x: this.x - this.facing * 18,
+        y: this.y - 4 + (Math.random() * 6 - 3),
+        vx: -this.facing * (Math.random() * 3 + 1),
+        vy: Math.random() * -1.5,
+        size: Math.random() * 4 + 2,
+        alpha: 1,
+        color: '#00e5ff'
+      });
+    }
+  }
+
+  createWallSparks() {
+    if (Math.random() < 0.4) {
+      this.particles.push({
+        x: (this.wallSide === 'left') ? this.x - 14 : this.x + 14,
+        y: this.y - 18,
+        vx: (this.wallSide === 'left' ? 1 : -1) * (Math.random() * 2 + 1),
+        vy: Math.random() * -2 - 1,
+        size: 3,
+        alpha: 1,
+        color: '#ffb703'
+      });
+    }
+  }
+
+  createLandDust() {
+    for (let i = 0; i < 6; i++) {
+      this.particles.push({
+        x: this.x + (Math.random() * 20 - 10),
+        y: this.y - 2,
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * -2,
+        size: Math.random() * 3 + 1,
+        alpha: 0.8,
+        color: '#94a3b8'
+      });
+    }
+  }
+
+  update(dt) {
+    if (this.isDead) {
+      this._updateParticles(dt);
+      return;
+    }
+
+    this._updateTimers(dt);
+
+    if (this.isAttackState()) {
+      this.attackStateTimer += dt;
+    } else {
+      this.attackStateTimer = 0;
+    }
+
+    const checkFn = _checkCanStandUp || (typeof checkCanStandUp !== 'undefined' ? checkCanStandUp : () => true);
+    this.canStandUp = checkFn(this.x, this.y);
+
+    const isDashing = this.sm && (this.sm.state === 'DASH' || this.sm.state === 'ATTACK_DASH');
+    if (!this.canStandUp && !isDashing && this.sm && this.sm.superState === 'GROUNDED') {
+      this.sm.transitionTo('GROUNDED', 'DASH');
+    }
+
+    this._updateVelocities(dt, isDashing);
+    this._resolveWorldCollisions(dt, isDashing);
+    this._advanceAnimation(dt);
+    this._updateParticles(dt);
+  }
+
+  _updateTimers(dt) {
+    if (this.invincibleTimer > 0) {
+      this.invincibleTimer -= dt;
+      if (this.invincibleTimer <= 0) {
+        this.invincibleTimer = 0;
+        this.isInvincible = false;
+      }
+    }
+
+    if (this.hurtTimer > 0) {
+      this.hurtTimer -= dt;
+      if (this.hurtTimer <= 0) {
+        this.hurtTimer = 0;
+        if (this.sm) this.sm.dispatchEvent('HURT_FINISHED');
+      }
+    }
+
+    if (this.busterTimer > 0) {
+      this.busterTimer -= dt;
+    }
+
+    if (typeof keys !== 'undefined' && (keys['KeyJ'] || keys['KeyX'])) {
+      this.chargeTime += dt;
+    } else {
+      this.chargeTime = 0;
+    }
+  }
+
+  _updateVelocities(dt, isDashing) {
+    const P = _PLAYER_PHYS || (typeof PHYS !== 'undefined' ? PHYS : { DASH_SPEED: 10.0, RUN_SPEED: 5.2, ATTACK_RUN_SPEED: 3.5, AIR_ACCEL: 0.45, AIR_MAX_SPEED: 5.2, AIR_DRAG: 0.94, GRAVITY: 28.0, MAX_FALL_SPEED: 14.0, WALL_SLIDE_GRAVITY: 7.0, WALL_SLIDE_MAX_SPEED: 2.8, JUMP_VY: -13.0 });
+    
+    if (isDashing) {
+      this._updateDashVelocity(dt, P);
+    } else if (this.sm && this.sm.superState === 'GROUNDED') {
+      this._updateGroundedVelocity(P);
+    } else if (this.sm && this.sm.superState === 'AIRBORNE') {
+      this._updateAirborneVelocity(dt, P);
+    } else if (this.sm && this.sm.superState === 'WALL_SLIDE') {
+      this._updateWallSlideVelocity(dt, P);
+    } else if (this.sm && this.sm.superState === 'HURT') {
+      this.vx *= 0.92;
+      if (!this.isGrounded) {
+        this.vy += P.GRAVITY * dt;
+        if (this.vy > P.MAX_FALL_SPEED) this.vy = P.MAX_FALL_SPEED;
+      }
+    }
+  }
+
+  _updateDashVelocity(dt, P) {
+    this.dashTimer -= dt;
+    this.vx = this.facing * P.DASH_SPEED;
+    if (Math.random() < 0.5) this.createDashDust();
+    if (this.dashTimer <= 0 && this.sm) {
+      this.sm.dispatchEvent('DASH_FINISHED');
+    }
+  }
+
+  _updateGroundedVelocity(P) {
+    if (this.sm.state === 'ATTACK_RUN') {
+      this.vx = this.inputX * P.ATTACK_RUN_SPEED;
+    } else if (this.sm.state === 'ATTACK_1' || this.sm.state === 'ATTACK_2' || this.sm.state === 'ATTACK_3' || this.sm.state === 'CHARGE_SLASH') {
+      this.vx = 0;
+    } else {
+      this.vx = (Math.abs(this.inputX) > 0.1) ? this.inputX * P.RUN_SPEED : 0;
+      if (Math.abs(this.inputX) > 0.1) this.facing = this.inputX > 0 ? 1 : -1;
+    }
+  }
+
+  _updateAirborneVelocity(dt, P) {
+    const maxAirSpeed = this.isDashJumping ? P.DASH_SPEED : P.AIR_MAX_SPEED;
+    if (Math.abs(this.inputX) > 0.1) {
+      this.vx += this.inputX * P.AIR_ACCEL;
+      this.vx = Math.max(-maxAirSpeed, Math.min(maxAirSpeed, this.vx));
+      this.facing = this.inputX > 0 ? 1 : -1;
+    } else {
+      this.vx *= P.AIR_DRAG;
+    }
+    this.vy += P.GRAVITY * dt;
+    if (this.vy > P.MAX_FALL_SPEED) this.vy = P.MAX_FALL_SPEED;
+
+    if (this.sm && this.sm.state === 'JUMP' && this.vy >= 0) {
+      this.sm.dispatchEvent('APEX_REACHED');
+    }
+  }
+
+  _updateWallSlideVelocity(dt, P) {
+    this.vy += P.WALL_SLIDE_GRAVITY * dt;
+    if (this.vy > P.WALL_SLIDE_MAX_SPEED) this.vy = P.WALL_SLIDE_MAX_SPEED;
+    this.createWallSparks();
+    this.facing = (this.wallSide === 'left') ? 1 : -1;
+
+    if ((this.wallSide === 'left' && this.inputX > 0.1) || (this.wallSide === 'right' && this.inputX < -0.1)) {
+      this.wallSide = null;
+      if (this.sm) this.sm.dispatchEvent('WALL_DETACH');
+    }
+  }
+
+  _resolveWorldCollisions(dt, isDashing) {
+    const solidsList = _PLAYER_SOLIDS || (typeof SOLIDS !== 'undefined' ? SOLIDS : []);
+    const dtScale = dt * 60;
+    const pH = isDashing ? 28 : 50;
+    const pW = isDashing ? 15 : 11;
+
+    this._resolveHorizontalWalls(solidsList, dtScale, pH, pW);
+    this._resolveVerticalSurfaces(solidsList, dtScale, pH, pW);
+  }
+
+  _resolveHorizontalWalls(solidsList, dtScale, pH, pW) {
+    let nextX = this.x + this.vx * dtScale;
+    let hitWallBlock = null;
+
+    for (const block of solidsList) {
+      if (block.type === 'floor') continue;
+
+      const pTop = this.y - pH + 4;
+      const pBottom = this.y - 2;
+
+      if (pBottom > block.y && pTop < block.y + block.h) {
+        if (this.vx > 0 && nextX + pW >= block.x && this.x + pW <= block.x + 12) {
+          nextX = block.x - pW;
+          this.vx = 0;
+          hitWallBlock = { block, side: 'right' };
+        } else if (this.vx < 0 && nextX - pW <= block.x + block.w && this.x - pW >= block.x + block.w - 12) {
+          nextX = block.x + block.w + pW;
+          this.vx = 0;
+          hitWallBlock = { block, side: 'left' };
         }
       }
+    }
+    this.x = nextX;
 
-      dispatchEvent(event) {
-        logEvent(`Event Fired: ${event}`, 'event-fired');
+    if (hitWallBlock && !this.isGrounded && this.sm && this.sm.superState === 'AIRBORNE' && this.vy > 0) {
+      if ((hitWallBlock.side === 'right' && this.inputX > 0.1) || (hitWallBlock.side === 'left' && this.inputX < -0.1)) {
+        this.wallSide = hitWallBlock.side;
+        this.vx = 0;
+        this.sm.dispatchEvent('WALL_TOUCH');
+      }
+    }
+  }
 
-        switch (this.superState) {
+  _resolveVerticalSurfaces(solidsList, dtScale, pH, pW) {
+    let nextY = this.y + this.vy * dtScale;
+    let landedOnFloor = false;
 
-          /* ------------------- GROUNDED ------------------- */
-          case 'GROUNDED':
-            if (event === 'FALL') {
-              if (this.state.startsWith('ATTACK_') || this.state === 'CHARGE_SLASH') {
-                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
-              } else {
-                this.transitionTo('AIRBORNE', 'FALL');
-              }
-              return;
-            }
-            if (event === 'JUMP_PRESS') {
-              const isDashHeld = keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL'];
-              if (isDashHeld || this.state === 'DASH' || this.state === 'ATTACK_DASH') {
-                this.actor.isDashJumping = true;
-              }
-
-              // Applica a física do pulo imediatamente
-              this.actor.vy = PHYS.JUMP_VY;
-              this.actor.isGrounded = false;
-              if (this.actor.isDashJumping) {
-                this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
-              }
-
-              if (this.state.startsWith('ATTACK_') || this.state === 'CHARGE_SLASH') {
-                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
-              } else {
-                this.transitionTo('AIRBORNE', 'JUMP');
-              }
-              return;
-            }
-
-            switch (this.state) {
-              case 'IDLE':
-                if (event === 'MOVE_INPUT') this.transitionTo('GROUNDED', 'RUN');
-                else if (event === 'DASH_PRESS') this.transitionTo('GROUNDED', 'DASH');
-                else if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_1');
-                else if (event === 'CHARGE_RELEASE') this.transitionTo('GROUNDED', 'CHARGE_SLASH');
-                break;
-
-              case 'RUN':
-                if (event === 'STOP_INPUT') this.transitionTo('GROUNDED', 'IDLE');
-                else if (event === 'DASH_PRESS') this.transitionTo('GROUNDED', 'DASH');
-                else if (event === 'ATTACK_PRESS') this.transitionTo('GROUNDED', 'ATTACK_RUN');
-                else if (event === 'CHARGE_RELEASE') this.transitionTo('GROUNDED', 'CHARGE_SLASH');
-                break;
-
-              case 'DASH':
-                if (event === 'DASH_FINISHED') {
-                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-                }
-                else if (event === 'ATTACK_PRESS') {
-                  this.transitionTo('GROUNDED', 'ATTACK_DASH');
-                }
-                break;
-
-              case 'ATTACK_1':
-              case 'ATTACK_2':
-              case 'ATTACK_3':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-                } else if (event === 'ATTACK_PRESS') {
-                  if (this.state === 'ATTACK_1') this.transitionTo('GROUNDED', 'ATTACK_2');
-                  else if (this.state === 'ATTACK_2') this.transitionTo('GROUNDED', 'ATTACK_3');
-                }
-                break;
-                
-              case 'CHARGE_SLASH':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-                }
-                break;
-
-              case 'ATTACK_RUN':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-                }
-                break;
-
-              case 'ATTACK_DASH':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-                }
-                break;
-            }
-            break;
-
-          /* ------------------- AIRBORNE ------------------- */
-          case 'AIRBORNE':
-            // Super-state level transitions
-            if (event === 'LANDED') {
-              this.transitionTo('GROUNDED', Math.abs(this.actor.inputX) > 0.1 ? 'RUN' : 'IDLE');
-              return;
-            }
-            if (event === 'WALL_TOUCH') {
-              this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
-              return;
-            }
-
-            switch (this.state) {
-              case 'JUMP':
-                if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
-                else if (event === 'APEX_REACHED') this.transitionTo('AIRBORNE', 'FALL');
-                else if (event === 'DASH_PRESS') {
-                  // Input Leniency (Grace Period): Se apertar Dash logo depois do pulo, converte pra Dash Jump
-                  if (this.actor.vy < PHYS.JUMP_VY + 3.0 && !this.actor.isDashJumping) {
-                    this.actor.isDashJumping = true;
-                    this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
-                    this.actor.createDashDust(); // Feedback visual
-                  }
-                }
-                break;
-
-              case 'FALL':
-                if (event === 'ATTACK_PRESS') this.transitionTo('AIRBORNE', 'ATTACK_AIR');
-                break;
-
-              case 'ATTACK_AIR':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('AIRBORNE', this.actor.vy < 0 ? 'JUMP' : 'FALL');
-                } else if (event === 'DASH_PRESS') {
-                  // Leniency também vale se você atacou no exato instante do pulo
-                  if (this.actor.vy < PHYS.JUMP_VY + 3.0 && !this.actor.isDashJumping) {
-                    this.actor.isDashJumping = true;
-                    this.actor.vx = this.actor.facing * PHYS.DASH_SPEED;
-                  }
-                }
-                break;
-            }
-            break;
-
-          /* ------------------- WALL_SLIDE ------------------- */
-          case 'WALL_SLIDE':
-            if (event === 'LANDED') {
-              this.transitionTo('GROUNDED', 'IDLE');
-              return;
-            }
-            if (event === 'WALL_DETACH') {
-              this.transitionTo('AIRBORNE', 'FALL');
-              return;
-            }
-            if (event === 'JUMP_PRESS') {
-              // Wall Kick Jump: Impulse up & away from wall!
-              // Check if dash is held for a Dash Wall Jump
-              const isDashHeld = keys['ShiftLeft'] || keys['ShiftRight'] || keys['KeyC'] || keys['KeyL'];
-              
-              if (isDashHeld) {
-                this.actor.isDashJumping = true; // Activa a física do Dash Jump no ar
-              }
-              
-              const jumpVx = this.actor.isDashJumping ? PHYS.DASH_SPEED : PHYS.WALL_KICK_VX;
-              this.actor.vx = (this.actor.wallSide === 'left') ? jumpVx : -jumpVx;
-              this.actor.vy = PHYS.WALL_KICK_VY;
-              this.actor.facing = (this.actor.wallSide === 'left') ? 1 : -1;
-              
-              if (this.state === 'ATTACK_GRAB_WALL') {
-                this.transitionTo('AIRBORNE', 'ATTACK_AIR');
-              } else {
-                this.transitionTo('AIRBORNE', 'JUMP');
-              }
-              return;
-            }
-
-            switch (this.state) {
-              case 'GRAB_WALL':
-                if (event === 'ATTACK_PRESS') {
-                  this.transitionTo('WALL_SLIDE', 'ATTACK_GRAB_WALL');
-                }
-                break;
-              case 'ATTACK_GRAB_WALL':
-                if (event === 'ATTACK_FINISHED') {
-                  this.transitionTo('WALL_SLIDE', 'GRAB_WALL');
-                }
-                break;
-            }
-            break;
+    if (this.vy < 0) {
+      for (const block of solidsList) {
+        if (block.type === 'floor') continue;
+        if (this.x + pW > block.x + 2 && this.x - pW < block.x + block.w - 2) {
+          if (nextY - pH <= block.y + block.h && this.y - pH >= block.y + block.h - 14) {
+            nextY = block.y + block.h + pH;
+            this.vy = 0;
+          }
         }
       }
     }
 
-    /* =========================================================================
-       Player Physics & Actor Entity
-       ========================================================================= */
-    class PlayerActor {
-      constructor() {
-        this.x = 420;
-        this.y = ARENA.GROUND_Y;
-        this.vx = 0;
-        this.vy = 0;
-        this.facing = 1;
+    for (const block of solidsList) {
+      if (this.x + pW > block.x + 2 && this.x - pW < block.x + block.w - 2) {
+        if (nextY >= block.y && this.y <= block.y + 16) {
+          nextY = block.y;
+          if (this.vy > 2) this.createLandDust();
+          this.vy = 0;
+          landedOnFloor = true;
+          break;
+        }
+      }
+    }
+
+    this.y = nextY;
+
+    if (landedOnFloor) {
+      if (!this.isGrounded) {
         this.isGrounded = true;
         this.wallSide = null;
-        this.dashTimer = 0;
-        this.chargeTime = 0;
-        this.attackFinishedDispatched = false;
-
-        this.currentSeqId = 'seq_02_idle';
-        this.animFrame = 0;
-        this.animTimer = 0;
-        this.chargeTime = 0;
-        
-        // Combo & Buster state
-        this.comboCount = 0;
-        this.attackBuffered = false;
-        this.isChargeRelease = false;
-        this.busterTimer = 0;
-        this.busterShotCount = 0;
-        
-        this.facing = 1;
-        this.sm = new PlayerSm(this);
-        this.sm.start();
-
-        this.particles = [];
+        if (this.sm) this.sm.dispatchEvent('LANDED');
       }
+    } else {
+      if (this.isGrounded && this.sm && this.sm.superState === 'GROUNDED') {
+        this.isGrounded = false;
+        this.sm.dispatchEvent('FALL');
+      }
+      this.isGrounded = false;
+    }
+  }
 
-      playSequence(seqId) {
-        if (this.currentSeqId !== seqId) {
-          this.currentSeqId = seqId;
+  _advanceAnimation(dt) {
+    const seq = (typeof SPRITE_CATALOG !== 'undefined' && SPRITE_CATALOG.find(s => s.id === this.currentSeqId)) || (typeof SPRITE_CATALOG !== 'undefined' ? SPRITE_CATALOG[1] : null);
+    if (!seq) return;
+
+    this.animTimer += dt;
+    const frameDuration = 1 / seq.fps;
+
+    if (this.animTimer >= frameDuration) {
+      this.animTimer -= frameDuration;
+      if (this.animFrame < seq.frames.length - 1) {
+        this.animFrame++;
+      } else {
+        if (seq.loop) {
           this.animFrame = 0;
-          this.animTimer = 0;
-          this.attackFinishedDispatched = false;
-        }
-      }
-
-      isAttackState() {
-        return this.sm.state.startsWith('ATTACK_') || this.sm.state === 'CHARGE_SLASH';
-      }
-
-      createDashDust() {
-        for (let i = 0; i < 8; i++) {
-          this.particles.push({
-            x: this.x - this.facing * 18,
-            y: this.y + 16 + (Math.random() * 6 - 3),
-            vx: -this.facing * (Math.random() * 3 + 1),
-            vy: Math.random() * -1.5,
-            size: Math.random() * 4 + 2,
-            alpha: 1,
-            color: '#00e5ff'
-          });
-        }
-      }
-
-      createWallSparks() {
-        if (Math.random() < 0.4) {
-          this.particles.push({
-            x: (this.wallSide === 'left') ? this.x - 14 : this.x + 14,
-            y: this.y + 8,
-            vx: (this.wallSide === 'left' ? 1 : -1) * (Math.random() * 2 + 1),
-            vy: Math.random() * -2 - 1,
-            size: 3,
-            alpha: 1,
-            color: '#ffb703'
-          });
-        }
-      }
-
-      createLandDust() {
-        for (let i = 0; i < 5; i++) {
-          this.particles.push({
-            x: this.x + (Math.random() * 20 - 10),
-            y: ARENA.GROUND_Y + 14,
-            vx: (Math.random() - 0.5) * 4,
-            vy: Math.random() * -2,
-            size: Math.random() * 3 + 1,
-            alpha: 0.8,
-            color: '#94a3b8'
-          });
-        }
-      }
-
-      update(dt) {
-        // --- Charge tracking ---
-        if (keys['KeyJ'] || keys['KeyX']) {
-          this.chargeTime += dt;
         } else {
-          this.chargeTime = 0;
-        }
-
-        const isDashing = this.sm.state === 'DASH' || this.sm.state === 'ATTACK_DASH';
-        const isWallSliding = this.sm.superState === 'WALL_SLIDE';
-
-        // =====================================================
-        // HORIZONTAL MOVEMENT per super-state
-        // =====================================================
-        if (isDashing) {
-          // --- DASH: Fixed speed in facing direction ---
-          this.dashTimer -= dt;
-          this.vx = this.facing * PHYS.DASH_SPEED;
-          if (Math.random() < 0.5) this.createDashDust();
-          if (this.dashTimer <= 0) {
-            this.sm.dispatchEvent('DASH_FINISHED');
-          }
-        } else if (this.sm.superState === 'GROUNDED') {
-          // --- GROUNDED: Direct velocity from input ---
-          if (this.sm.state === 'ATTACK_RUN') {
-            // Keep moving while slashing, but slower
-            this.vx = this.inputX * PHYS.ATTACK_RUN_SPEED;
-          } else if (this.sm.state === 'ATTACK_IDLE') {
-            // Stand still during idle attack
-            this.vx = 0;
-          } else {
-            if (Math.abs(this.inputX) > 0.1) {
-              this.vx = this.inputX * PHYS.RUN_SPEED;
-              this.facing = this.inputX > 0 ? 1 : -1;
-            } else {
-              this.vx = 0;
-            }
-          }
-        } else if (this.sm.superState === 'AIRBORNE') {
-          // --- AIRBORNE: Smooth air control with acceleration ---
-          const maxAirSpeed = this.isDashJumping ? PHYS.DASH_SPEED : PHYS.AIR_MAX_SPEED;
-          
-          if (Math.abs(this.inputX) > 0.1) {
-            this.vx += this.inputX * PHYS.AIR_ACCEL;
-            this.vx = Math.max(-maxAirSpeed, Math.min(maxAirSpeed, this.vx));
-            this.facing = this.inputX > 0 ? 1 : -1;
-          } else {
-            this.vx *= PHYS.AIR_DRAG;
-          }
-          // Apply gravity
-          this.vy += PHYS.GRAVITY * dt;
-          if (this.vy > PHYS.MAX_FALL_SPEED) this.vy = PHYS.MAX_FALL_SPEED;
-
-          // Apex detection: JUMP → FALL when vy crosses zero
-          if (this.sm.state === 'JUMP' && this.vy >= 0) {
-            this.sm.dispatchEvent('APEX_REACHED');
-          }
-        } else if (isWallSliding) {
-          // --- WALL_SLIDE: Slow slide down ---
-          this.vy += PHYS.WALL_SLIDE_GRAVITY * dt;
-          if (this.vy > PHYS.WALL_SLIDE_MAX_SPEED) this.vy = PHYS.WALL_SLIDE_MAX_SPEED;
-          this.createWallSparks();
-          // Face away from wall (visual: Zero looks outward from wall)
-          this.facing = (this.wallSide === 'left') ? 1 : -1;
-
-          // *** FIX: WALL DETACH when pressing AWAY from the wall ***
-          if (this.wallSide === 'left' && this.inputX > 0.1) {
-            this.wallSide = null;
-            this.sm.dispatchEvent('WALL_DETACH');
-          } else if (this.wallSide === 'right' && this.inputX < -0.1) {
-            this.wallSide = null;
-            this.sm.dispatchEvent('WALL_DETACH');
-          }
-        }
-
-        // =====================================================
-        // POSITION UPDATE (framerate-independent via dt * 60)
-        // Velocities are tuned for 60fps, so we scale by (dt * 60) 
-        // to maintain consistent speed across refresh rates.
-        // =====================================================
-        const dtScale = dt * 60;
-        this.x += this.vx * dtScale;
-        this.y += this.vy * dtScale;
-
-        // =====================================================
-        // COLLISION DETECTION
-        // =====================================================
-
-        // --- FLOOR collision ---
-        if (this.y >= ARENA.GROUND_Y) {
-          this.y = ARENA.GROUND_Y;
-          if (this.vy > 2) this.createLandDust(); // Dust only for meaningful falls
-          this.vy = 0;
-          if (!this.isGrounded) {
-            this.isGrounded = true;
-            this.wallSide = null;
-            this.sm.dispatchEvent('LANDED');
-          }
-        } else {
-          if (this.isGrounded && this.sm.superState === 'GROUNDED') {
-            // Player walked off an edge → transition to FALL
-            this.isGrounded = false;
-            this.sm.dispatchEvent('FALL');
-          }
-          this.isGrounded = false;
-        }
-
-        // --- CEILING collision ---
-        if (this.y <= ARENA.CEILING_Y) {
-          this.y = ARENA.CEILING_Y;
-          if (this.vy < 0) this.vy = 0; // Stop upward momentum, start falling
-        }
-
-        // --- WALL collision & wall grab ---
-        if (this.x <= ARENA.LEFT_WALL_X) {
-          this.x = ARENA.LEFT_WALL_X;
-          // Wall touch: grab wall if airborne and moving toward wall
-          if (!this.isGrounded && this.sm.superState === 'AIRBORNE' && this.inputX < -0.1) {
-            if (this.wallSide !== 'left') {
-              this.wallSide = 'left';
-              this.vx = 0;
-              this.sm.dispatchEvent('WALL_TOUCH');
-            }
-          }
-        } else if (this.x >= ARENA.RIGHT_WALL_X) {
-          this.x = ARENA.RIGHT_WALL_X;
-          // Wall touch: grab wall if airborne and moving toward wall
-          if (!this.isGrounded && this.sm.superState === 'AIRBORNE' && this.inputX > 0.1) {
-            if (this.wallSide !== 'right') {
-              this.wallSide = 'right';
-              this.vx = 0;
-              this.sm.dispatchEvent('WALL_TOUCH');
-            }
-          }
-        } else {
-          // Player left the wall zone (e.g., after wall kick)
-          if (this.wallSide !== null && this.sm.superState === 'WALL_SLIDE') {
-            this.wallSide = null;
-            this.sm.dispatchEvent('WALL_DETACH');
-          } else if (this.wallSide !== null) {
-            this.wallSide = null;
-          }
-        }
-
-        // =====================================================
-        // ANIMATION FRAME ADVANCING (ONE-SHOT SAFE DISPATCH)
-        // =====================================================
-        const seq = SPRITE_CATALOG.find(s => s.id === this.currentSeqId) || SPRITE_CATALOG[1];
-        this.animTimer += dt;
-        const frameDuration = 1 / seq.fps;
-
-        if (this.animTimer >= frameDuration) {
-          this.animTimer -= frameDuration;
-          if (this.animFrame < seq.frames.length - 1) {
-            this.animFrame++;
-          } else {
-            if (seq.loop) {
-              this.animFrame = 0;
-            } else {
-              // Frame reached end: dispatch ATTACK_FINISHED ONCE if in an attack state
-              if (this.isAttackState() && !this.attackFinishedDispatched) {
-                this.attackFinishedDispatched = true;
-                this.sm.dispatchEvent('ATTACK_FINISHED');
-              }
-            }
-          }
-        }
-
-        // =====================================================
-        // PARTICLE UPDATE
-        // =====================================================
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-          const p = this.particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.alpha -= dt * 2.5;
-          if (p.alpha <= 0) {
-            this.particles.splice(i, 1);
+          if (this.isAttackState() && !this.attackFinishedDispatched && this.sm) {
+            this.attackFinishedDispatched = true;
+            this.sm.dispatchEvent('ATTACK_FINISHED');
           }
         }
       }
+    }
+  }
 
-      draw(ctx) {
-        // --- Charge Aura ---
-        if (this.chargeTime > 0.3) {
-          ctx.save();
-          ctx.beginPath();
-          const chargeLevel = Math.min(1.0, (this.chargeTime - 0.3) / 1.2);
-          ctx.arc(this.x, this.y, 26 + Math.sin(Date.now() * 0.02) * 5, 0, Math.PI * 2);
-          ctx.fillStyle = chargeLevel > 0.8 ? 'rgba(255, 42, 95, 0.35)' : 'rgba(0, 229, 255, 0.3)';
-          ctx.shadowColor = chargeLevel > 0.8 ? '#ff2a5f' : '#00e5ff';
-          ctx.shadowBlur = 18;
-          ctx.fill();
-          ctx.restore();
-        }
+  _updateParticles(dt) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= dt * 2.5;
+      if (p.alpha <= 0) this.particles.splice(i, 1);
+    }
+  }
 
-        // --- Buster Timer ---
-        if (this.busterTimer > 0) {
-          this.busterTimer -= dt;
-        }
+  draw(ctx) {
+    const P = _PLAYER_PHYS || (typeof PHYS !== 'undefined' ? PHYS : { SPRITE_SCALE: 2.2 });
 
-        // --- Sprite Rendering ---
-        let renderSeqId = this.currentSeqId;
+    if (this.chargeTime > 0.3) {
+      this._drawChargeAura(ctx);
+    }
 
-        // Buster Override Logic
-        if (this.busterTimer > 0) {
-          if (renderSeqId === 'seq_02_idle' || renderSeqId === 'seq_03_idle_arm_raised') {
-            renderSeqId = this.chargeTime > 1.2 ? 'seq_31_buster_charge_and_shoot' : 'seq_29_buster_shoot_stand';
-          } else if (renderSeqId === 'seq_07_run') {
-            renderSeqId = 'seq_33_run_and_shoot_buster';
-          } else if (renderSeqId === 'seq_08_jump' || renderSeqId === 'seq_10_jump_somersault') {
-            renderSeqId = 'seq_29_buster_shoot_stand'; // (Air shoot uses similar frame in our catalog)
-          }
-        }
+    this._drawSprite(ctx, P);
+    this._drawParticles(ctx);
+  }
 
-        const seq = SPRITE_CATALOG.find(s => s.id === renderSeqId) || SPRITE_CATALOG[1];
-        const frameIndex = Math.min(this.animFrame, seq.frames.length - 1);
-        const framePath = seq.frames[frameIndex];
-        const imgObj = loadedImages[framePath];
+  _drawChargeAura(ctx) {
+    ctx.save();
+    ctx.beginPath();
+    const chargeLevel = Math.min(1.0, (this.chargeTime - 0.3) / 1.2);
+    ctx.arc(this.x, this.y - 20, 26 + Math.sin(Date.now() * 0.02) * 5, 0, Math.PI * 2);
+    ctx.fillStyle = chargeLevel > 0.8 ? 'rgba(255, 42, 95, 0.35)' : 'rgba(0, 229, 255, 0.3)';
+    ctx.shadowColor = chargeLevel > 0.8 ? '#ff2a5f' : '#00e5ff';
+    ctx.shadowBlur = 18;
+    ctx.fill();
+    ctx.restore();
+  }
 
-        if (imgObj && imgObj.complete && imgObj.naturalWidth > 0) {
+  _drawSprite(ctx, P) {
+    let renderSeqId = this.currentSeqId;
+    const seq = (typeof SPRITE_CATALOG !== 'undefined' && SPRITE_CATALOG.find(s => s.id === renderSeqId)) || (typeof SPRITE_CATALOG !== 'undefined' ? SPRITE_CATALOG[1] : null);
+    
+    if (seq) {
+      const frameIndex = Math.min(this.animFrame, seq.frames.length - 1);
+      const framePath = seq.frames[frameIndex];
+      const imgObj = typeof loadedImages !== 'undefined' ? loadedImages[framePath] : null;
+
+      if (imgObj && imgObj.complete && imgObj.naturalWidth > 0) {
+        if (!this.isInvincible || Math.floor(Date.now() / 100) % 2 !== 0) {
           ctx.save();
           ctx.translate(this.x, this.y);
-
-          // Use natural image dimensions × scale factor
-          // Sprites are 80x80 frames, centered. We draw them at SPRITE_SCALE
-          // with the anchor point at the character's feet (bottom center).
           const sw = imgObj.naturalWidth;
           const sh = imgObj.naturalHeight;
-          const scale = PHYS.SPRITE_SCALE;
-
-          ctx.scale(this.facing * scale, scale);
-          // Draw with bottom-center anchor: offset by half-width left, full height up
+          ctx.scale(this.facing * P.SPRITE_SCALE, P.SPRITE_SCALE);
           ctx.drawImage(imgObj, -sw / 2, -sh + 10, sw, sh);
           ctx.restore();
-        } else {
-          // Fallback: colored rectangle
-          ctx.fillStyle = '#ff2a5f';
-          ctx.fillRect(this.x - 16, this.y - 48, 32, 52);
+        }
+      } else {
+        ctx.fillStyle = '#ff2a5f';
+        ctx.fillRect(this.x - 16, this.y - 48, 32, 48);
+      }
+    }
+  }
+
+  _drawParticles(ctx) {
+    for (const p of this.particles) {
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+      ctx.restore();
+    }
+  }
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { PlayerActor };
+}
+
+
+// ===== MODULE: enemy_actor.js =====
+/**
+ * Pantheon Guardian Enemy Entity with 3 Difficulty Tiers & AI Kiting
+ * Tier 1: Scout (Patrol / Basic)
+ * Tier 2: Gunner (Patrol + Aimed Plasma Shots)
+ * Tier 3: Elite Kiter (Tactical Spacing / Kites Player / Fast Recovery / Heavy Damage)
+ * Uses state-locked animations, turn cooldowns, and accurate AABB combat registration.
+ */
+
+let _ENEMY_WORLD = null;
+let _ENEMY_PHYS = null;
+let _ENEMY_SOLIDS = null;
+
+if (typeof require !== 'undefined') {
+  try {
+    const consts = require('./constants');
+    _ENEMY_WORLD = consts.WORLD;
+    _ENEMY_PHYS = consts.PHYS;
+  } catch (e) {}
+  try {
+    const geo = require('./world_geometry');
+    _ENEMY_SOLIDS = geo.SOLIDS;
+  } catch (e) {}
+}
+
+if (typeof WORLD !== 'undefined' && !_ENEMY_WORLD) _ENEMY_WORLD = WORLD;
+if (typeof PHYS !== 'undefined' && !_ENEMY_PHYS) _ENEMY_PHYS = PHYS;
+if (typeof SOLIDS !== 'undefined' && !_ENEMY_SOLIDS) _ENEMY_SOLIDS = SOLIDS;
+
+class EnemyActor {
+  constructor(x, minX, maxX, tier = 1) {
+    const W = _ENEMY_WORLD || (typeof WORLD !== 'undefined' ? WORLD : { GROUND_Y: 380 });
+    this.startX = x;
+    this.x = x;
+    this.y = W.GROUND_Y;
+    this.vx = 0;
+    this.facing = -1;
+    this.tier = tier;
+
+    this.patrolLeft = minX || (x - 100);
+    this.patrolRight = maxX || (x + 100);
+    this.state = 'WALK';
+    this.isDead = false;
+    this.deathTimer = 0;
+    this.hurtFlash = 0;
+    this.turnCooldown = 0;
+    this.lastHitAttackId = 0;
+
+    this.currentSeqId = 'enemy_pantheon_seq_04_walk';
+    this.animFrame = 0;
+    this.animTimer = 0;
+    this.stateTimer = 0;
+    this.hasFiredInCurrentShoot = false;
+    this.particles = [];
+    this.bullets = [];
+
+    this._applyTierAttributes();
+  }
+
+  _applyTierAttributes() {
+    if (this.tier === 1) {
+      this.title = 'Pantheon Scout (Fácil)';
+      this.maxHp = 3;
+      this.speed = 1.3;
+      this.contactDamage = 1;
+      this.canShoot = false;
+      this.canKite = false;
+      this.shootCooldown = 999;
+      this.hurtDuration = 0.3;
+      this.glowColor = '#00e5ff';
+    } else if (this.tier === 2) {
+      this.title = 'Pantheon Gunner (Médio)';
+      this.maxHp = 5;
+      this.speed = 2.0;
+      this.contactDamage = 1;
+      this.canShoot = true;
+      this.canKite = false;
+      this.shootCooldown = 2.0;
+      this.hurtDuration = 0.25;
+      this.glowColor = '#ffb703';
+    } else {
+      this.title = 'Pantheon Elite (Malandro)';
+      this.maxHp = 8;
+      this.speed = 3.3;
+      this.contactDamage = 2;
+      this.canShoot = true;
+      this.canKite = true;
+      this.shootCooldown = 1.3;
+      this.hurtDuration = 0.18;
+      this.glowColor = '#ff2a5f';
+    }
+
+    this.hp = this.maxHp;
+    this.shootTimer = 0.6 + Math.random() * 0.5;
+  }
+
+  playSequence(seqId) {
+    if (this.currentSeqId !== seqId) {
+      this.currentSeqId = seqId;
+      this.animFrame = 0;
+      this.animTimer = 0;
+    }
+  }
+
+  respawn(x) {
+    const W = _ENEMY_WORLD || (typeof WORLD !== 'undefined' ? WORLD : { GROUND_Y: 380 });
+    if (x !== undefined) this.startX = x;
+    this.x = this.startX;
+    this.y = W.GROUND_Y;
+    this.vx = 0;
+    this.facing = -1;
+    this.hp = this.maxHp;
+    this.isDead = false;
+    this.deathTimer = 0;
+    this.hurtFlash = 0;
+    this.turnCooldown = 0;
+    this.lastHitAttackId = 0;
+    this.state = 'WALK';
+    this.playSequence('enemy_pantheon_seq_04_walk');
+    this.stateTimer = 0;
+    this.shootTimer = 0.6 + Math.random() * 0.5;
+    this.particles = [];
+    this.bullets = [];
+  }
+
+  takeDamage(amount = 1) {
+    this.hp -= amount;
+    this.hurtFlash = 0.2;
+    if (this.hp <= 0) {
+      this._onDeath(amount);
+    } else {
+      this.state = 'HURT';
+      this.playSequence('enemy_pantheon_seq_02_hurt');
+      this.stateTimer = this.hurtDuration;
+      if (typeof logEvent === 'function') {
+        logEvent(`[COMBATE] ${this.title} levou dano (-${amount})! HP: ${this.hp}/${this.maxHp}`, 'event-fired');
+      }
+    }
+  }
+
+  _onDeath(amount) {
+    this.hp = 0;
+    this.state = 'DEATH';
+    this.playSequence('enemy_pantheon_seq_05_death');
+    this.deathTimer = 0.6;
+    if (typeof logEvent === 'function') {
+      logEvent(`[COMBATE] ${this.title} destruído! (Dano: -${amount})`, 'state-trans');
+    }
+    for (let i = 0; i < 20; i++) {
+      this.particles.push({
+        x: this.x + (Math.random() * 34 - 17),
+        y: this.y - 20 + (Math.random() * 34 - 17),
+        vx: (Math.random() - 0.5) * 8,
+        vy: Math.random() * -6 - 1.5,
+        size: Math.random() * 6 + 2,
+        alpha: 1,
+        color: Math.random() > 0.5 ? this.glowColor : '#ffb703'
+      });
+    }
+  }
+
+  update(dt, playerX, playerY, playerSm) {
+    this._updateParticles(dt);
+    this._updateBullets(dt, playerX, playerY, playerSm);
+
+    if (this.isDead) return;
+    if (this.hurtFlash > 0) this.hurtFlash -= dt;
+    if (this.turnCooldown > 0) this.turnCooldown -= dt;
+
+    this._updateStateLogic(dt, playerX, playerSm);
+    this._resolveSolidWallCollisions();
+    this._advanceAnimation(dt);
+    this._checkCombatCollisions(playerSm ? playerSm.actor : null);
+  }
+
+  _updateStateLogic(dt, playerX, playerSm) {
+    const distToPlayer = playerX - this.x;
+    const absDist = Math.abs(distToPlayer);
+    const isPlayerInRoom2 = playerX >= 810 && playerX <= 1650;
+
+    if (this.state === 'WALK') {
+      this._updateWalkBehavior(dt, playerX, distToPlayer, absDist, isPlayerInRoom2, playerSm);
+    } else if (this.state === 'SHOOT') {
+      this._updateShootBehavior(dt, distToPlayer);
+    } else if (this.state === 'MELEE') {
+      this._updateMeleeBehavior(dt, distToPlayer, playerSm);
+    } else if (this.state === 'HURT') {
+      this.stateTimer -= dt;
+      if (this.stateTimer <= 0) {
+        this.state = 'WALK';
+        this.playSequence('enemy_pantheon_seq_04_walk');
+      }
+    } else if (this.state === 'DEATH') {
+      this.deathTimer -= dt;
+      if (this.deathTimer <= 0) this.isDead = true;
+    }
+  }
+
+  _updateWalkBehavior(dt, playerX, distToPlayer, absDist, isPlayerInRoom2, playerSm) {
+    this.playSequence('enemy_pantheon_seq_04_walk');
+
+    if (this.canKite && isPlayerInRoom2) {
+      this._updateEliteCombatStep(dt, distToPlayer, absDist, playerSm);
+    } else {
+      this._updatePatrolStep(distToPlayer, absDist, isPlayerInRoom2);
+    }
+
+    if (this.canShoot && isPlayerInRoom2) {
+      this._checkShootingTrigger(dt, distToPlayer, absDist, playerSm);
+    }
+  }
+
+  _updateEliteCombatStep(dt, distToPlayer, absDist, playerSm) {
+    const pActor = playerSm ? playerSm.actor : null;
+    const pVx = pActor ? pActor.vx : 0;
+    const pIsAirborne = playerSm ? playerSm.superState === 'AIRBORNE' : false;
+    const dirToPlayer = distToPlayer > 0 ? 1 : -1;
+
+    // 1. Se tá colado E pronto pra atacar, encara e não foge! O MELEE vai engatilhar.
+    if (absDist < 48 && this.shootTimer <= 0) {
+      if (this.turnCooldown <= 0 && this.facing !== dirToPlayer) {
+        this.facing = dirToPlayer;
+        this.turnCooldown = 0.15;
+      }
+      return; // Fica parado pra bater
+    }
+
+    // 2. Kiting Tático e Preditivo (Sem moonwalk!)
+    let sweetSpotMin = 100;
+    let sweetSpotMax = 160;
+
+    const isPlayerRushing = (distToPlayer > 0 && pVx > 2.5) || (distToPlayer < 0 && pVx < -2.5);
+    if (isPlayerRushing) {
+      sweetSpotMin = 160; 
+    }
+
+    // Se o player está no ar e perto, dar backdash rápido defensivo
+    if (pIsAirborne && absDist < 120) {
+      // Moonwalk aqui é válido (backdash)
+      if (this.turnCooldown <= 0 && this.facing !== dirToPlayer) {
+        this.facing = dirToPlayer;
+      }
+      this.x -= this.facing * (this.speed * 1.6);
+    }
+    else if (absDist < sweetSpotMin) {
+      // Player muito perto: recuar andando de costas para ele (CORRENDO PRA LONGE, não moonwalk)
+      if (this.turnCooldown <= 0 && this.facing === dirToPlayer) {
+        this.facing = -dirToPlayer; // Vira as costas pra fugir!
+        this.turnCooldown = 0.15;
+      }
+      this.x += this.facing * (this.speed * 1.3);
+    }
+    else if (absDist > sweetSpotMax) {
+      // Player longe: Vira pro player e AVANÇA DE FRENTE
+      if (this.turnCooldown <= 0 && this.facing !== dirToPlayer) {
+        this.facing = dirToPlayer;
+        this.turnCooldown = 0.15;
+      }
+      const isPlayerFleeing = (distToPlayer > 0 && pVx < -1) || (distToPlayer < 0 && pVx > 1);
+      const chaseMult = isPlayerFleeing ? 1.5 : 1.1; 
+      this.x += this.facing * (this.speed * chaseMult);
+    }
+    else {
+      // Zona ideal: Vira pro player e continua avançando devagarinho
+      if (this.turnCooldown <= 0 && this.facing !== dirToPlayer) {
+        this.facing = dirToPlayer;
+        this.turnCooldown = 0.15;
+      }
+      // Anda pra frente devagar pra não ficar 100% estático
+      this.x += this.facing * (this.speed * 0.2);
+
+      // Metralhar
+      if (pActor && !pActor.isInvincible) {
+        this.shootTimer -= dt * 1.1; 
+      }
+    }
+  }
+
+  _updatePatrolStep(distToPlayer, absDist, isPlayerInRoom2) {
+    this.x += this.facing * this.speed;
+
+    if (this.x <= this.patrolLeft && this.facing === -1) {
+      this.facing = 1;
+      this.turnCooldown = 0.3;
+    } else if (this.x >= this.patrolRight && this.facing === 1) {
+      this.facing = -1;
+      this.turnCooldown = 0.3;
+    }
+
+    if (isPlayerInRoom2 && absDist > 35 && absDist < 260 && this.turnCooldown <= 0) {
+      const desiredFacing = distToPlayer > 0 ? 1 : -1;
+      if (this.facing !== desiredFacing) {
+        this.facing = desiredFacing;
+        this.turnCooldown = 0.28;
+      }
+    }
+  }
+
+  _checkShootingTrigger(dt, distToPlayer, absDist, playerSm) {
+    this.shootTimer -= dt;
+    if (this.shootTimer <= 0 && absDist < 320) {
+      const isFacingPlayer = (distToPlayer > 0 && this.facing === 1) || (distToPlayer < 0 && this.facing === -1);
+      
+      const pInvincible = playerSm && playerSm.actor && playerSm.actor.isInvincible;
+      if (this.tier === 3 && pInvincible) {
+        this.shootTimer = 0.25; 
+        return;
+      }
+
+      if (isFacingPlayer) {
+        // Se estiver colado, GOLPE FÍSICO em vez de atirar! (Tiers 2 e 3)
+        if (absDist < 48) {
+          this.state = 'MELEE';
+          this.playSequence('enemy_pantheon_seq_03_shoot');
+          this.stateTimer = 0.45;
+          this.hasFiredInCurrentShoot = false;
+          this.shootTimer = this.shootCooldown * 0.8; // Volta a atacar um pouco mais rápido depois do melee
+          return;
         }
 
-        // --- Particles ---
-        for (const p of this.particles) {
-          ctx.save();
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 6;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-          ctx.restore();
+        // Senão, SHOOT normal
+        this.state = 'SHOOT';
+        this.playSequence('enemy_pantheon_seq_03_shoot');
+        this.stateTimer = 0.55;
+        this.hasFiredInCurrentShoot = false;
+        
+        // Burst Fire (apenas Tier 3): 55% chance de soltar tiro duplo
+        this.isBursting = (this.tier === 3 && Math.random() > 0.45);
+        this.burstTimer = 0;
+
+        this.shootTimer = this.shootCooldown;
+      }
+    }
+  }
+
+  _resolveSolidWallCollisions() {
+    const solids = _ENEMY_SOLIDS || (typeof SOLIDS !== 'undefined' ? SOLIDS : []);
+    const eWidth = 14;
+    const eHeight = 44;
+
+    for (const b of solids) {
+      if (b.type === 'floor' || b.type === 'ceiling') continue;
+      if (this.y > b.y && this.y - eHeight < b.y + b.h) {
+        if (this.x + eWidth >= b.x && this.x - eWidth <= b.x + b.w) {
+          if (this.facing === 1 && this.x < b.x) {
+            this.x = b.x - eWidth;
+            if (!this.canKite) { this.facing = -1; this.turnCooldown = 0.3; }
+          } else if (this.facing === -1 && this.x > b.x + b.w) {
+            this.x = b.x + b.w + eWidth;
+            if (!this.canKite) { this.facing = 1; this.turnCooldown = 0.3; }
+          }
         }
       }
     }
 
-    /* =========================================================================
-       Main Game Loop & Input Event Handling
-       ========================================================================= */
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const player = new PlayerActor();
+    // Hard room boundaries (Room 2: x between 825 and 1630)
+    const minX = Math.max(825, this.patrolLeft);
+    const maxX = Math.min(1630, this.patrolRight);
+    if (this.x <= minX) {
+      this.x = minX;
+      if (!this.canKite) { this.facing = 1; this.turnCooldown = 0.3; }
+    } else if (this.x >= maxX) {
+      this.x = maxX;
+      if (!this.canKite) { this.facing = -1; this.turnCooldown = 0.3; }
+    }
+  }
 
-    const keys = {};
-    window.addEventListener('keydown', (e) => {
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-        e.preventDefault();
-      }
+  _updateShootBehavior(dt, distToPlayer) {
+    this.stateTimer -= dt;
 
-      if (keys[e.code]) return;
-      keys[e.code] = true;
+    if (this.animFrame >= 2 && !this.hasFiredInCurrentShoot) {
+      this.hasFiredInCurrentShoot = true;
+      this._spawnPlasmaBullet(false);
 
-      if (e.code === 'Space' || e.code === 'KeyK' || e.code === 'KeyZ') {
-        player.sm.dispatchEvent('JUMP_PRESS');
+      if (this.isBursting) {
+        this.burstTimer = 0.12; // Atraso para o segundo tiro da rajada
       }
-      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyL' || e.code === 'KeyC') {
-        player.sm.dispatchEvent('DASH_PRESS');
+    }
+
+    // Gerencia o segundo tiro se estiver no modo burst
+    if (this.isBursting && this.hasFiredInCurrentShoot && this.burstTimer !== undefined) {
+      this.burstTimer -= dt;
+      if (this.burstTimer <= 0) {
+        this._spawnPlasmaBullet(true);
+        this.isBursting = false;
       }
-      if (e.code === 'KeyJ' || e.code === 'KeyX') {
-        // Attack Press
-        player.sm.dispatchEvent('ATTACK_PRESS');
-      }
-      if (e.code === 'KeyF' || e.code === 'KeyV') {
-        // Buster Press (Sub-weapon)
-        player.busterTimer = 0.4; // 400ms override animation
-        player.busterShotCount++;
-        // Emit bullet particle
-        player.particles.push({
-          x: player.x + player.facing * 25,
-          y: player.y - 25,
-          vx: player.facing * 15,
-          vy: 0,
+    }
+
+    if (this.stateTimer <= 0) {
+      this.state = 'WALK';
+      this.playSequence('enemy_pantheon_seq_04_walk');
+    }
+  }
+
+  _spawnPlasmaBullet(isBurst = false) {
+    // Tiro surpresa do burst sai um pouco mais rápido e numa altura levemente diferente
+    const bulletSpeed = this.tier === 3 ? (isBurst ? 8.6 : 7.2) : 5.8;
+    const yOffset = isBurst ? -18 : -28; 
+
+    this.bullets.push({
+      x: this.x + this.facing * 22,
+      y: this.y + yOffset,
+      vx: this.facing * bulletSpeed,
+      vy: 0,
+      radius: this.tier === 3 ? 6 : 4.5,
+      color: this.tier === 3 ? '#ff2a5f' : '#ffb703',
+      damage: 1,
+      life: 2.8
+    });
+
+    for (let i = 0; i < 6; i++) {
+      this.particles.push({
+        x: this.x + this.facing * 22,
+        y: this.y + yOffset,
+        vx: this.facing * (Math.random() * 3 + 2),
+        vy: (Math.random() - 0.5) * 3,
+        size: Math.random() * 4 + 2,
+        alpha: 1,
+        color: this.tier === 3 ? '#ff2a5f' : '#ffff00'
+      });
+    }
+  }
+
+  _updateMeleeBehavior(dt, distToPlayer, playerSm) {
+    this.stateTimer -= dt;
+
+    if (this.animFrame >= 2 && !this.hasFiredInCurrentShoot) {
+      this.hasFiredInCurrentShoot = true;
+      
+      const reach = 42; 
+      const dx = (playerSm && playerSm.actor) ? (playerSm.actor.x - this.x) : 999;
+      const dy = (playerSm && playerSm.actor) ? (playerSm.actor.y - this.y) : 999;
+      
+      // Efeito visual do soco/bastão
+      for (let i = 0; i < 6; i++) {
+        this.particles.push({
+          x: this.x + this.facing * 20 + (Math.random()*12 - 6),
+          y: this.y - 24 + (Math.random()*12 - 6),
+          vx: this.facing * 5 + (Math.random() - 0.5)*2,
+          vy: (Math.random() - 0.5) * 4,
+          size: Math.random() * 5 + 2,
           alpha: 1,
-          size: 6,
-          color: '#ffff00'
+          color: '#ffffff'
         });
       }
-    });
 
-    window.addEventListener('keyup', (e) => {
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-        e.preventDefault();
-      }
-      keys[e.code] = false;
-
-      // Charge Slash Release
-      if (e.code === 'KeyJ' || e.code === 'KeyX') {
-        if (player.chargeTime >= 1.2) {
-           player.isChargeRelease = true;
-           player.sm.dispatchEvent('CHARGE_RELEASE'); // Dispara o evento que você criou no drawio!
-        }
-        player.chargeTime = 0;
-      }
-    });
-
-    function handleContinuousInput() {
-      let move = 0;
-      if (keys['ArrowLeft'] || keys['KeyA']) move -= 1;
-      if (keys['ArrowRight'] || keys['KeyD']) move += 1;
-
-      if (move !== player.inputX) {
-        player.inputX = move;
-        if (move !== 0) {
-          player.sm.dispatchEvent('MOVE_INPUT');
-        } else {
-          player.sm.dispatchEvent('STOP_INPUT');
+      // Check hit
+      if (Math.abs(dx) < reach && Math.sign(dx) === this.facing && Math.abs(dy) < 45) {
+        if (playerSm && playerSm.actor && !playerSm.actor.isInvincible && playerSm.superState !== 'HURT') {
+          playerSm.dispatchEvent('HIT_RECEIVED');
+          if (typeof logEvent === 'function') logEvent('[COMBATE] ' + this.title + ' acertou um GOLPE FÍSICO no Zero!', 'event-fired');
         }
       }
     }
 
-    let lastTime = performance.now();
-    let frameCount = 0;
-    let fpsTime = 0;
+    if (this.stateTimer <= 0) {
+      this.state = 'WALK';
+      this.playSequence('enemy_pantheon_seq_04_walk');
+    }
+  }
 
-    function gameLoop(now) {
-      const dt = Math.min((now - lastTime) / 1000, 0.1);
-      lastTime = now;
+  _updateBullets(dt, playerX, playerY, playerSm) {
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const b = this.bullets[i];
+      b.x += b.vx;
+      b.y += b.vy;
+      b.life -= dt;
 
-      frameCount++;
-      fpsTime += dt;
-      if (fpsTime >= 1.0) {
-        document.getElementById('fpsDisplay').innerText = `${frameCount} FPS`;
-        frameCount = 0;
-        fpsTime = 0;
+      if (b.life <= 0 || b.x < 60 || b.x > 2460) {
+        this.bullets.splice(i, 1);
+        continue;
       }
 
-      handleContinuousInput();
-      player.update(dt);
+      const dx = playerX - b.x;
+      const dy = (playerY - 24) - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawArena(ctx);
-      player.draw(ctx);
-      updateStatsUi();
+      if (dist < 26) {
+        const isPlayerSlashing = playerSm && playerSm.actor && playerSm.actor.isAttackState && playerSm.actor.isAttackState();
+        
+        if (isPlayerSlashing) {
+          for (let p = 0; p < 8; p++) {
+            this.particles.push({
+              x: b.x, y: b.y,
+              vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+              size: 3, alpha: 1, color: '#00e5ff'
+            });
+          }
+          if (typeof logEvent === 'function') logEvent('[DEFLECT] Sabre do Zero cortou e destruiu o projétil inimigo!', 'event-fired');
+          this.bullets.splice(i, 1);
+          continue;
+        }
 
-      requestAnimationFrame(gameLoop);
+        if (playerSm && playerSm.actor && !playerSm.actor.isInvincible && !playerSm.actor.isDead && playerSm.superState !== 'HURT') {
+          playerSm.dispatchEvent('HIT_RECEIVED');
+          this.bullets.splice(i, 1);
+        }
+      }
+    }
+  }
+
+  _advanceAnimation(dt) {
+    const seq = typeof ENEMY_CATALOG !== 'undefined' ? ENEMY_CATALOG.find(s => s.id === this.currentSeqId) : null;
+    if (!seq) return;
+    this.animTimer += dt;
+    const frameDuration = 1 / seq.fps;
+    if (this.animTimer >= frameDuration) {
+      this.animTimer -= frameDuration;
+      if (this.animFrame < seq.frames.length - 1) {
+        this.animFrame++;
+      } else if (seq.loop) {
+        this.animFrame = 0;
+      }
+    }
+  }
+
+  _checkCombatCollisions(player) {
+    if (this.state === 'DEATH' || this.state === 'HURT') return;
+    if (!player) return;
+
+    // 1. Contact damage to player
+    const dx = player.x - this.x;
+    const dy = player.y - this.y;
+    if (Math.abs(dx) < 28 && Math.abs(dy) < 35) {
+      if (player.sm && !player.isInvincible && !player.isDead && player.sm.superState !== 'HURT') {
+        player.sm.dispatchEvent('HIT_RECEIVED');
+      }
     }
 
-    function drawArena(ctx) {
-      // Grid
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.04)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < canvas.width; x += 40) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
+    // 2. Player attack hitting enemy
+    const attackHitbox = player.getAttackHitbox ? player.getAttackHitbox() : null;
+    if (attackHitbox) {
+      const enemyBox = { x: this.x - 16, y: this.y - 48, w: 32, h: 48 };
+      
+      const overlapX = attackHitbox.x < enemyBox.x + enemyBox.w && attackHitbox.x + attackHitbox.w > enemyBox.x;
+      const overlapY = attackHitbox.y < enemyBox.y + enemyBox.h && attackHitbox.y + attackHitbox.h > enemyBox.y;
+
+      if (overlapX && overlapY) {
+        if (this.lastHitAttackId !== attackHitbox.attackId) {
+          this.lastHitAttackId = attackHitbox.attackId;
+          this.takeDamage(attackHitbox.isHeavy ? 2 : 1);
+        }
       }
-      for (let y = 0; y < canvas.height; y += 40) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
+    }
+  }
+
+  _updateParticles(dt) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= dt * 2.5;
+      if (p.alpha <= 0) this.particles.splice(i, 1);
+    }
+  }
+
+  draw(ctx) {
+    this._drawBullets(ctx);
+    if (this.isDead && this.particles.length === 0) return;
+    const P = _ENEMY_PHYS || (typeof PHYS !== 'undefined' ? PHYS : { SPRITE_SCALE: 2.2 });
+
+    if (!this.isDead) {
+      this._drawGroundShadow(ctx);
+      this._drawSprite(ctx, P);
+      this._drawHpBar(ctx);
+    }
+    this._drawParticles(ctx);
+  }
+
+  _drawGroundShadow(ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(this.x, this.y - 1, 16, 4, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  _drawSprite(ctx, P) {
+    const seq = typeof ENEMY_CATALOG !== 'undefined' ? ENEMY_CATALOG.find(s => s.id === this.currentSeqId) : null;
+    if (!seq) return;
+    const frameIndex = Math.min(this.animFrame, seq.frames.length - 1);
+    const framePath = seq.frames[frameIndex];
+    const imgObj = typeof loadedImages !== 'undefined' ? loadedImages[framePath] : null;
+
+    if (imgObj && imgObj.complete && imgObj.naturalWidth > 0) {
+      if (this.hurtFlash <= 0 || Math.floor(Date.now() / 80) % 2 !== 0) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.facing * P.SPRITE_SCALE, P.SPRITE_SCALE);
+        ctx.drawImage(imgObj, -imgObj.naturalWidth / 2, -imgObj.naturalHeight, imgObj.naturalWidth, imgObj.naturalHeight);
+
+        // Eye visor glow
+        ctx.fillStyle = this.glowColor;
+        ctx.shadowColor = this.glowColor;
+        ctx.shadowBlur = 8;
+        ctx.fillRect(this.facing * 4, -imgObj.naturalHeight + 14, 3, 2);
+        ctx.restore();
       }
+    } else {
+      ctx.fillStyle = this.glowColor;
+      ctx.fillRect(this.x - 12, this.y - 40, 24, 44);
+    }
+  }
 
-      // Left Wall
-      const gradLeft = ctx.createLinearGradient(0, 0, ARENA.LEFT_WALL_X, 0);
-      gradLeft.addColorStop(0, '#0c111a');
-      gradLeft.addColorStop(1, '#1b253c');
-      ctx.fillStyle = gradLeft;
-      ctx.fillRect(0, 0, ARENA.LEFT_WALL_X, canvas.height);
-      ctx.strokeStyle = '#00e5ff';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(0, 0, ARENA.LEFT_WALL_X, canvas.height);
+  _drawHpBar(ctx) {
+    if (this.hp <= 0) return;
+    const barW = this.tier === 3 ? 46 : (this.tier === 2 ? 38 : 32);
+    const barH = 5;
+    const barX = this.x - barW / 2;
+    const barY = this.y - 94;
 
-      // Right Wall
-      const gradRight = ctx.createLinearGradient(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W, 0);
-      gradRight.addColorStop(0, '#1b253c');
-      gradRight.addColorStop(1, '#0c111a');
-      ctx.fillStyle = gradRight;
-      ctx.fillRect(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W - ARENA.RIGHT_WALL_X, canvas.height);
-      ctx.strokeStyle = '#00e5ff';
-      ctx.strokeRect(ARENA.RIGHT_WALL_X, 0, ARENA.CANVAS_W - ARENA.RIGHT_WALL_X, canvas.height);
+    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    ctx.fillRect(barX - 1, barY - 1, barW + 2, barH + 2);
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(barX, barY, barW, barH);
 
-      // Ceiling
-      const gradCeiling = ctx.createLinearGradient(0, 0, 0, ARENA.CEILING_Y);
-      gradCeiling.addColorStop(0, '#090d16');
-      gradCeiling.addColorStop(1, '#1e293b');
-      ctx.fillStyle = gradCeiling;
-      ctx.fillRect(0, 0, canvas.width, ARENA.CEILING_Y);
-      ctx.strokeStyle = '#ff2a5f';
-      ctx.lineWidth = 1;
+    ctx.fillStyle = this.glowColor;
+    ctx.fillRect(barX, barY, barW * (this.hp / this.maxHp), barH);
+
+    ctx.fillStyle = this.glowColor;
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(this.tier === 3 ? '⚡ ELITE KITER' : (this.tier === 2 ? '🔫 GUNNER' : 'SCOUT'), this.x, barY - 4);
+    ctx.textAlign = 'left';
+  }
+
+  _drawBullets(ctx) {
+    for (const b of this.bullets) {
+      ctx.save();
       ctx.beginPath();
-      ctx.moveTo(ARENA.LEFT_WALL_X, ARENA.CEILING_Y);
-      ctx.lineTo(ARENA.RIGHT_WALL_X, ARENA.CEILING_Y);
-      ctx.stroke();
+      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+      ctx.fillStyle = b.color;
+      ctx.shadowColor = b.color;
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
 
-      // Floor
-      const gradFloor = ctx.createLinearGradient(0, ARENA.GROUND_Y + 15, 0, ARENA.CANVAS_H);
-      gradFloor.addColorStop(0, '#1e293b');
-      gradFloor.addColorStop(1, '#090d16');
-      ctx.fillStyle = gradFloor;
-      ctx.fillRect(0, ARENA.GROUND_Y + 15, canvas.width, ARENA.CANVAS_H - ARENA.GROUND_Y - 15);
-      ctx.strokeStyle = '#ff2a5f';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(ARENA.LEFT_WALL_X, ARENA.GROUND_Y + 15);
-      ctx.lineTo(ARENA.RIGHT_WALL_X, ARENA.GROUND_Y + 15);
-      ctx.stroke();
+  _drawParticles(ctx) {
+    for (const p of this.particles) {
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.fillRect(p.x, p.y, p.size, p.size);
+      ctx.restore();
+    }
+  }
+}
 
-      // Labels
-      ctx.fillStyle = 'rgba(255,255,255,0.3)';
-      ctx.font = '10px monospace';
-      ctx.fillText('◀ PAREDE (WALL-SLIDE / KICK / ATTACK)', 90, 220);
-      ctx.fillText('PAREDE (WALL-SLIDE / KICK / ATTACK) ▶', 520, 220);
-      ctx.fillText('CHÃO (COLLISION LEVEL)', 360, ARENA.GROUND_Y + 35);
-      ctx.fillText('TETO (CEILING)', 360, ARENA.CEILING_Y - 5);
+if (typeof module !== 'undefined') {
+  module.exports = { EnemyActor };
+}
+
+
+// ===== MODULE: renderer.js =====
+/**
+ * Canvas Rendering Pipeline: World, Dividers, Low Tunnel, HUD, Modals
+ */
+
+function drawWorld(ctx, camX) {
+  // 1. Background Grid Pattern
+  ctx.strokeStyle = 'rgba(0, 229, 255, 0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < WORLD.W; x += 40) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, WORLD.H);
+    ctx.stroke();
+  }
+  for (let y = 0; y < WORLD.H; y += 40) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(WORLD.W, y);
+    ctx.stroke();
+  }
+
+  // 2. Global Ceiling
+  const gradCeil = ctx.createLinearGradient(0, 0, 0, WORLD.CEILING_Y);
+  gradCeil.addColorStop(0, '#07090e');
+  gradCeil.addColorStop(1, '#1e293b');
+  ctx.fillStyle = gradCeil;
+  ctx.fillRect(0, 0, WORLD.W, WORLD.CEILING_Y);
+  ctx.strokeStyle = '#ff2a5f';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0, 0, WORLD.W, WORLD.CEILING_Y);
+
+  // 3. Global Floor
+  const gradFloor = ctx.createLinearGradient(0, WORLD.GROUND_Y, 0, WORLD.H);
+  gradFloor.addColorStop(0, '#1e293b');
+  gradFloor.addColorStop(1, '#090d16');
+  ctx.fillStyle = gradFloor;
+  ctx.fillRect(0, WORLD.GROUND_Y, WORLD.W, WORLD.H - WORLD.GROUND_Y);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, WORLD.GROUND_Y);
+  ctx.lineTo(WORLD.W, WORLD.GROUND_Y);
+  ctx.stroke();
+
+  // Floor neon highlight line
+  ctx.strokeStyle = '#00ffaa';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, WORLD.GROUND_Y + 1);
+  ctx.lineTo(WORLD.W, WORLD.GROUND_Y + 1);
+  ctx.stroke();
+
+  // 4. Outer Left Wall (Sala 1)
+  ctx.fillStyle = '#1b253c';
+  ctx.fillRect(0, 0, 60, WORLD.H);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, 60, WORLD.H);
+
+  // 5. Divider Wall 1 (Sala 1 ➔ Sala 2)
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(790, 180, 24, 200);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(790, 180, 24, 200);
+
+  ctx.fillStyle = '#ffb703';
+  ctx.font = 'bold 9px monospace';
+  ctx.fillText('▲ WALL-KICK', 740, 170);
+  ctx.fillText('➔ SALA 2', 820, 290);
+
+  // 6. Divider Wall 2 (Sala 2 ➔ Sala 3)
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(1640, 190, 24, 190);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1640, 190, 24, 190);
+
+  ctx.fillStyle = '#ffb703';
+  ctx.font = 'bold 9px monospace';
+  ctx.fillText('▲ PULAR', 1648, 180);
+  ctx.fillText('➔ SALA 3', 1670, 290);
+
+  // 7. Low Duct / Tunnel in Sala 3 (x: 1850 to 2220, from y=40 to y=342)
+  // Height 302px leaves 38px clearance from GROUND_Y(380)
+  const gradTunnel = ctx.createLinearGradient(1850, 40, 1850, 342);
+  gradTunnel.addColorStop(0, '#111827');
+  gradTunnel.addColorStop(1, '#374151');
+  ctx.fillStyle = gradTunnel;
+  ctx.fillRect(1850, 40, 370, 302);
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1850, 40, 370, 302);
+
+  // Warning hazard stripes along bottom edge of low ceiling
+  ctx.fillStyle = '#ff2a5f';
+  for (let tx = 1850; tx < 2220; tx += 20) {
+    ctx.fillRect(tx, 338, 10, 4);
+  }
+
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = 'bold 10px monospace';
+  ctx.fillText('DUTO BAIXO — DASH [SHIFT/C]', 1880, 325);
+
+  // 8. Divider Wall 3 (Sala 3 -> Sala 4 Boss)
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(2480, 200, 24, 180);
+  ctx.strokeStyle = '#ef4444'; // Red outline for boss door!
+  ctx.lineWidth = 2;
+  ctx.strokeRect(2480, 200, 24, 180);
+
+  ctx.fillStyle = '#ef4444';
+  ctx.font = 'bold 9px monospace';
+  ctx.fillText('➔ BOSS', 2490, 180);
+
+  // 9. Outer Right Wall (Goal Sala 4)
+  ctx.fillStyle = '#1b253c';
+  ctx.fillRect(3300, 0, 60, WORLD.H);
+  ctx.strokeStyle = '#00ffaa';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(3300, 0, 60, WORLD.H);
+
+  // Boss Area Warning neon (Sala 4)
+  ctx.fillStyle = 'rgba(239, 68, 68, 0.05)'; // faint red tint
+  ctx.fillRect(2510, 40, 790, 340);
+
+  ctx.fillStyle = '#ef4444';
+  ctx.font = 'bold 16px monospace';
+  ctx.fillText('AVISO: ANOMALIA DETECTADA', 2800, 150);
+
+  // Background room banners
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = 'bold 20px monospace';
+  ctx.fillText('SALA 1', 350, 150);
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText('Treino', 360, 175);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = 'bold 20px monospace';
+  ctx.fillText('SALA 2', 1200, 150);
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText('Combate', 1210, 175);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = 'bold 20px monospace';
+  ctx.fillText('SALA 3', 1720, 150);
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText('Dash', 1735, 175);
+
+  ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+  ctx.font = 'bold 24px monospace';
+  ctx.fillText('SALA 4', 2900, 120);
+  ctx.font = 'bold 14px monospace';
+  ctx.fillText('Confronto Final', 2875, 145);
+}
+
+function drawHUD(ctx, player) {
+  // Room Location Badge (Top Center)
+  ctx.save();
+  const currentRoom = player.getCurrentRoom();
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+  ctx.fillRect(WORLD.CANVAS_W / 2 - 130, 8, 260, 24);
+  ctx.strokeStyle = '#00e5ff';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(WORLD.CANVAS_W / 2 - 130, 8, 260, 24);
+
+  ctx.fillStyle = '#00e5ff';
+  ctx.font = 'bold 11px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`📍 ${currentRoom}`, WORLD.CANVAS_W / 2, 24);
+  ctx.restore();
+
+  // Zero HP Bar (Top Left)
+  const zBarX = 20;
+  const zBarY = 28;
+  const zBarW = 140;
+  const zBarH = 14;
+
+  ctx.fillStyle = 'rgba(7, 10, 18, 0.85)';
+  ctx.fillRect(zBarX - 6, zBarY - 18, zBarW + 70, 42);
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(zBarX - 6, zBarY - 18, zBarW + 70, 42);
+
+  ctx.fillStyle = '#00ffaa';
+  ctx.font = 'bold 11px monospace';
+  ctx.fillText('ZERO', zBarX, zBarY - 6);
+
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(zBarX, zBarY, zBarW, zBarH);
+  ctx.strokeStyle = '#334155';
+  ctx.strokeRect(zBarX, zBarY, zBarW, zBarH);
+
+  const segW = (zBarW - 6) / PHYS.MAX_HP;
+  for (let i = 0; i < PHYS.MAX_HP; i++) {
+    const segX = zBarX + 3 + i * segW;
+    ctx.fillStyle = (i < player.hp) ? (player.hp > 1 ? '#00ffaa' : '#ff2a5f') : '#1e293b';
+    ctx.fillRect(segX + 1, zBarY + 2, segW - 2, zBarH - 4);
+  }
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px monospace';
+  ctx.fillText(`${Math.max(0, player.hp)}/${PHYS.MAX_HP}`, zBarX + zBarW + 8, zBarY + 11);
+
+  if (player.isInvincible && !player.isDead) {
+    ctx.fillStyle = Math.floor(Date.now() / 150) % 2 === 0 ? '#ffb703' : '#ff2a5f';
+    ctx.font = 'bold 9px monospace';
+    ctx.fillText('⚡ I-FRAMES', zBarX + 45, zBarY - 6);
+  }
+
+  if (!player.canStandUp) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.9)';
+    ctx.fillRect(zBarX + 220, 10, 180, 22);
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 10px monospace';
+    ctx.fillText('⚠️ TETO BAIXO (SLIDING)', zBarX + 230, 25);
+    ctx.restore();
+  }
+
+  // Game Over Modal
+  if (player.isDead) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(10, 5, 8, 0.82)';
+    ctx.fillRect(0, 0, WORLD.CANVAS_W, WORLD.CANVAS_H);
+
+    const cx = WORLD.CANVAS_W / 2;
+    const cy = WORLD.CANVAS_H / 2;
+
+    ctx.fillStyle = '#111726';
+    ctx.fillRect(cx - 180, cy - 60, 360, 120);
+    ctx.strokeStyle = '#ff2a5f';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx - 180, cy - 60, 360, 120);
+
+    ctx.fillStyle = '#ff2a5f';
+    ctx.font = 'bold 20px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('⚠️ ZERO DESTRUÍDO ⚠️', cx, cy - 20);
+
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = '13px monospace';
+    ctx.fillText('Super Estado atual: DEATH :: DYING', cx, cy + 8);
+
+    ctx.fillStyle = '#00ffaa';
+    ctx.font = 'bold 12px monospace';
+    ctx.fillText('Pressione [R] para Reiniciar na Sala 1', cx, cy + 34);
+    ctx.restore();
+  }
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { drawWorld, drawHUD };
+}
+
+
+// ===== MODULE: ui_manager.js =====
+/**
+ * UI Diagnostics, Event Logger & Sequence Studio Manager
+ */
+
+function updateHsmUi(superState, subState) {
+  const currentTag = document.getElementById('currentStateTag');
+  if (currentTag) currentTag.innerText = `${superState} :: ${subState}`;
+
+  ['GROUNDED', 'AIRBORNE', 'WALL_SLIDE', 'HURT', 'DEATH'].forEach(s => {
+    const el = document.getElementById(`super_${s}`);
+    if (el) el.classList.toggle('active', s === superState);
+  });
+
+  const allPills = document.querySelectorAll('.state-pill');
+  allPills.forEach(p => {
+    p.classList.toggle('active', p.id === `state_${subState}`);
+  });
+}
+
+function updateStatsUi(player) {
+  const setTxt = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = val;
+  };
+
+  setTxt('stat_vx', player.vx.toFixed(2));
+  setTxt('stat_vy', player.vy.toFixed(2));
+  setTxt('stat_ground', player.isGrounded ? 'TRUE' : 'FALSE');
+  setTxt('stat_wall', player.wallSide ? player.wallSide.toUpperCase() : 'NONE');
+  setTxt('stat_dash', `${Math.max(0, player.dashTimer).toFixed(2)}s`);
+  setTxt('stat_charge', `${Math.min(100, (player.chargeTime / 1.5 * 100)).toFixed(0)}%`);
+  
+  const hpEl = document.getElementById('stat_hp');
+  if (hpEl) {
+    hpEl.innerText = `${player.hp}/${PHYS.MAX_HP}`;
+    hpEl.style.color = player.hp > 1 ? '#00ffaa' : '#ff2a5f';
+  }
+
+  setTxt('stat_invincible', player.isInvincible ? 'YES' : 'NO');
+
+  const standEl = document.getElementById('stat_standup');
+  if (standEl) {
+    standEl.innerText = player.canStandUp ? 'TRUE' : 'FALSE';
+    standEl.style.color = player.canStandUp ? '#00ffaa' : '#f59e0b';
+  }
+
+  const chargeInd = document.getElementById('ui-charge-indicator');
+  const chargeTitle = document.getElementById('ui-charge-title');
+  if (chargeInd && chargeTitle) {
+    chargeInd.classList.remove('idle', 'charging', 'ready');
+    if (player.chargeTime === 0) {
+      chargeInd.classList.add('idle');
+      chargeTitle.innerText = 'CHARGE (Segurar J/X) — Inativo';
+    } else if (player.chargeTime < 0.8) {
+      chargeInd.classList.add('charging');
+      chargeTitle.innerText = 'CARREGANDO... (Ortogonal)';
+    } else {
+      chargeInd.classList.add('ready');
+      chargeTitle.innerText = 'CARREGADO! (Solte para Atacar)';
+    }
+  }
+
+  const roomEl = document.getElementById('stat_room');
+  if (roomEl) {
+    roomEl.innerText = player.getCurrentRoom().split(' ')[0] + ' ' + player.getCurrentRoom().split(' ')[1];
+  }
+}
+
+function logEvent(msg, type = '') {
+  const log = document.getElementById('eventLog');
+  if (!log) return;
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${type}`;
+  const time = new Date().toLocaleTimeString().split(' ')[0];
+  entry.innerHTML = `<span>${msg}</span><span style="color:#64748b;">${time}</span>`;
+  log.prepend(entry);
+
+  while (log.children.length > 30) {
+    log.removeChild(log.lastChild);
+  }
+}
+
+let currentFilter = 'all';
+
+function renderSequenceStudio() {
+  const grid = document.getElementById('sequencesGrid');
+  if (!grid || typeof SPRITE_CATALOG === 'undefined') return;
+  grid.innerHTML = '';
+
+  const filtered = SPRITE_CATALOG.filter(s => {
+    if (currentFilter === 'all') return true;
+    return s.cat === currentFilter;
+  });
+
+  filtered.forEach(seq => {
+    const card = document.createElement('div');
+    card.className = `seq-card ${(typeof player !== 'undefined' && player.currentSeqId === seq.id) ? 'active-preview' : ''}`;
+    card.id = `card_${seq.id}`;
+
+    card.innerHTML = `
+      <div class="seq-header">
+        <span class="seq-id">${seq.id}</span>
+        <span class="seq-cat">${seq.cat}</span>
+      </div>
+      <div class="seq-title">${seq.label}</div>
+      <div class="seq-preview-row">
+        <img src="${seq.gif}" alt="${seq.label}" />
+      </div>
+      <div class="seq-footer">
+        <span>${seq.frames.length} frames (${seq.fps} FPS)</span>
+        <button class="btn-test-seq" onclick="testSequence('${seq.id}', event)">Testar no Zero</button>
+      </div>
+    `;
+
+    card.onclick = () => testSequence(seq.id);
+    grid.appendChild(card);
+  });
+}
+
+function testSequence(seqId, e) {
+  if (e) e.stopPropagation();
+  if (typeof player !== 'undefined') player.playSequence(seqId);
+  logEvent(`Testando sequência: ${seqId}`, 'state-trans');
+
+  document.querySelectorAll('.seq-card').forEach(c => c.classList.remove('active-preview'));
+  const activeCard = document.getElementById(`card_${seqId}`);
+  if (activeCard) activeCard.classList.add('active-preview');
+}
+
+function filterSequences(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.innerText.includes(cat) || (cat === 'all' && b.innerText.includes('Todas')));
+  });
+  renderSequenceStudio();
+}
+
+function switchView(tab) {
+  document.getElementById('btnTabSandbox').classList.toggle('active', tab === 'sandbox');
+  document.getElementById('btnTabStudio').classList.toggle('active', tab === 'studio');
+
+  if (tab === 'sandbox') {
+    document.getElementById('panelSandbox').scrollIntoView({ behavior: 'smooth' });
+  } else {
+    document.getElementById('panelStudio').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { updateHsmUi, updateStatsUi, logEvent, renderSequenceStudio, testSequence, filterSequences, switchView };
+}
+
+
+// ===== MODULE: main.js =====
+/**
+ * Game Loop, Input Handlers & Global Entity Setup
+ */
+
+class ZeroBossAI {
+  constructor(x, y) {
+    this.startX = x;
+    this.startY = y;
+    this.actor = new PlayerActor();
+    this.actor.x = x;
+    this.actor.y = y;
+    this.actor.facing = -1;
+    this.actor.hp = 24; 
+    this.maxHp = 24;
+    this.sm = new PlayerSm(this.actor);
+    this.actor.sm = this.sm;
+    this.sm.start();
+    
+    this.isDead = false;
+    this.aiTimer = 0;
+    this.aiState = 'IDLE';
+    this.lastHitAttackId = null;
+    this.myLastAttackId = null;
+    this.chargeLevel = 0;
+    
+    this.actionQueue = [];
+  }
+  
+  respawn(x) {
+    if (x !== undefined) this.actor.x = x;
+    else this.actor.x = this.startX;
+    this.actor.y = this.startY;
+    this.actor.hp = this.maxHp;
+    this.isDead = false;
+    this.actor.isDead = false;
+    this.actor.facing = -1;
+    this.aiTimer = 0;
+    this.aiState = 'IDLE';
+    this.sm.transitionTo('GROUNDED', 'IDLE');
+    this.actionQueue = [];
+    this.chargeLevel = 0;
+    this.actor.chargeTime = 0;
+  }
+  
+  takeDamage(amount) {
+    if (this.isDead || this.actor.isInvincible) return;
+    this.actor.hp -= amount;
+    this.sm.dispatchEvent('HIT_RECEIVED');
+    if (typeof logEvent === 'function') logEvent(`[BOSS] Omega Zero tomou dano (${amount})! HP Restante: ${this.actor.hp}`, 'event-fired');
+    if (this.actor.hp <= 0) {
+      this.isDead = true;
+      this.actor.hp = 0;
+      this.actor.isDead = true;
+      if (typeof logEvent === 'function') logEvent(`[BOSS] OMEGA ZERO FOI DERROTADO!`, 'event-fired');
+    }
+  }
+  
+  update(dt, playerX, playerY, playerSm) {
+    if (this.isDead) {
+      this.actor.update(dt); 
+      return;
+    }
+    
+    const pActor = playerSm ? playerSm.actor : null;
+    if (!pActor || pActor.isDead) {
+      this.actor.inputX = 0;
+      this.actor.sm.dispatchEvent('STOP_INPUT');
+      this.actor.update(dt);
+      return;
     }
 
-    /* =========================================================================
-       UI Diagnostics & Logger
-       ========================================================================= */
-    function updateHsmUi(superState, subState) {
-      document.getElementById('currentStateTag').innerText = `${superState} :: ${subState}`;
-
-      ['GROUNDED', 'AIRBORNE', 'WALL_SLIDE'].forEach(s => {
-        const el = document.getElementById(`super_${s}`);
-        if (el) el.classList.toggle('active', s === superState);
-      });
-
-      const allPills = document.querySelectorAll('.state-pill');
-      allPills.forEach(p => {
-        p.classList.toggle('active', p.id === `state_${subState}`);
-      });
+    // Só reage se o player entrar na sala dele (Sala 4 começa depois do X: 2480)
+    if (pActor.x < 2480) {
+      this.actor.inputX = 0;
+      this.actor.sm.dispatchEvent('STOP_INPUT');
+      this.actor.update(dt);
+      return;
     }
 
-    function updateStatsUi() {
-      document.getElementById('stat_vx').innerText = player.vx.toFixed(2);
-      document.getElementById('stat_vy').innerText = player.vy.toFixed(2);
-      document.getElementById('stat_ground').innerText = player.isGrounded ? 'TRUE' : 'FALSE';
-      document.getElementById('stat_wall').innerText = player.wallSide ? player.wallSide.toUpperCase() : 'NONE';
-      document.getElementById('stat_dash').innerText = `${Math.max(0, player.dashTimer).toFixed(2)}s`;
-      document.getElementById('stat_charge').innerText = `${Math.min(100, (player.chargeTime / 1.5 * 100)).toFixed(0)}%`;
-    }
-
-    function logEvent(msg, type = '') {
-      const log = document.getElementById('eventLog');
-      const entry = document.createElement('div');
-      entry.className = `log-entry ${type}`;
-      const time = new Date().toLocaleTimeString().split(' ')[0];
-      entry.innerHTML = `<span>${msg}</span><span style="color:#64748b;">${time}</span>`;
-      log.prepend(entry);
-
-      while (log.children.length > 30) {
-        log.removeChild(log.lastChild);
+    const dx = pActor.x - this.actor.x;
+    const dy = pActor.y - this.actor.y;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+    const dir = Math.sign(dx) || 1;
+    
+    // Process Action Queue
+    if (this.actionQueue.length > 0) {
+      this.actionQueue[0].delay -= dt;
+      if (this.actionQueue[0].delay <= 0) {
+        this.actor.sm.dispatchEvent(this.actionQueue[0].event);
+        this.actionQueue.shift();
       }
     }
-
-    /* =========================================================================
-       Populate Sequence Studio
-       ========================================================================= */
-    let currentFilter = 'all';
-
-    function renderSequenceStudio() {
-      const grid = document.getElementById('sequencesGrid');
-      grid.innerHTML = '';
-
-      const filtered = SPRITE_CATALOG.filter(s => {
-        if (currentFilter === 'all') return true;
-        return s.cat === currentFilter;
-      });
-
-      filtered.forEach(seq => {
-        const card = document.createElement('div');
-        card.className = `seq-card ${player.currentSeqId === seq.id ? 'active-preview' : ''}`;
-        card.id = `card_${seq.id}`;
-
-        card.innerHTML = `
-          <div class="seq-header">
-            <span class="seq-id">${seq.id}</span>
-            <span class="seq-cat">${seq.cat}</span>
-          </div>
-          <div class="seq-title">${seq.label}</div>
-          <div class="seq-preview-row">
-            <img src="${seq.gif}" alt="${seq.label}" />
-          </div>
-          <div class="seq-footer">
-            <span>${seq.frames.length} frames (${seq.fps} FPS)</span>
-            <button class="btn-test-seq" onclick="testSequence('${seq.id}', event)">Testar no Zero</button>
-          </div>
-        `;
-
-        card.onclick = () => testSequence(seq.id);
-        grid.appendChild(card);
-      });
+    
+    // 1. AI Decision Making
+    this.aiTimer -= dt;
+    if (this.aiTimer <= 0 && this.actionQueue.length === 0) {
+       this.decideNextAction(absDx, absDy, dir, pActor, playerSm);
     }
-
-    function testSequence(seqId, e) {
-      if (e) e.stopPropagation();
-      player.playSequence(seqId);
-      logEvent(`Testando sequência: ${seqId}`, 'state-trans');
-
-      document.querySelectorAll('.seq-card').forEach(c => c.classList.remove('active-preview'));
-      const activeCard = document.getElementById(`card_${seqId}`);
-      if (activeCard) activeCard.classList.add('active-preview');
-    }
-
-    function filterSequences(cat) {
-      currentFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => {
-        b.classList.toggle('active', b.innerText.includes(cat) || (cat === 'all' && b.innerText.includes('Todas')));
-      });
-      renderSequenceStudio();
-    }
-
-    function switchView(tab) {
-      document.getElementById('btnTabSandbox').classList.toggle('active', tab === 'sandbox');
-      document.getElementById('btnTabStudio').classList.toggle('active', tab === 'studio');
-
-      if (tab === 'sandbox') {
-        document.getElementById('panelSandbox').scrollIntoView({ behavior: 'smooth' });
+    
+    this.executeCurrentAction(dir, absDx, dt);
+    
+    this.actor.update(dt);
+    
+    // 2. Check combat collisions
+    this._checkCollisions(pActor, playerSm);
+  }
+  
+  decideNextAction(absDx, absDy, dir, pActor, pSm) {
+    const roll = Math.random();
+    
+    this.actor.sm.dispatchEvent('STOP_INPUT');
+    this.actor.sm.dispatchEvent('JUMP_RELEASE');
+    this.actor.sm.dispatchEvent('ATTACK_RELEASE');
+    
+    this.actor.facing = dir;
+    
+    if (absDx > 200) {
+      if (roll < 0.4) {
+        this.aiState = 'DASH_APPROACH';
+        this.aiTimer = 0.5 + Math.random()*0.3;
+        this.actor.sm.dispatchEvent('DASH_PRESS');
+      } else if (roll < 0.8) {
+        this.aiState = 'JUMP_APPROACH';
+        this.aiTimer = 0.8;
+        this.actor.sm.dispatchEvent('DASH_PRESS');
+        this.actionQueue.push({ delay: 0.05, event: 'JUMP_PRESS' }); // dash jump
       } else {
-        document.getElementById('panelStudio').scrollIntoView({ behavior: 'smooth' });
+        this.aiState = 'CHARGE_SABER';
+        this.aiTimer = 1.0 + Math.random();
+      }
+    } 
+    else if (absDx > 80) {
+      if (roll < 0.3) {
+        this.aiState = 'DASH_ATTACK';
+        this.aiTimer = 0.6;
+        this.actor.sm.dispatchEvent('DASH_PRESS');
+        this.actionQueue.push({ delay: 0.25, event: 'ATTACK_PRESS' });
+      } else if (roll < 0.6) {
+        this.aiState = 'JUMP_ATTACK';
+        this.aiTimer = 0.7;
+        this.actor.sm.dispatchEvent('JUMP_PRESS');
+        this.actionQueue.push({ delay: 0.2, event: 'ATTACK_PRESS' });
+        this.actionQueue.push({ delay: 0.1, event: 'ATTACK_RELEASE' });
+      } else if (roll < 0.8) {
+        this.aiState = 'BACKDASH';
+        this.aiTimer = 0.4;
+        this.actor.facing = -dir;
+        this.actor.sm.dispatchEvent('DASH_PRESS');
+      } else {
+        this.aiState = 'WALK_APPROACH';
+        this.aiTimer = 0.5;
+      }
+    }
+    else {
+      if (roll < 0.4) {
+        this.aiState = 'COMBO';
+        this.aiTimer = 1.2;
+        this.actor.sm.dispatchEvent('ATTACK_PRESS');
+        this.actionQueue.push({ delay: 0.2, event: 'ATTACK_RELEASE' });
+        this.actionQueue.push({ delay: 0.05, event: 'ATTACK_PRESS' });
+        this.actionQueue.push({ delay: 0.35, event: 'ATTACK_RELEASE' });
+        this.actionQueue.push({ delay: 0.05, event: 'ATTACK_PRESS' }); // 3rd hit
+      } else if (roll < 0.8) {
+        this.aiState = 'BACKDASH';
+        this.aiTimer = 0.4;
+        this.actor.facing = -dir;
+        this.actor.sm.dispatchEvent('DASH_PRESS');
+      } else {
+        this.aiState = 'JUMP_ATTACK';
+        this.aiTimer = 0.6;
+        this.actor.sm.dispatchEvent('JUMP_PRESS');
+        this.actionQueue.push({ delay: 0.1, event: 'ATTACK_PRESS' });
+      }
+    }
+  }
+  
+  executeCurrentAction(dir, absDx, dt) {
+    if (this.aiState === 'CHARGE_SABER') {
+        this.chargeLevel += dt;
+        this.actor.chargeTime = this.chargeLevel;
+        this.actor.inputX = dir;
+        this.actor.sm.dispatchEvent('MOVE_INPUT');
+        
+        if (this.aiTimer <= 0.1 && this.chargeLevel > 0.8) {
+            this.actor.sm.dispatchEvent('CHARGE_RELEASE');
+            this.actor.sm.dispatchEvent('ATTACK_PRESS');
+            this.chargeLevel = 0;
+            this.actor.chargeTime = 0;
+        }
+    } 
+    else if (this.aiState === 'BACKDASH') {
+        this.actor.inputX = -dir;
+        this.actor.sm.dispatchEvent('MOVE_INPUT');
+    }
+    else if (this.aiState === 'DASH_APPROACH' || this.aiState === 'WALK_APPROACH' || this.aiState === 'JUMP_APPROACH' || this.aiState === 'DASH_ATTACK') {
+        this.actor.inputX = dir;
+        this.actor.sm.dispatchEvent('MOVE_INPUT');
+    }
+    else if (this.aiState === 'COMBO') {
+        this.actor.inputX = 0; // Stand still for combo
+        this.actor.sm.dispatchEvent('STOP_INPUT');
+    }
+    else {
+        this.actor.inputX = 0;
+        this.actor.sm.dispatchEvent('STOP_INPUT');
+    }
+  }
+
+  _checkCollisions(pActor, pSm) {
+    const myHitbox = this.actor.getAttackHitbox ? this.actor.getAttackHitbox() : null;
+    if (myHitbox && !pActor.isInvincible && pSm.superState !== 'HURT') {
+        const pBox = { x: pActor.x - 12, y: pActor.y - 40, w: 24, h: 40 };
+        const overlapX = myHitbox.x < pBox.x + pBox.w && myHitbox.x + myHitbox.w > pBox.x;
+        const overlapY = myHitbox.y < pBox.y + pBox.h && myHitbox.y + myHitbox.h > pBox.y;
+        if (overlapX && overlapY) {
+            if (this.myLastAttackId !== myHitbox.attackId) {
+                this.myLastAttackId = myHitbox.attackId;
+                if (myHitbox.isHeavy) {
+                  pActor.hp -= 1; // Extra point of damage. HIT_RECEIVED deducts another 1 point. Total 2.
+                }
+                pSm.dispatchEvent('HIT_RECEIVED');
+            }
+        }
+    }
+    
+    const dx = pActor.x - this.actor.x;
+    const dy = pActor.y - this.actor.y;
+    if (Math.abs(dx) < 20 && Math.abs(dy) < 35) {
+      if (!pActor.isInvincible && pSm.superState !== 'HURT' && this.actor.sm.state !== 'HURT' && !this.isDead) {
+          pSm.dispatchEvent('HIT_RECEIVED');
       }
     }
 
-    renderSequenceStudio();
+    const pAttack = pActor.getAttackHitbox ? pActor.getAttackHitbox() : null;
+    if (pAttack && !this.actor.isInvincible && this.actor.sm.superState !== 'HURT' && !this.isDead) {
+        const myBox = { x: this.actor.x - 12, y: this.actor.y - 40, w: 24, h: 40 };
+        const overlapX = pAttack.x < myBox.x + myBox.w && pAttack.x + pAttack.w > myBox.x;
+        const overlapY = pAttack.y < myBox.y + myBox.h && pAttack.y + myBox.h > myBox.y;
+        
+        if (overlapX && overlapY) {
+            if (this.lastHitAttackId !== pAttack.attackId) {
+                this.lastHitAttackId = pAttack.attackId;
+                this.takeDamage(pAttack.isHeavy ? 3 : 1);
+            }
+        }
+    }
+  }
+  
+  draw(ctx) {
+    ctx.save();
+    if (!this.isDead) {
+        ctx.filter = 'hue-rotate(150deg) saturate(1.5) brightness(0.8)';
+    }
+    this.actor.draw(ctx);
+    ctx.restore();
+    
+    if (this.isDead) return;
+
+    ctx.fillStyle = '#ef4444';
+    const hpPct = Math.max(0, this.actor.hp / this.maxHp);
+    ctx.fillRect(this.actor.x - 20, this.actor.y - 60, 40 * hpPct, 4);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(this.actor.x - 20, this.actor.y - 60, 40, 4);
+    
+    ctx.fillStyle = '#fff';
+    ctx.font = '8px monospace';
+    ctx.fillText('OMEGA', this.actor.x - 12, this.actor.y - 65);
+  }
+}
+
+const canvas = typeof document !== 'undefined' ? document.getElementById('gameCanvas') : null;
+const ctx = canvas ? canvas.getContext('2d') : null;
+const player = new PlayerActor();
+
+const enemies = [
+  new EnemyActor(980, 860, 1100, 1),   // Tier 1: Scout
+  new EnemyActor(1240, 1120, 1380, 2), // Tier 2: Gunner
+  new EnemyActor(1480, 1380, 1600, 3), // Tier 3: Elite Kiter
+  new ZeroBossAI(3100, WORLD.GROUND_Y) // OMEGA ZERO BOSS
+];
+
+let cameraX = 0;
+
+function resetGame() {
+  player.reset(140, WORLD.GROUND_Y);
+  respawnAllEnemies();
+}
+
+function respawnAllEnemies() {
+  enemies[0].respawn(980);
+  enemies[1].respawn(1240);
+  enemies[2].respawn(1480);
+  enemies[3].respawn(3100);
+  if (typeof logEvent === 'function') logEvent('[RESPAWN] Todos os inimigos e o BOSS foram recriados!', 'event-fired');
+}
+
+function warpPlayer(x) {
+  player.x = x;
+  player.y = WORLD.GROUND_Y;
+  player.vx = 0;
+  player.vy = 0;
+  player.isGrounded = true;
+  logEvent(`[WARP] Zero teleportado para x=${x} (${player.getCurrentRoom()})!`, 'state-trans');
+}
+
+function testHitPlayer() {
+  if (!player.isInvincible && !player.isDead && player.sm.superState !== 'HURT') {
+    player.sm.dispatchEvent('HIT_RECEIVED');
+  } else {
+    logEvent('[HIT] Ignorado: Zero está com I-Frames (Invencível) ou destruído!', 'event-fired');
+  }
+}
+
+function testChargePlayer() {
+  player.chargeTime = 1.5;
+  logEvent('[CHARGE] Carga máxima instantânea no Z-Saber! Solte J/X para disparar.', 'event-fired');
+}
+
+function healPlayer() {
+  player.hp = PHYS.MAX_HP;
+  player.isDead = false;
+  logEvent(`[HEAL] HP do Zero restaurado para ${PHYS.MAX_HP}/${PHYS.MAX_HP}!`, 'state-trans');
+}
+
+const keys = {};
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', (e) => {
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      e.preventDefault();
+    }
+
+    if (keys[e.code]) return;
+    keys[e.code] = true;
+
+    if (e.code === 'KeyR') { resetGame(); return; }
+    if (e.code === 'KeyT') { respawnAllEnemies(); return; }
+    if (e.code === 'KeyH') { testHitPlayer(); return; }
+    if (e.code === 'KeyG') { testChargePlayer(); return; }
+
+    if (e.code === 'Digit1') { warpPlayer(120); return; }
+    if (e.code === 'Digit2') { warpPlayer(900); return; }
+    if (e.code === 'Digit3') { warpPlayer(1750); return; }
+    if (e.code === 'Digit4') { warpPlayer(2600); return; }
+
+    if (e.code === 'Space' || e.code === 'KeyK' || e.code === 'KeyZ') {
+      player.sm.dispatchEvent('JUMP_PRESS');
+    }
+    if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'KeyL' || e.code === 'KeyC') {
+      player.sm.dispatchEvent('DASH_PRESS');
+    }
+    if (e.code === 'KeyJ' || e.code === 'KeyX') {
+      player.sm.dispatchEvent('ATTACK_PRESS');
+    }
+    if (e.code === 'KeyF' || e.code === 'KeyV') {
+      player.busterTimer = 0.4;
+      player.particles.push({
+        x: player.x + player.facing * 25,
+        y: player.y - 25,
+        vx: player.facing * 15,
+        vy: 0,
+        alpha: 1,
+        size: 6,
+        color: '#ffff00'
+      });
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      e.preventDefault();
+    }
+    keys[e.code] = false;
+
+    if (e.code === 'KeyJ' || e.code === 'KeyX') {
+      if (player.chargeTime >= 1.2) {
+        player.sm.dispatchEvent('CHARGE_RELEASE');
+      }
+      player.chargeTime = 0;
+    }
+  });
+}
+
+function handleContinuousInput() {
+  let move = 0;
+  if (keys['ArrowLeft'] || keys['KeyA']) move -= 1;
+  if (keys['ArrowRight'] || keys['KeyD']) move += 1;
+
+  if (move !== player.inputX) {
+    player.inputX = move;
+    if (move !== 0) {
+      player.sm.dispatchEvent('MOVE_INPUT');
+    } else {
+      player.sm.dispatchEvent('STOP_INPUT');
+    }
+  }
+}
+
+let lastTime = typeof performance !== 'undefined' ? performance.now() : 0;
+let frameCount = 0;
+let fpsTime = 0;
+
+function gameLoop(now) {
+  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
+
+  frameCount++;
+  fpsTime += dt;
+  if (fpsTime >= 1.0) {
+    const fpsEl = document.getElementById('fpsDisplay');
+    if (fpsEl) fpsEl.innerText = `${frameCount} FPS`;
+    frameCount = 0;
+    fpsTime = 0;
+  }
+
+  handleContinuousInput();
+  player.update(dt);
+  for (const enemy of enemies) {
+    enemy.update(dt, player.x, player.y, player.sm);
+  }
+
+  // Smooth camera follow
+  const targetCamX = player.x - WORLD.CANVAS_W / 2;
+  cameraX += (targetCamX - cameraX) * 0.14;
+  cameraX = Math.max(0, Math.min(WORLD.W - WORLD.CANVAS_W, cameraX));
+
+  if (ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(-Math.round(cameraX), 0);
+    drawWorld(ctx, cameraX);
+    for (const enemy of enemies) {
+      enemy.draw(ctx);
+    }
+    player.draw(ctx);
+    ctx.restore();
+
+    drawHUD(ctx, player);
+    updateStatsUi(player);
+  }
+
+  if (typeof requestAnimationFrame === 'function') {
     requestAnimationFrame(gameLoop);
+  }
+}
+
+if (typeof renderSequenceStudio === 'function') {
+  renderSequenceStudio();
+}
+
+if (typeof requestAnimationFrame === 'function') {
+  requestAnimationFrame(gameLoop);
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { player, enemies, resetGame, respawnAllEnemies, warpPlayer, testHitPlayer, testChargePlayer, healPlayer, gameLoop };
+}
+
+
   </script>
 </body>
 </html>

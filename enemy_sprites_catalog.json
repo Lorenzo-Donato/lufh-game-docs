@@ -1,0 +1,74 @@
+[
+  {
+    "id": "enemy_pantheon_seq_01_idle",
+    "cat": "Enemy",
+    "label": "IDLE (Patrol)",
+    "fps": 6,
+    "loop": true,
+    "gif": "sprites_extracted/enemy_pantheon_seq_01_idle/animation.gif",
+    "strip": "sprites_extracted/enemy_pantheon_seq_01_idle/strip.png",
+    "frames": [
+      "sprites_extracted/enemy_pantheon_seq_01_idle/frame_00.png",
+      "sprites_extracted/enemy_pantheon_seq_01_idle/frame_01.png",
+      "sprites_extracted/enemy_pantheon_seq_01_idle/frame_02.png"
+    ]
+  },
+  {
+    "id": "enemy_pantheon_seq_02_hurt",
+    "cat": "Enemy",
+    "label": "HURT (Damage)",
+    "fps": 6,
+    "loop": false,
+    "gif": "sprites_extracted/enemy_pantheon_seq_02_hurt/animation.gif",
+    "strip": "sprites_extracted/enemy_pantheon_seq_02_hurt/strip.png",
+    "frames": [
+      "sprites_extracted/enemy_pantheon_seq_02_hurt/frame_00.png"
+    ]
+  },
+  {
+    "id": "enemy_pantheon_seq_03_shoot",
+    "cat": "Enemy",
+    "label": "SHOOT (Attack)",
+    "fps": 6,
+    "loop": true,
+    "gif": "sprites_extracted/enemy_pantheon_seq_03_shoot/animation.gif",
+    "strip": "sprites_extracted/enemy_pantheon_seq_03_shoot/strip.png",
+    "frames": [
+      "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_00.png",
+      "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_01.png",
+      "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_02.png",
+      "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_03.png",
+      "sprites_extracted/enemy_pantheon_seq_03_shoot/frame_04.png"
+    ]
+  },
+  {
+    "id": "enemy_pantheon_seq_04_walk",
+    "cat": "Enemy",
+    "label": "WALK (Patrol)",
+    "fps": 6,
+    "loop": true,
+    "gif": "sprites_extracted/enemy_pantheon_seq_04_walk/animation.gif",
+    "strip": "sprites_extracted/enemy_pantheon_seq_04_walk/strip.png",
+    "frames": [
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_00.png",
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_01.png",
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_02.png",
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_03.png",
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_04.png",
+      "sprites_extracted/enemy_pantheon_seq_04_walk/frame_05.png"
+    ]
+  },
+  {
+    "id": "enemy_pantheon_seq_05_death",
+    "cat": "Enemy",
+    "label": "DEATH (Explosion)",
+    "fps": 6,
+    "loop": false,
+    "gif": "sprites_extracted/enemy_pantheon_seq_05_death/animation.gif",
+    "strip": "sprites_extracted/enemy_pantheon_seq_05_death/strip.png",
+    "frames": [
+      "sprites_extracted/enemy_pantheon_seq_05_death/frame_00.png",
+      "sprites_extracted/enemy_pantheon_seq_05_death/frame_01.png"
+    ]
+  }
+]

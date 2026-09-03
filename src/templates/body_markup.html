@@ -1,0 +1,249 @@
+<!-- Top Navigation -->
+  <header>
+    <div class="logo-area">
+      <span class="badge-tag">Mega Man Zero</span>
+      <h1>StateSmith HSM & Sequence Studio <span class="sub-title">| Interactive C# Architecture</span></h1>
+    </div>
+    <div class="tabs-nav">
+      <button class="tab-btn active" id="btnTabSandbox" onclick="switchView('sandbox')">🎮 Physics Sandbox</button>
+      <button class="tab-btn" id="btnTabStudio" onclick="switchView('studio')">🎞️ Sequence Studio (34 Sequências)</button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container">
+
+    <!-- Left Column: Interactive Sandbox & Visual Game Canvas -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <div class="panel" id="panelSandbox">
+        <div class="panel-header">
+          <span>🎮 Interactive Physics Sandbox (Zero Controller)</span>
+          <span style="font-size:11px; color:var(--accent-green);" id="fpsDisplay">60 FPS</span>
+        </div>
+
+        <!-- Quick Action Toolbar -->
+        <div class="sandbox-toolbar">
+          <button class="action-btn btn-reset" onclick="resetGame()" title="Tecla [R]: Restaura Zero e reinicia na Sala 1">🔄 Reiniciar (R)</button>
+          <button class="action-btn btn-respawn" onclick="respawnAllEnemies()" title="Tecla [T]: Recria os 3 Pantheons na Sala 2">🤖 Respawn 3 Inimigos (T)</button>
+          <button class="action-btn btn-hit" onclick="testHitPlayer()" title="Tecla [H]: Simula colisão para testar Super Estado HURT">💥 Simular Dano (H)</button>
+          <button class="action-btn btn-charge" onclick="testChargePlayer()" title="Tecla [G]: Dá carga instantânea no Z-Saber">⚡ Carga Sabre (G)</button>
+          <button class="action-btn btn-heal" onclick="healPlayer()" title="Restaura vida do Zero">❤️ Curar Zero</button>
+          <div style="margin-left:auto; display:flex; gap:6px;">
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(120)">📍 Sala 1 (Wall-Kick)</button>
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(900)">📍 Sala 2 (3 Pantheons)</button>
+            <button class="action-btn" style="background:#1e293b; border-color:#334155;" onclick="warpPlayer(1750)">📍 Sala 3 (Duto Dash)</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="gameCanvas" width="840" height="460"></canvas>
+          <div class="controls-legend">
+            <div class="key-hint"><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> Mover</div>
+            <div class="key-hint"><kbd>Space</kbd> / <kbd>K</kbd> / <kbd>Z</kbd> Pulo / Wall-Kick</div>
+            <div class="key-hint"><kbd>J</kbd> / <kbd>X</kbd> Corte Sabre (Combo 1-2-3)</div>
+            <div class="key-hint"><kbd>Segurar J/X</kbd> Carregar Sabre (Soltar em Dash/Ar/Solo/Parede)</div>
+            <div class="key-hint"><kbd>Shift</kbd> / <kbd>L</kbd> / <kbd>C</kbd> Dash Terrestre</div>
+            <div class="key-hint"><kbd>R</kbd> Reiniciar Jogo</div>
+            <div class="key-hint"><kbd>T</kbd> Respawn Inimigo</div>
+            <div class="key-hint"><kbd>H</kbd> Testar Dano</div>
+            <div class="key-hint"><kbd>G</kbd> Carga Instantânea</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sequence Studio: Full catalog of all 34 extracted sequences -->
+      <div class="sequence-studio" id="panelStudio">
+        <div class="panel-header" style="background:none; padding:0 0 12px 0;">
+          <span>🎞️ Sprite Sequence Studio (34 Sequências com Nomenclatura Oficial MMZ)</span>
+          <span style="font-size:11px; color:var(--text-muted);">Clique em uma sequência para testar no Zero</span>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="studio-filter-bar">
+          <button class="filter-btn active" onclick="filterSequences('all')">Todas (34)</button>
+          <button class="filter-btn" onclick="filterSequences('Movement')">Movimentação (17)</button>
+          <button class="filter-btn" onclick="filterSequences('Combat (Saber)')">Z-Saber (11)</button>
+          <button class="filter-btn" onclick="filterSequences('Buster & Effects')">Buster & Efeitos (6)</button>
+        </div>
+
+        <!-- Sequences Grid -->
+        <div class="sequences-grid" id="sequencesGrid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: State Machine Tree, Event Triggers & Diagnostics -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <!-- HSM Hierarchy Viewer -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>⚡ Hierarchical State Machine</span>
+          <span style="font-size:10px; color:var(--accent-gold);" id="currentStateTag">GROUNDED :: IDLE</span>
+        </div>
+
+        <div class="hsm-tree">
+
+          <!-- CHARGE Orthogonal Banner -->
+          <div class="charge-indicator idle" id="ui-charge-indicator">
+            <span class="charge-icon">⚡</span>
+            <div>
+              <div id="ui-charge-title">CHARGE (Segurar J/X) — Inativo</div>
+              <div class="charge-states">Ativo em GROUNDED | AIRBORNE | WALL_SLIDE -> CHARGE_RELEASE dispara corte carregado</div>
+            </div>
+          </div>
+
+          <!-- GROUNDED Super State -->
+          <div class="super-state-box active" id="super_GROUNDED" style="border-color:#1ba1e2;">
+            <div class="super-state-title" style="color:#1ba1e2;">
+              <span>● GROUNDED</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill active" id="state_IDLE">IDLE</div>
+              <div class="state-pill" id="state_RUN">RUN</div>
+              <div class="state-pill" id="state_DASH">DASH</div>
+              <div class="state-pill" id="state_ATTACK_1">ATK_1</div>
+              <div class="state-pill" id="state_ATTACK_2">ATK_2</div>
+              <div class="state-pill" id="state_ATTACK_3">ATK_3</div>
+              <div class="state-pill" id="state_ATTACK_RUN">ATK_RUN</div>
+              <div class="state-pill" id="state_ATTACK_DASH">ATK_DASH</div>
+              <div class="state-pill" id="state_CHARGE_SLASH">CHG_SLASH</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">IDLE →<span class="ev">MOVE</span>→ RUN</span>
+              <span class="transition-hint">→<span class="ev">DASH</span>→ DASH</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_1</span>
+              <span class="transition-hint">ATK_1 →<span class="ev">ATK</span>→ ATK_2 →<span class="ev">ATK</span>→ ATK_3</span>
+              <span class="transition-hint">→<span class="ev">JUMP</span>→ AIRBORNE</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_SLASH</span>
+            </div>
+          </div>
+
+          <!-- AIRBORNE Super State -->
+          <div class="super-state-box" id="super_AIRBORNE" style="border-color:#e67e22;">
+            <div class="super-state-title" style="color:#e67e22;">
+              <span>● AIRBORNE</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_JUMP">JUMP</div>
+              <div class="state-pill" id="state_FALL">FALL</div>
+              <div class="state-pill" id="state_ATTACK_AIR">ATK_AIR</div>
+              <div class="state-pill" id="state_CHARGE_AIR_SLASH">CHG_AIR_SL</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">JUMP →<span class="ev">APEX</span>→ FALL</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_AIR</span>
+              <span class="transition-hint">→<span class="ev">WALL</span>→ WALL_SLIDE</span>
+              <span class="transition-hint">→<span class="ev">LAND</span>→ GROUNDED</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_AIR_SL</span>
+            </div>
+          </div>
+
+          <!-- WALL_SLIDE Super State -->
+          <div class="super-state-box" id="super_WALL_SLIDE" style="border-color:#6f42c1;">
+            <div class="super-state-title" style="color:#6f42c1;">
+              <span>● WALL_SLIDE</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_GRAB_WALL">GRAB_WALL</div>
+              <div class="state-pill" id="state_ATTACK_GRAB_WALL">ATK_WALL</div>
+              <div class="state-pill" id="state_CHARGE_WALL_SLASH">CHG_WALL_SL</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">→<span class="ev">JUMP</span>→ WALL-KICK (AIRBORNE)</span>
+              <span class="transition-hint">→<span class="ev">ATK</span>→ ATK_WALL</span>
+              <span class="transition-hint">→<span class="ev">DETACH</span>→ FALL</span>
+              <span class="transition-hint">→<span class="ev">CHG_REL</span>→ CHG_WALL_SL</span>
+            </div>
+          </div>
+
+          <!-- HURT Super State -->
+          <div class="super-state-box" id="super_HURT" style="border-color:#dc3545;">
+            <div class="super-state-title" style="color:#dc3545;">
+              <span>● HURT</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_HURT_GROUND">HURT_GND</div>
+              <div class="state-pill" id="state_HURT_AIR">HURT_AIR</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint"><span class="ev">HIT_RECEIVED</span> (qualquer estado) → HURT</span>
+              <span class="transition-hint">→<span class="ev">HURT_FIN</span>→ GROUNDED/AIRBORNE ou DEATH</span>
+            </div>
+          </div>
+
+          <!-- DEATH Super State -->
+          <div class="super-state-box" id="super_DEATH" style="border-color:#6c757d;">
+            <div class="super-state-title" style="color:#6c757d;">
+              <span>● DEATH</span>
+            </div>
+            <div class="sub-states-grid">
+              <div class="state-pill" id="state_DYING">DYING</div>
+            </div>
+            <div class="transition-hints">
+              <span class="transition-hint">HP ≤ 0 após <span class="ev">HURT_FIN</span> → DYING</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Real-time Variables / Stats -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Velocity X</span>
+            <span class="stat-val" id="stat_vx">0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Velocity Y</span>
+            <span class="stat-val" id="stat_vy">0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Grounded</span>
+            <span class="stat-val" id="stat_ground">TRUE</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Wall Cling</span>
+            <span class="stat-val" id="stat_wall">NONE</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Dash Timer</span>
+            <span class="stat-val" id="stat_dash">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Charge Level</span>
+            <span class="stat-val" id="stat_charge">0%</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">HP</span>
+            <span class="stat-val" id="stat_hp" style="color:#00ffaa;">4/4</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Invincible</span>
+            <span class="stat-val" id="stat_invincible">NO</span>
+          </div>
+          <div class="stat-item" style="border-left-color:#ffb703;">
+            <span class="stat-label">Can Stand Up</span>
+            <span class="stat-val" id="stat_standup" style="color:#ffb703;">TRUE</span>
+          </div>
+          <div class="stat-item" style="border-left-color:#00e5ff;">
+            <span class="stat-label">Setor / Sala</span>
+            <span class="stat-val" id="stat_room" style="color:#00e5ff;">Sala 1</span>
+          </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="panel-header" style="border-top:1px solid var(--panel-border); font-size:11px;">
+          <span>📋 Event Dispatch Log</span>
+        </div>
+        <div class="event-log" id="eventLog">
+          <div class="log-entry state-trans"><span>[INIT] PlayerSm initialized in GROUNDED::IDLE</span></div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
